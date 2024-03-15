@@ -97,10 +97,14 @@ function saveEntry() {
 
 function openCreateTemplateModal() {
   uiElements.createTemplateModal.style.display = "block";
+  uiElements.templateFieldsContainer.innerHTML = "";
+
+  // TODO updateTemplateDropdown()
 
   // Focus on the first input field for accessibility
   const nameInput = document.getElementById("template-name");
   if (nameInput) {
+    // FOCUS FIELD
     nameInput.focus();
   }
 }
@@ -211,7 +215,6 @@ function handleFieldTypeChange(fieldTypeSelect, fieldOptionsContainer) {
 
 function createTemplate() {
   const templateFieldsContainer = document.getElementById("template-fields");
-
   const templateName = document.getElementById("template-name").value;
 
   function processTemplate() {
@@ -257,7 +260,7 @@ function createTemplate() {
 
     // 4. Add fields to the templateData object
     templates[templateName] = fields;
-
+    // TODO  PREVENT OVERWRITE?!
     // add a catagory to the library for the new template
     if (!loreLib[templateName]) {
       loreLib[templateName] = {};
@@ -275,15 +278,18 @@ function createTemplate() {
       "create-template-modal"
     );
     createTemplateModal.style.display = "none";
-
     // 6. (Optional) Update template options in templateSelect (implementation depends on your logic)
     updateOptions();
     updateForm();
     console.log("Template created:", templateName); // Log for confirmation
   }
 
-  if (templateName) {
-    processTemplate();
+  if (uiElements.templateDropdown.value) {
+    console.log(uiElements.templateDropdown.value);
+  } else {
+    if (templateName) {
+      processTemplate();
+    }
   }
 }
 
@@ -295,10 +301,15 @@ function updateOptions() {
     availableTemplates
       .filter((templateName) => !existingTemplateNames.has(templateName))
       .forEach((templateName) => {
-        const option = document.createElement("option");
-        option.value = templateName;
-        option.text = templateName;
-        uiElements.templateSelect.appendChild(option);
+        const entryOption = document.createElement("option");
+        entryOption.value = templateName;
+        entryOption.text = templateName;
+        uiElements.templateSelect.appendChild(entryOption);
+
+        const templateOption = document.createElement("option");
+        templateOption.value = templateName;
+        templateOption.text = templateName;
+        uiElements.templateDropdown.appendChild(templateOption);
 
         existingTemplateNames.add(templateName); // Add new template to the set
       });
@@ -316,15 +327,27 @@ function removeTemplateEntry(templateName) {
   if (templateOption) {
     uiElements.templateSelect.removeChild(templateOption);
   }
-
   // 3. If no templates remain, select none
   if (uiElements.templateSelect.options.length === 0) {
-    selectedTemplate = null; // Reset selected template
+    selectedTemplate = undefined; // Reset selected template
+  }
+
+  // 4. Remove from the template creator dropdown
+  const createTemplateOption = uiElements.templateDropdown.querySelector(
+    `option[value="${templateName}"]`
+  );
+  if (createTemplateOption) {
+    uiElements.templateDropdown.removeChild(createTemplateOption);
+  }
+  // 5. If no templates remain, select none
+  if (uiElements.templateDropdown.options.length === 0) {
+    selectedTemplate = undefined; // Reset selected template
   }
 }
 
 function deleteTemplate(templateName) {
   // 1. Confirm deletion with the user
+  if (!templateName) return;
   if (
     !confirm(
       `Are you sure you want to delete the template "${templateName}"? This action cannot be undone.`
@@ -349,8 +372,11 @@ function deleteTemplate(templateName) {
   }
   // 4. (Optional) Update template options in templateSelect (implementation depends on your logic)
   removeTemplateEntry(templateName);
+  uiElements.deleteTemplateButton.style.display = "none";
+
   updateForm();
   updateOptions();
+  uiElements.createTemplateModal.style.display = "none";
 }
 
 function updateForm() {
@@ -358,13 +384,11 @@ function updateForm() {
   clearImagePreview();
   // Clear existing form elements
   uiElements.entryForm.innerHTML = "";
-  uiElements.deleteTemplateButton.style.display = "none";
 
   const elementsToShow = [
     uiElements.entryForm,
     uiElements.saveEntryButton,
     uiElements.imageUpload,
-    uiElements.advancedOptions,
     uiElements.clearForm,
   ]; // Add elements to show/hide
 
@@ -384,15 +408,18 @@ function updateForm() {
         case "text":
           inputElement = document.createElement("input");
           inputElement.type = "text";
-          inputElement.name = fieldName;
+          // Escape spaces in the field name for attribute safety
+          inputElement.name = fieldName.replace(/\s/g, "_");
           break;
         case "textarea":
           inputElement = document.createElement("textarea");
-          inputElement.name = fieldName;
+          // Escape spaces in the field name for attribute safety
+          inputElement.name = fieldName.replace(/\s/g, "_");
           break;
         case "select":
           inputElement = document.createElement("select");
-          inputElement.name = fieldName;
+          // Escape spaces in the field name for attribute safety
+          inputElement.name = fieldName.replace(/\s/g, "_");
           for (const option of fieldData.options) {
             const optionElement = document.createElement("option");
             optionElement.text = option;
@@ -763,6 +790,7 @@ uiElements.addFieldButton.addEventListener("click", function () {
 uiElements.saveTemplateButton.addEventListener("click", createTemplate);
 
 uiElements.templateSelect.addEventListener("change", () => {
+  console.log("change in template selector on entry page");
   if (!selectedTemplate) {
     selectedTemplate = uiElements.templateSelect.value;
     updateForm();
@@ -812,10 +840,8 @@ uiElements.advancedOptions.addEventListener("click", () => {
 
   if (deleteButton.style.display === "block") {
     deleteButton.style.display = "none";
-    uiElements.advancedOptions.innerText = "Advanced";
   } else {
     deleteButton.style.display = "block";
-    uiElements.advancedOptions.innerText = "Hide Advanced";
   }
 });
 
@@ -838,6 +864,69 @@ uiElements.clearForm.addEventListener("click", () => {
   updateForm();
 });
 
+uiElements.templateDropdown.addEventListener("change", (event) => {
+  selectedTemplate = uiElements.templateDropdown.value;
+  const templateData = templates[selectedTemplate];
+  const formContainer = uiElements.templateFieldsContainer;
+  // console.log(formContainer);
+  formContainer.innerHTML = "";
+  function appendTemplateFields(templateData, formContainer) {
+    // Iterate through the template data
+    for (const fieldName in templateData) {
+      const fieldData = templateData[fieldName];
+      // console.log("fieldData", fieldData);
+
+      const newField = createNewField();
+      const fieldInput = newField.querySelector("input");
+      fieldInput.value = fieldData.label;
+
+      const fieldTypeSelect = newField.querySelector(
+        "select[name='field-type']"
+      );
+      const fieldOptionsContainer = newField.querySelector(".field-options");
+      
+      fieldTypeSelect.value = fieldData.type;
+
+
+      handleFieldTypeChange(fieldTypeSelect, fieldOptionsContainer);
+
+      if ((fieldData.type == "select" && fieldData.options != undefined)) {
+
+        console.log(fieldData.type);
+        for (let i = 0; i < fieldData.options.length; i++) {
+          const optionInput = document.createElement("input");
+          optionInput.type = "text";
+          optionInput.value = fieldData.options[i];
+          optionInput.classList.add("option-input"); // Add the class
+
+          fieldOptionsContainer.appendChild(optionInput);
+        }
+        const optionButtonContainer = document.createElement("div");
+        optionButtonContainer.classList.add("option-button-container"); // Add a class for styling
+
+        const addOptionButton = document.createElement("button");
+        addOptionButton.textContent = "Add Option";
+        addOptionButton.addEventListener("click", function () {
+          addOptionInput(fieldOptionsContainer); // Call function to add option input
+        });
+        optionButtonContainer.appendChild(addOptionButton);
+
+        const removeOptionButton = document.createElement("button");
+        removeOptionButton.textContent = "Remove Option";
+        removeOptionButton.addEventListener("click", function () {
+          removeOptionInput(fieldOptionsContainer); // Call function to remove option input
+        });
+        optionButtonContainer.appendChild(removeOptionButton);
+
+        // Append the button container to the options container
+        fieldOptionsContainer.appendChild(optionButtonContainer);
+      }
+
+      uiElements.templateFieldsContainer.appendChild(newField);
+    }
+  }
+  appendTemplateFields(templateData, formContainer);
+});
 
 //* ON LOAD *//
 uiElements.welcomeDiv.style.display = "block";

@@ -288,18 +288,32 @@ button:hover {
   height: 100%;
   overflow: auto; /* Enable scroll if needed */
   background-color: rgba(0, 0, 0, 0.4); /* Black w/ opacity */
+  filter: blur(0px); /* Initially no blur */
+  backdrop-filter: blur(2px) saturate(1.2); /* Slight blur and color enhancement */
+
+  transition: filter 0.3s ease-in-out;
 }
 
 .modal-content {
   background-color: var(--form-background); /* Darker purple from theme */
   margin: 15% auto; /* 15% from top and centered */
   padding: 20px;
+  line-height: 1.5rem;
   border: 1px solid var(--secondary-color); /* Bright purple border */
   width: 80%; /* Could adjust width */
   border-radius: 5px;
   box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
 }
+.modal ul {
+  background-color: rgba(0, 0, 0, 0.2); /* Semi-transparent dark background */
+  padding: 15px; /* Add some padding for better separation */
+  border: 1px solid var(--secondary-color); /* Optional: Red border for emphasis */
+  list-style-type: square; 
 
+}
+.modal-content li {
+  margin: 1rem;
+}
 /* Close button styles */
 .close-modal {
   color: var(--text-color); /* White for readability */
@@ -421,11 +435,12 @@ button:hover {
   margin-bottom: 1rem;
 }
 
-#delete-template {
+#delete-template, #advanced-options {
   color: var(--highlight-color); /* Yellow for contrast */
   display: none;
   border: 1px solid var(--secondary-color); /* Optional: Red border for emphasis */
   text-shadow: 0px 1px 1px rgba(0, 0, 0, 0.1);
+  display: none;
 }
 
 #save-entry {
@@ -441,11 +456,13 @@ button:hover {
   margin-bottom: 2rem;
   background-color: var(--button-color); /* Bright purple from theme */
 }
+
 .item-preview {
   display: flex;
   width: 64px;
   height:64px;
 }
+
 .item-preview-text {
   font-family: monospace; /* Optional: Use a monospace font for better alignment */
   font-size: large;
