@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Fey Brewster Lore Library</title>
+ 
+  </head>
+  <body>
+    <div id="welcome-message" class="welcome">
+      <h1>Welcome to the Lore Editor!</h1>
+      <p>Select a directory to get started.</p>
+    </div>
+    <nav>
+      <button id="create-button" class="button">Edit Entry</button>
+      <button id="create-template" class="button">Create Template</button>
+      <button id="view-button" class="button">View Lore</button>
+      <button id="settings-button" class="button">Settings</button>
+    </nav>
+
+    <div id="app-container" class="app-container">
+      <p id="info"></p>
+
+      <div id="create-form-container" class="form-container">
+        <!-- top left -->
+        <div class="main-content">
+
+          <div id="input" class="left-section">
+            <h1>Edit Entry</h1>
+
+            <select id="template-select">
+              <option value="">-- Select Template --</option>
+            </select>
+            <select id="prototype-select" disabled>
+              <option value="">-- Select Prototype (Optional) --</option>
+            </select>
+
+            <div id="template-nav">
+              <button id="clear-form" type="button">Clear Form</button>
+              <button id="advanced-options" type="button">Advanced</button>
+
+              <button id="delete-template" type="button">
+                Delete Template
+              </button>
+            </div>
+            <div id="image-file-upload" class="image-upload">
+              <label for="image-input">Select Image</label>
+              <input type="file" id="image-input" accept="image/*" />
+              <button id="clear-image-button">Clear Image</button>
+            </div>
+
+            <!-- Bottom -->
+            <div id="form">
+              <form id="entry-form"></form>
+            </div>
+            <button id="save-entry" type="submit">Save Entry</button>
+
+          </div>
+
+          <!-- top right -->
+          <div id="image" class="right-section">
+            <img id="image-preview" src="" alt="Image Preview" />
+          </div>
+        </div>
+      </div>
+      <div id="game-data-viewer" class="viewer-container">
+        <div id="game-data-viewer">
+          <div class="category-card">
+            <h2 class="category-header">Worlds</h2>
+            <ul class="category-content"></ul>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div id="create-template-modal" class="modal">
+      <div class="modal-content">
+        <h2>Create New Template</h2>
+        <form id="create-template-form">
+          <label for="template-name">Template Name:</label>
+          <input type="text" id="template-name" name="template-name" required />
+        </form>
+        <div id="template-fields"></div>
+        <button type="button" id="add-field">Add Field</button>
+
+        <button type="button" id="save-template">Save Template</button>
+      </div>
+    </div>
+
+    <div id="confirmation-modal" class="modal">
+      <div class="modal-content">
+        <p>Are you sure you want to delete this entry?</p>
+        <div class="modal-buttons">
+          <button id="confirm-delete" class="button">Delete</button>
+          <button id="cancel-delete" class="button">Cancel</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="item-details-modal" class="modal">
+      <div class="modal-content">
+        <span class="close-modal">&times;</span>
+        <h2 id="item-details-name"></h2>
+        <div id="item-details-sprite"></div>
+        <p id="item-details-description"></p>
+      </div>
+    </div>
+
+    <div id="settings-modal" class="modal">
+      <div class="modal-content">
+        <h2>Settings</h2>
+        <form id="settings-form">
+          <p>
+            Select the root directory of your project. If the data folders and
+            files do not exist, the lore library will make them.
+          </p>
+          <p>
+            You may choose to select a directory that is a tracked repo like a
+            github project for easy collaboration or version control.
+          </p>
+          <label for="project-path">Project Path:</label>
+          <button id="file-browser-button" type="button">Browse</button>
+        </form>
+      </div>
+    </div>
+  </body>
+</html>
