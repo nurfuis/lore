@@ -31,5 +31,7 @@ export class UIElements {
     this.fileBrowserButton = document.getElementById("file-browser-button");
     this.clearForm = document.getElementById("clear-form");
     this.templateDropdown = document.getElementById("template-dropdown");
+    this.generatePromptButton = document.getElementById("generate-prompt");
+
   }
 }

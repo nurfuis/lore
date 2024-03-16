@@ -202,6 +202,7 @@ p {
   display: none;
   width: 90%; /* Set image to fill available width */
   object-fit: cover; /* Scale image to fit container, maintaining aspect ratio */
+  max-width: 156px;
 }
 #image-file-upload {
   margin-top: 0.5rem;
@@ -450,9 +451,13 @@ button:hover {
   text-shadow: 0px 1px 1px rgba(0, 0, 0, 0.1);
   width: 100%;
 }
-
+#generate-prompt {
+  color: var(--button-text-color); /* White text for readability */
+  display: none;
+  border: 1px solid var(--secondary-color); /* Optional: Red border for emphasis */
+  text-shadow: 0px 1px 1px rgba(0, 0, 0, 0.1);
+}
 .remove-field-button {
-  display: block;
   margin-bottom: 2rem;
   background-color: var(--button-color); /* Bright purple from theme */
 }
@@ -470,4 +475,21 @@ button:hover {
   white-space: pre-wrap; /* Wrap text without breaking words */
   margin-bottom: 0.5rem; /* Remove default margin for cleaner spacing */
   /* Add other styles as needed (e.g., font-size, color) */
+}
+.prompt {
+  display: block;
+  padding: 0.5rem;
+  font-size: 0.8rem; /* Reduce font size slightly */
+  color: #999; /* Use a lighter gray color */
+  margin-bottom: 0.5rem; /* Add some margin for better spacing */
+  font-style: italic; /* Add italics for a more suggestive tone */
+}
+
+label {
+  margin-top:  1.5rem;
+  font-variant: small-caps;
+
+}
+hr {
+  color:  var(--secondary-color);
 }

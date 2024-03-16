@@ -13,7 +13,8 @@ let templates = templateData.getMaps();
 let spriteName;
 let selectedTemplate;
 const existingTemplateNames = new Set();
-
+let selectedEntry;
+let isCreatingTemplate;
 //* ELEMENTS *//
 const uiElements = new UIElements();
 
@@ -99,6 +100,7 @@ function openCreateTemplateModal() {
   uiElements.createTemplateModal.style.display = "block";
   uiElements.templateFieldsContainer.innerHTML = "";
 
+  isCreatingTemplate = true;
   // TODO updateTemplateDropdown()
 
   // Focus on the first input field for accessibility
@@ -127,6 +129,15 @@ function createNewField() {
   fieldTypeSelect.name = "field-type";
   newField.appendChild(fieldTypeSelect);
 
+  const fieldPromptLabel = document.createElement("label");
+  fieldPromptLabel.textContent = "Field Prompt:";
+  newField.appendChild(fieldPromptLabel);
+
+  const fieldPrompt = document.createElement("input"); // Placeholder for the prompt
+  fieldPrompt.classList.add("field-prompt"); // Add a class for styling
+  fieldPrompt.name = "field-prompt";
+  newField.appendChild(fieldPrompt);
+
   const fieldTypes = ["text", "textarea", "select"];
   fieldTypes.forEach((type) => {
     const option = document.createElement("option");
@@ -149,6 +160,22 @@ function createNewField() {
   });
   newField.appendChild(removeFieldButton);
 
+  // Add "Insert Field" button
+  const insertFieldButton = document.createElement("button");
+  insertFieldButton.textContent = "Insert Field";
+  insertFieldButton.classList.add("insert-field-button");
+  insertFieldButton.addEventListener("click", function () {
+    const newField = createNewField(); // Create a new field
+    uiElements.templateFieldsContainer.insertBefore(
+      newField,
+      this.parentElement.nextSibling
+    ); // Insert it after this field
+  });
+
+  newField.appendChild(insertFieldButton);
+
+  const hr = document.createElement("hr");
+  newField.appendChild(hr);
   return newField;
 }
 
@@ -229,6 +256,10 @@ function createTemplate() {
       const fieldTypeSelect = fieldElement.querySelector(
         "select[name='field-type']"
       );
+      const fieldTypePrompt = fieldElement.querySelector(
+        "input[name='field-prompt']"
+      );
+
       const options = []; // Initialize an empty options array for select fields
 
       // Handle options for select type only
@@ -248,12 +279,14 @@ function createTemplate() {
           label: fieldNameInput.value, // Set label to same as field name (optional, can be customized)
           type: fieldTypeSelect.value,
           options: options, // Include options if it's a select field
+          prompt: fieldTypePrompt.value,
         };
       } else {
         fields[fieldNameInput.value] = {
           // Use field name as key in the fields object
           label: fieldNameInput.value, // Set label to same as field name (optional, can be customized)
           type: fieldTypeSelect.value,
+          prompt: fieldTypePrompt.value,
         };
       }
     });
@@ -381,26 +414,35 @@ function deleteTemplate(templateName) {
 
 function updateForm() {
   const selectedTemplate = uiElements.templateSelect.value;
-  clearImagePreview();
+
   // Clear existing form elements
+  clearImagePreview();
   uiElements.entryForm.innerHTML = "";
 
+  // Add elements to show/hide
   const elementsToShow = [
     uiElements.entryForm,
     uiElements.saveEntryButton,
     uiElements.imageUpload,
     uiElements.clearForm,
-  ]; // Add elements to show/hide
+    uiElements.generatePromptButton,
+  ];
 
   const elementsToHide = [];
+
   if (selectedTemplate) {
     const templateFields = templates[selectedTemplate];
 
     // Build form elements based on template data
     for (const fieldName in templateFields) {
       const fieldData = templateFields[fieldName];
+
       const label = document.createElement("label");
       label.textContent = fieldData.label;
+
+      const promptSpan = document.createElement("span");
+      promptSpan.classList.add("prompt");
+      promptSpan.textContent = fieldData.prompt || fieldData.label;
 
       let inputElement;
 
@@ -408,6 +450,7 @@ function updateForm() {
         case "text":
           inputElement = document.createElement("input");
           inputElement.type = "text";
+
           // Escape spaces in the field name for attribute safety
           inputElement.name = fieldName.replace(/\s/g, "_");
           break;
@@ -431,6 +474,8 @@ function updateForm() {
 
       const br = document.createElement("br");
       uiElements.entryForm.appendChild(label);
+      uiElements.entryForm.appendChild(promptSpan);
+
       uiElements.entryForm.appendChild(inputElement);
       uiElements.entryForm.appendChild(br);
     }
@@ -774,19 +819,31 @@ uiElements.createTemplateButton.addEventListener(
 window.addEventListener("click", function (event) {
   if (event.target === uiElements.createTemplateModal) {
     uiElements.createTemplateModal.style.display = "none";
+    isCreatingTemplate = false;
   }
 });
 
-uiElements.addFieldButton.addEventListener("click", function () {
+function addFieldEvent() {
   const newField = createNewField();
   const fieldTypeSelect = newField.querySelector("select[name='field-type']");
+
   const fieldOptionsContainer = newField.querySelector(".field-options");
 
   handleFieldTypeChange(fieldTypeSelect, fieldOptionsContainer);
-
+  const inputToFocus = newField.querySelector("input"); // Directly target the input element
   uiElements.templateFieldsContainer.appendChild(newField);
-});
+  inputToFocus.focus();
+}
 
+uiElements.addFieldButton.addEventListener("click", function () {
+  addFieldEvent();
+});
+document.addEventListener("keydown", function (event) {
+  if (event.key === "Tab" && isCreatingTemplate) {
+    event.preventDefault(); // Prevent default Alt+Tab behavior
+    addFieldEvent();
+  }
+});
 uiElements.saveTemplateButton.addEventListener("click", createTemplate);
 
 uiElements.templateSelect.addEventListener("change", () => {
@@ -822,14 +879,18 @@ uiElements.createButton.addEventListener("click", () => toggleView(true));
 uiElements.viewButton.addEventListener("click", () => toggleView(false));
 
 uiElements.prototypeSelect.addEventListener("change", (event) => {
-  const selectedEntry = event.target.value;
+  selectedEntry = event.target.value;
+
   for (const field in loreLib[selectedTemplate][selectedEntry]) {
     if (field == "sprite") {
-      console.log(loreLib[selectedTemplate][selectedEntry][field]);
+      // console.log(loreLib[selectedTemplate][selectedEntry][field]);
       setPreview(loreLib[selectedTemplate][selectedEntry][field]);
     } else if (field !== "valid" && field !== "version") {
       const element = document.querySelector(`[name=${field}]`);
       element.value = loreLib[selectedTemplate][selectedEntry][field];
+
+      console.log(loreLib[selectedTemplate][selectedEntry][field]);
+
       clearImagePreview();
     }
   }
@@ -884,14 +945,12 @@ uiElements.templateDropdown.addEventListener("change", (event) => {
         "select[name='field-type']"
       );
       const fieldOptionsContainer = newField.querySelector(".field-options");
-      
-      fieldTypeSelect.value = fieldData.type;
 
+      fieldTypeSelect.value = fieldData.type;
 
       handleFieldTypeChange(fieldTypeSelect, fieldOptionsContainer);
 
-      if ((fieldData.type == "select" && fieldData.options != undefined)) {
-
+      if (fieldData.type == "select" && fieldData.options != undefined) {
         console.log(fieldData.type);
         for (let i = 0; i < fieldData.options.length; i++) {
           const optionInput = document.createElement("input");
@@ -928,6 +987,39 @@ uiElements.templateDropdown.addEventListener("change", (event) => {
   appendTemplateFields(templateData, formContainer);
 });
 
+uiElements.generatePromptButton.addEventListener("click", () => {
+  function generatePrompt() {
+    const promptText = document.getElementById("promptText");
+
+    let promptString = "";
+
+    if (selectedEntry !== undefined) {
+      promptString += `Please fill in the missing details for a lore library entry in the ${selectedTemplate} category. You can expand or adjust details to create a more convincing lore while preserving the main details provided.; `;
+
+      for (const field in loreLib[selectedTemplate][selectedEntry]) {
+        if (field !== "valid" && field !== "version" && field != "sprite") {
+          const fieldValue = loreLib[selectedTemplate][selectedEntry][field];
+          const fieldPromptTemplate = promptTemplates[field];
+          console.log(fieldValue);
+          if (!fieldValue) {
+            promptString += fieldPromptTemplate
+              ? fieldPromptTemplate
+              : `**Provide details for the ${field} field** ;`;
+          } else {
+            promptString += `Based on the existing ${field}: ${fieldValue}; `;
+          }
+        }
+      }
+    } else {
+      promptString = "Please select a lore entry to generate a prompt for.";
+    }
+
+    promptText.textContent = promptString;
+    promptModal.style.display = "block"; // Open the modal after updating prompt
+  }
+  generatePrompt();
+});
+
 //* ON LOAD *//
 uiElements.welcomeDiv.style.display = "block";
 
@@ -935,3 +1027,133 @@ toggleSettingsModal();
 uiElements.createButton.style.display = "none";
 uiElements.viewButton.style.display = "none";
 uiElements.createTemplateButton.style.display = "none";
+
+const promptModal = document.getElementById("promptModal");
+
+// Get the button that opens the modal
+
+// Get the <span> element that closes the modal
+const closeSpan = document.getElementsByClassName("close")[0];
+
+// When the user clicks on the button, open the modal
+uiElements.generatePromptButton.addEventListener("click", function () {
+  promptModal.style.display = "block";
+});
+
+// When the user clicks on <span> (x), close the modal
+closeSpan.addEventListener("click", function () {
+  promptModal.style.display = "none";
+});
+
+// When the user clicks outside of the modal, close it
+window.addEventListener("click", function (event) {
+  if (event.target === promptModal) {
+    promptModal.style.display = "none";
+  }
+});
+
+function fillTemplate(template, data) {
+  let filledTemplate = template;
+  for (const key in data) {
+    filledTemplate = filledTemplate.replace(
+      new RegExp(`{{${key}}}`, "g"),
+      data[key]
+    );
+  }
+  return filledTemplate;
+}
+
+const copyPromptButton = document.getElementById("copyPromptButton");
+
+function copyPromptText() {
+  const promptText = document.getElementById("promptText");
+  const selection = window.getSelection();
+  const range = document.createRange();
+  range.selectNodeContents(promptText);
+  selection.removeAllRanges();
+  selection.addRange(range);
+  navigator.clipboard
+    .writeText(promptText.textContent)
+    .then(() => {
+      console.log("Prompt copied successfully!"); // Optional success message
+    })
+    .catch(() => {
+      console.error("Failed to copy prompt!"); // Optional error message
+    });
+  selection.removeAllRanges();
+}
+copyPromptButton.addEventListener("click", copyPromptText);
+
+const UNIVERSE = "earth based lore ";
+const FACTIONS = "";
+
+const promptTemplates = {
+  location:
+    "Location: What are some challenges faced by explorers in the " +
+    UNIVERSE +
+    " region? ; ",
+  appearance:
+    "Appearance: What would this look like in the land of " + UNIVERSE + "? ; ",
+  name:
+    "Name: Utilize a naming convention that reflects the lore of the " +
+    UNIVERSE +
+    " universe.; ",
+
+  alias: "Alias:Provide a nickname or alternative name.; ",
+
+  description:
+    "Description: Capture the essence of the location through details. Describe the overall scale; ",
+
+  terrain:
+    "Terrain: Detail the landscape features: mountains, plains, deserts, etc.; ",
+
+  atmosphere:
+    "Atmosphere: Describe the composition and pressure of the atmosphere.; ",
+
+  climate:
+    "Climate: Outline the average temperature range and weather patterns.; ",
+
+  flora_and_faune:
+    "Flora and Fauna: Describe the plant and animal life, if any.; ",
+
+  settlements:
+    "Settlements: Consider factors like population size, architectural style, and social structures.; ",
+
+  history:
+    "History: Include details on its founding, inhabitants, and any historical conflicts or advancements.; ",
+
+  cultural_practices:
+    "Cultural Practices: Describe the customs, traditions, and beliefs of the inhabitants.; ",
+
+  mythology:
+    "Mythology: Describe the prevalent myths and legends surrounding the location or its inhabitants.; ",
+
+  architecture:
+    "Architecture: Describe the typical building style used in settlements.; ",
+
+  resources:
+    "Resources: Specify the valuable resources found in the location.; ",
+
+  time_of_day:
+    "Time of Day: Decide if a specific time of day is relevant for the location's purpose or mood.; ",
+
+  weather_conditions:
+    "Weather Conditions: Describe the prevailing weather patterns or typical weather for the location.; ",
+
+  sensory_details:
+    "Sensory Details: Engage the reader's senses through evocative descriptions. ",
+
+  mood: "Mood: Describe the overall feeling or atmosphere evoked by the location.; ",
+
+  factions:
+    "Factions: List any dominant factions or groups that hold power within the location.; ",
+
+  characters:
+    "Characters: Consider the types of characters that might inhabit or visit the location.; ",
+
+  events:
+    "Events: Consider both historical events and potential future developments.; ",
+
+  notes:
+    "Notes: Use this section to include any additional details or ideas that don't fit into the other categories.; ",
+};

@@ -301,7 +301,7 @@ ipcMain.on("save-image", (event, filePath) => {
 
     // Create a preview image (adjust width/height as needed)
     sharp(imageData)
-      .resize(256, 256) // Adjust width and height for your preview size
+      .resize(156, 156) // Adjust width and height for your preview size
       .toBuffer((err, previewData) => {
         if (err) {
           console.error("Error creating preview:", err);
