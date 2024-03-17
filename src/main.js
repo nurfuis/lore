@@ -62,6 +62,7 @@ function setupLoreDir() {
   userDataPath = USER_PATH;
   dataDirPath = userDataPath + USER_DIR;
   backupPath = dataDirPath + BACKUP_DIR;
+  
   try {
     if (!fs.existsSync(dataDirPath)) {
       fs.mkdirSync(dataDirPath);
@@ -258,7 +259,7 @@ function readImageList() {
 ipcMain.on("request-image", (event, filename) => {
   // Respond to the synchronous request with the image data or error
   const imagePath = spritesData[SPRITES_KEY][filename][PREVIEWS_KEY]; //.preview
-  // console.log("requested image", imagePath);
+  console.log("requested image", imagePath);
   try {
     const image = fs.readFileSync(imagePath);
     event.returnValue = image;

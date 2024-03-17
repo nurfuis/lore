@@ -1,5 +1,5 @@
-import { UIElements } from "./UIElements";
-import { Image } from "./utils/Image";
+import { UIElements } from "../UIElements";
+import { Image } from "../utils/Image";
 
 export class EntryForm {
   constructor() {

@@ -1,10 +1,10 @@
 import "./index.css";
 import { UIElements } from "./app/UIElements";
-import { EntryForm } from "./app/EntryForm";
+import { EntryForm } from "./app/modules/EntryForm";
 import { Prompts } from "./app/utils/Prompts";
-import { TemplateMaker } from "./app/TemplateMaker";
-import { Viewer } from "./app/Viewer";
-import { Menu } from "./app/Menu";
+import { TemplateMaker } from "./app/modules/TemplateMaker";
+import { Viewer } from "./app/modules/Viewer";
+import { Menu } from "./app/modules/Menu";
 
 const uiElements = new UIElements();
 //* MAIN FEATURE *//
@@ -46,7 +46,7 @@ async function startUp() {
       break;
     }
 
-    await new Promise((resolve) => setTimeout(resolve, 1000)); // Wait for 1 second
+    await new Promise((resolve) => setTimeout(resolve, 5000)); // Wait for 1 second
 
     tries++;
     if (tries >= maxTries) {

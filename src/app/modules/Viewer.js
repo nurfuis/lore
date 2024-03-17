@@ -1,5 +1,5 @@
-import { UIElements } from "./UIElements";
-import { Image } from "./utils/Image";
+import { UIElements } from "../UIElements";
+import { Image } from "../utils/Image";
 const uiElements = new UIElements();
 const image = new Image();
 
@@ -62,7 +62,6 @@ export class Viewer {
         uiElements.detailsModal.style.display = "none";
       }
     });
-
   }
 
   deleteConfirmed(itemToDelete, type) {
