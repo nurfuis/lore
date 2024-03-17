@@ -7,6 +7,7 @@ import { Viewer } from "./app/modules/Viewer";
 import { Menu } from "./app/modules/Menu";
 
 const uiElements = new UIElements();
+
 //* MAIN FEATURE *//
 const entryForm = new EntryForm();
 const prompts = new Prompts();

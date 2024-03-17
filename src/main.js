@@ -181,9 +181,11 @@ function readLoreFile() {
 //* HANDLE LORE REQUEST *//
 ipcMain.on("request-lore-data", (event) => {
   console.log("Checking for data library...");
-  mainWindow.setTitle(USER_PATH + ": Lore Library");
 
-  event.returnValue = loreData;
+  if (USER_PATH) {
+    mainWindow.setTitle(USER_PATH + ": Lore Library");
+    event.returnValue = loreData;
+  }
 });
 //*HANDLE LORE SAVE *//
 ipcMain.on("save-lore", (event, data) => {
