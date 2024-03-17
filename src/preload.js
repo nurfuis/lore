@@ -17,7 +17,7 @@ contextBridge.exposeInMainWorld("loreData", {
   },
 });
 
-contextBridge.exposeInMainWorld("imageRequest", {
+contextBridge.exposeInMainWorld("request", {
   getImage(filename) {
     // Add filename argument
     const response = ipcRenderer.sendSync("request-image", filename);

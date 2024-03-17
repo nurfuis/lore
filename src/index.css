@@ -172,7 +172,6 @@ p {
 #app-container {
   display: flex; /* Enable flexbox layout */
   flex-direction: column; /* Stack elements vertically */
-  height: 100vh; /* Set container height to 100% viewport height */
 }
 
 /* Header (Optional) */
@@ -321,6 +320,7 @@ button:hover {
   float: right;
   font-size: 30px;
   font-weight: bold;
+  overflow: hidden;
 }
 
 .close-modal:hover,
@@ -456,6 +456,7 @@ button:hover {
   display: none;
   border: 1px solid var(--secondary-color); /* Optional: Red border for emphasis */
   text-shadow: 0px 1px 1px rgba(0, 0, 0, 0.1);
+  display: none;
 }
 .remove-field-button {
   margin-bottom: 2rem;
@@ -492,4 +493,8 @@ label {
 }
 hr {
   color:  var(--secondary-color);
+}
+span {
+  max-width: 280px;
+  overflow: auto;
 }

@@ -32,6 +32,13 @@ export class UIElements {
     this.clearForm = document.getElementById("clear-form");
     this.templateDropdown = document.getElementById("template-dropdown");
     this.generatePromptButton = document.getElementById("generate-prompt");
+    this.promptModal = document.getElementById("promptModal");
 
+    this.ready();
+  }
+  ready() {
+    this.createButton.style.display = "none";
+    this.viewButton.style.display = "none";
+    this.createTemplateButton.style.display = "none";
   }
 }

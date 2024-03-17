@@ -5,13 +5,11 @@ const sharp = require("sharp");
 
 const { DEFAULT_TEMPLATES } = require("./app/constants");
 
-// Handle creating/removing shortcuts on Windows when installing/uninstalling.
 if (require("electron-squirrel-startup")) {
   app.quit();
 }
 let mainWindow;
 const createWindow = () => {
-  // Create the browser window.
   mainWindow = new BrowserWindow({
     width: 900,
     height: 600,
@@ -20,48 +18,26 @@ const createWindow = () => {
     },
   });
   mainWindow.setMenuBarVisibility(false);
-  // and load the index.html of the app.
   mainWindow.loadURL(MAIN_WINDOW_WEBPACK_ENTRY);
 
-  // Open the DevTools.
   // mainWindow.webContents.openDevTools();
 };
 
-// This method will be called when Electron has finished
-// initialization and is ready to create browser windows.
-// Some APIs can only be used after this event occurs.
 app.on("ready", createWindow);
 
-// Quit when all windows are closed, except on macOS. There, it's common
-// for applications and their menu bar to stay active until the user quits
-// explicitly with Cmd + Q.
 app.on("window-all-closed", () => {
-  function backup() {
-    try {
-      fs.copyFileSync(tempFile, mainFile);
-      console.log("Saved data to main file:", mainFile);
-      // TODO save an additional backup file with date
-    } catch (error) {
-      console.error(
-        "Error saving data to main file: No data or temp file was created."
-      );
-    }
+  try {
+    fs.copyFileSync(tempFile, mainFile);
+    console.log("Saved data to main file:", mainFile);
 
-    try {
-      fs.copyFileSync(tempFile, backupFile);
-      console.log("Saved data to backup file:", backupFile);
-
-      // files were saved and backed up so remove temp file
-      fs.unlinkSync(tempFile);
-      console.log("Temporary file removed:", tempFile);
-    } catch (error) {
-      console.error(
-        "Error saving data to backup file: No data or temp file was created."
-      );
-    }
+    // files were saved and backed up so remove temp file
+    fs.unlinkSync(tempFile);
+    console.log("Temporary file removed:", tempFile);
+  } catch (error) {
+    console.error(
+      "Error saving data to main file: No data or temp file was created."
+    );
   }
-
-  backup();
 
   if (process.platform !== "darwin") {
     app.quit();
@@ -69,15 +45,10 @@ app.on("window-all-closed", () => {
 });
 
 app.on("activate", () => {
-  // On OS X it's common to re-create a window in the app when the
-  // dock icon is clicked and there are no other windows open.
   if (BrowserWindow.getAllWindows().length === 0) {
     createWindow();
   }
 });
-
-// In this file you can include the rest of your app's specific main process
-// code. You can also put them in separate files and import them here.
 
 //* FILE SAVING *//
 const USER_DIR = "/data";
@@ -145,39 +116,47 @@ function readLoreFile() {
   }
 
   // check for a temp file
+  // TODO offer an option to write the tempFile to main and set loreData with tempData or to quit and inspect manually
   try {
-    // Attempt to read the temp file (will throw error if file doesn't exist)
-    loreData = JSON.parse(fs.readFileSync(tempFile, "utf-8"));
-    console.log("Loaded lore data from temp file");
-    console.error("Error shutting down:");
+    const tempData = JSON.parse(fs.readFileSync(tempFile, "utf-8"));
 
-    // Display alert about unexpected shutdown and corrupted data
     dialog
       .showMessageBox({
-        type: "error",
-        title: "Unexpected Shutdown Detected",
+        type: "warning",
+        title: "Temporary Data Found",
         message:
-          "The app encountered an error loading lore data. It appears there was an unexpected shutdown last time. Please inspect and resolve the corrupted temp file manually, then remove it to launch the app successfully.",
-        buttons: ["OK"],
+          "The app discovered a temporary file that might contain unsaved changes. What would you like to do?",
+        buttons: [
+          "Overwrite Main File",
+          "Proceed and Delete Temp",
+          "Exit to Inspect Manually",
+        ],
         noLink: true,
       })
-      .then(() => {
-        // Exit the application after the user acknowledges the alert
-        app.quit();
+      .then((choice) => {
+        if (choice.response === 0) {
+          // Overwrite main file
+          fs.copyFileSync(tempFile, mainFile);
+          console.log("Temp data overwritten to main file.");
+          loreData = tempData;
+        } else if (choice.response === 1) {
+          // Proceed and delete temp
+          fs.unlinkSync(tempFile);
+          console.log("Temporary file removed.");
+        } else {
+          // Exit to inspect manually
+          console.log("Exiting for manual inspection.");
+          app.quit();
+        }
       });
   } catch (err) {
-    // Check if the error is due to a non-existent file (ENOENT)
     if (err.code === "ENOENT") {
       console.log("No temp file found. Starting fresh.");
-      /*       fs.writeFile(tempFile, JSON.stringify(loreData), (err) => {
-        if (err) {
-          console.error("Error saving templates:", err);
-        } else {
-          console.log("Lore lib.temp created successfully!");
-        }
-      }); */
+    } else {
+      console.error("Error reading temp file:", err);
     }
   }
+
   // create a backup file
   fs.writeFile(backupFile, JSON.stringify(loreData), (err) => {
     if (err) {
@@ -191,6 +170,9 @@ function readLoreFile() {
 //* HANDLE LORE REQUEST *//
 ipcMain.on("request-lore-data", (event) => {
   // Respond to the synchronous request with the lore data
+  mainWindow.setTitle(USER_PATH + " : Lore Library");
+
+  console.log("Checking for data library...");
   event.returnValue = loreData;
 });
 
@@ -219,7 +201,7 @@ const SPRITES_DIR = "/sprites";
 const SPRITES_KEY = "sprite";
 const PREVIEWS_DIR = "/previews";
 const PREVIEWS_KEY = "preview";
-const FULLSIZE_KEY = "full"
+const FULLSIZE_KEY = "full";
 let assetsPath;
 let spritesPath;
 let previewsPath;
@@ -243,8 +225,6 @@ function setupSpritesDir() {
       fs.mkdirSync(previewsPath);
       console.log(`Created directory: ${previewsPath}`);
     }
-
-
   } catch (err) {
     console.error("Error creating directory:");
     // Optionally handle the error by exiting the application or notifying the user
@@ -257,7 +237,7 @@ let spritesData = {};
 
 function readImageList() {
   imageList = dataDirPath + SPRITE_LIBRARY;
-  console.log("image list", imageList);
+  // console.log("image list", imageList);
   // Check for existing library and set value to contents or use defaults
   try {
     spritesData = JSON.parse(fs.readFileSync(imageList, "utf-8"));
@@ -278,7 +258,7 @@ function readImageList() {
 ipcMain.on("request-image", (event, filename) => {
   // Respond to the synchronous request with the image data or error
   const imagePath = spritesData[SPRITES_KEY][filename][PREVIEWS_KEY]; //.preview
-  console.log("requested image", imagePath);
+  // console.log("requested image", imagePath);
   try {
     const image = fs.readFileSync(imagePath);
     event.returnValue = image;
@@ -329,8 +309,9 @@ ipcMain.on("save-image", (event, filePath) => {
         try {
           // add two entries, one for fullSize, another for preview
           spritesData[SPRITES_KEY][filename] = {};
-          spritesData[SPRITES_KEY][filename][PREVIEWS_KEY] = `${previewsPath}/${filename}`;
-
+          spritesData[SPRITES_KEY][filename][
+            PREVIEWS_KEY
+          ] = `${previewsPath}/${filename}`;
 
           fs.writeFile(imageList, JSON.stringify(spritesData), (err) => {
             if (err) {
@@ -416,22 +397,12 @@ ipcMain.on("save-templates", (event, data) => {
   });
 });
 
-function loadLibraryData() {
-  setupLoreDir();
-  readLoreFile();
-  setupSpritesDir();
-  readImageList();
-  readTemplateFile();
-}
-
 function openDialog() {
   dialog
     .showOpenDialog({ properties: ["openDirectory"] })
     .then((result) => {
       if (result.filePaths.length === 1) {
-        USER_PATH = result.filePaths[0];
-        mainWindow.setTitle(USER_PATH + ": Fey Brewster Lore Library");
-        loadLibraryData();
+        setUserDir(result.filePaths[0]);
       }
     })
     .catch((err) => {
@@ -442,3 +413,75 @@ function openDialog() {
 ipcMain.on("open-file-dialog", () => {
   openDialog();
 });
+
+function loadLibraryData() {
+  setupLoreDir();
+  readLoreFile();
+  setupSpritesDir();
+  readImageList();
+  readTemplateFile();
+  console.log("library was loaded");
+}
+
+const configPath = app.getPath("userData") + "/config.json";
+
+async function createDefaultConfig(userPath) {
+  try {
+    const defaultConfig = { USER_PATH: userPath };
+
+    await fs.promises.writeFile(
+      configPath,
+      JSON.stringify(defaultConfig, null, 2)
+    );
+    console.log("Config file created successfully.");
+  } catch (err) {
+    console.error("Error creating config file:", err);
+  }
+}
+
+async function setUserDir(path) {
+  try {
+    if (fs.existsSync(configPath)) {
+      const configData = JSON.parse(
+        await fs.promises.readFile(configPath, "utf-8")
+      );
+      if (configData.USER_PATH !== path) {
+        // Update if new path is different
+        configData.USER_PATH = path;
+        await fs.promises.writeFile(
+          configPath,
+          JSON.stringify(configData, null, 2)
+        );
+        console.log("Config file updated with new user path.");
+        mainWindow.close();
+        createWindow();  
+      }
+    } else {
+      // Create config if it doesn't exist
+      await createDefaultConfig(path);
+    }
+
+    USER_PATH = path; // Set global variable
+    loadLibraryData();
+  } catch (err) {
+    console.error("Error handling configuration:", err);
+  }
+}
+async function checkConfig() {
+  try {
+    if (fs.existsSync(configPath)) {
+      const configData = JSON.parse(
+        await fs.promises.readFile(configPath, "utf-8")
+      );
+      if (configData.hasOwnProperty("USER_PATH")) {
+        setUserDir(configData.USER_PATH);
+        console.log("user dir: ", configData.USER_PATH);
+      }
+    } else {
+      console.log("No config file found.");
+    }
+  } catch (err) {
+    console.error("Error checking config file:", err);
+  }
+}
+checkConfig();

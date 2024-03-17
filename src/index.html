@@ -6,10 +6,7 @@
   </head>
 
   <body>
-    <div id="welcome-message" class="welcome">
-      <h1>Welcome to the Lore Editor!</h1>
-      <p>Select a directory to get started.</p>
-    </div>
+
     <nav>
       <button id="create-button" class="button">Edit Entry</button>
       <button id="create-template" class="button">Create Template</button>
@@ -17,11 +14,17 @@
       <button id="settings-button" class="button">Settings</button>
     </nav>
 
+    <div id="welcome-message" class="welcome">
+      <h1>Welcome to the Lore Editor!</h1>
+      <p>Select a directory to get started.</p>
+    </div>
+
     <div id="app-container" class="app-container">
       <p id="info"></p>
 
       <div id="create-form-container" class="form-container">
         <div id="image" class="full-width">
+          
           <img id="image-preview" src="" alt="Image Preview" />
         </div>
 
@@ -32,8 +35,9 @@
             <select id="template-select">
               <option value="">-- Select Template --</option>
             </select>
+            
             <select id="prototype-select" disabled>
-              <option value="">-- Select Prototype (Optional) --</option>
+              <option value="">-- Select Entry (Optional) --</option>
             </select>
 
             <div id="template-nav">
@@ -69,7 +73,7 @@
 
     <div id="promptModal" class="modal">
       <div class="modal-content">
-        <span class="close">&times;</span>
+        
         <h2>Lore Library Prompt</h2>
         <button id="copyPromptButton">Copy Prompt</button>
         <p id="promptText"></p>
@@ -78,6 +82,8 @@
 
     <div id="create-template-modal" class="modal">
       <div class="modal-content">
+        <span class="close-modal">&times;</span>
+
         <h2>Create New Template</h2>
         <select id="template-dropdown">
           <option value="">-- Extend Template (Optional) --</option>
