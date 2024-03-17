@@ -53,42 +53,34 @@ app.on("activate", () => {
 
 //* FILE SAVING *//
 let USER_PATH;
-
 const USER_DIR = "/data";
 const BACKUP_DIR = "/backup";
 
-let userAppDataPath;
-let dataDirPath;
-let backupPath;
+let projectDataDirectory;
 
 function initializeProjectDirectories() {
   console.log("Initializing project directories...");
 
-  userAppDataPath = USER_PATH;
-  console.log(userAppDataPath);
+  const userAppDataPath = getUserDataPath();
+  console.log("User Data Path:", userAppDataPath);
 
-  dataDirPath = userAppDataPath + USER_DIR;
-  console.log(dataDirPath);
+  projectDataDirectory = createDirectoryIfNotExists(userAppDataPath, USER_DIR);
+  console.log("Created project data directory:", projectDataDirectory);
 
-  backupPath = dataDirPath + BACKUP_DIR;
-  console.log(backupPath);
+  const backupDirectory = createDirectoryIfNotExists(projectDataDirectory, BACKUP_DIR);
+  console.log("Created backup directory:", backupDirectory);
+}
 
-  try {
-    if (!fs.existsSync(dataDirPath)) {
-      fs.mkdirSync(dataDirPath);
-      console.log("creating", userAppDataPath + dataDirPath);
-    }
-  } catch (err) {
-    console.error("Error creating data directory:", err);
+function getUserDataPath() {
+  return app.getPath("userData");
+}
+
+function createDirectoryIfNotExists(baseDirectory, directoryName) {
+  const fullDirectoryPath = path.join(baseDirectory, directoryName);
+  if (!fs.existsSync(fullDirectoryPath)) {
+    fs.mkdirSync(fullDirectoryPath);
   }
-  try {
-    if (!fs.existsSync(backupPath)) {
-      fs.mkdirSync(backupPath);
-      console.log("creating", backupPath);
-    }
-  } catch (err) {
-    console.error("Error creating backup directory:", err);
-  }
+  return fullDirectoryPath;
 }
 
 const LORE_LIBRARY = "/lib.json"; 
@@ -103,11 +95,11 @@ let loreData = {};
 
 function readLoreFile() {
   console.log("reading lore file");
-  mainFile = dataDirPath + LORE_LIBRARY;
+  mainFile = projectDataDirectory + LORE_LIBRARY;
   console.log(mainFile);
-  tempFile = dataDirPath + LORE_LIBRARY_TEMP;
+  tempFile = projectDataDirectory + LORE_LIBRARY_TEMP;
   console.log(tempFile);
-  backupFile = dataDirPath + BACKUP_DIR + LORE_LIBRARY_BAK;
+  backupFile = projectDataDirectory + BACKUP_DIR + LORE_LIBRARY_BAK;
   console.log(backupFile);
   // Check for existing library
   try {
@@ -220,7 +212,7 @@ let previewsPath;
 
 function setupSpritesDir() {
   console.log("setting up sprites dir");
-  assetsPath = dataDirPath + ASSETS_PATH;
+  assetsPath = projectDataDirectory + ASSETS_PATH;
   console.log(assetsPath);
 
   spritesPath = assetsPath + SPRITES_DIR;
@@ -254,7 +246,7 @@ let imageList;
 let spritesData;
 
 function readImageList() {
-  imageList = dataDirPath + SPRITE_LIBRARY;
+  imageList = projectDataDirectory + SPRITE_LIBRARY;
   console.log("reading image list", imageList);
   try {
     spritesData = JSON.parse(fs.readFileSync(imageList, "utf-8"));
@@ -370,7 +362,7 @@ function fillMissingLoreEntries() {
 }
 
 function readTemplateFile() {
-  templatesPath = dataDirPath + TEMPLATES_FILE;
+  templatesPath = projectDataDirectory + TEMPLATES_FILE;
   // Check for existing library and set value to contents or use defaults
   try {
     templateData = JSON.parse(fs.readFileSync(templatesPath, "utf-8"));
