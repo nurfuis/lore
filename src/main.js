@@ -413,7 +413,6 @@ ipcMain.on("save-templates", (event, data) => {
     } else {
       console.log("Templates saved successfully!");
       event.sender.send("save-success"); // Send success message
-
     }
   });
 });

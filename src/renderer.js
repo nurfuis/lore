@@ -26,19 +26,19 @@ viewer.entryForm = entryForm;
 menu.viewer = viewer;
 
 async function startUp() {
-  console.log('renderer startup')
+  console.log("renderer startup");
 
   const maxTries = 120;
   let tries = 0;
 
   while (true) {
-    console.log('renderer checking for library')
+    console.log("renderer checking for library");
 
     const loreData = window.loreData;
     entryForm.loreLib = loreData.getLore();
 
     if (entryForm.loreLib && entryForm.loreLib.dateId > 0) {
-      console.log('renderer loop found a library', entryForm.loreLib.dateId )
+      console.log("renderer loop found a library", entryForm.loreLib.dateId);
 
       const templateData = window.templateData;
       templateMaker.templates = templateData.getMaps();
@@ -66,6 +66,5 @@ uiElements.fileBrowserButton.addEventListener("click", () => {
   window.electronAPI.openFileDialog();
   uiElements.settingsModal.style.display = "none";
   startUp();
-
 });
 startUp();

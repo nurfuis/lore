@@ -6,7 +6,6 @@
   </head>
 
   <body>
-
     <nav>
       <button id="create-button" class="button">Edit Entry</button>
       <button id="create-template" class="button">Create Template</button>
@@ -24,7 +23,6 @@
 
       <div id="create-form-container" class="form-container">
         <div id="image" class="full-width">
-          
           <img id="image-preview" src="" alt="Image Preview" />
         </div>
 
@@ -35,7 +33,7 @@
             <select id="template-select">
               <option value="">-- Select Template --</option>
             </select>
-            
+
             <select id="prototype-select" disabled>
               <option value="">-- Select Entry (Optional) --</option>
             </select>
@@ -73,7 +71,6 @@
 
     <div id="promptModal" class="modal">
       <div class="modal-content">
-        
         <h2>Lore Library Prompt</h2>
         <button id="copyPromptButton">Copy Prompt</button>
         <p id="promptText"></p>
@@ -97,7 +94,7 @@
           <label for="template-name">Template Name</label>
           <input type="text" id="template-name" name="template-name" required />
         </form>
-        <hr>
+        <hr />
         <div id="template-fields"></div>
 
         <button type="button" id="add-field">Add Field</button>
