@@ -22,6 +22,7 @@ export class Menu {
       }
     });
     uiElements.closeModalButton.addEventListener("click", () => {
+      // TODO select by class not ID
       uiElements.detailsModal.style.display = "none";
       uiElements.promptModal.style.display = "none";
       uiElements.createTemplateModal.style.display = "none";

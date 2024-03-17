@@ -25,13 +25,20 @@ viewer.entryForm = entryForm;
 menu.viewer = viewer;
 
 async function startUp() {
+  console.log('renderer startup')
 
   const maxTries = 120;
   let tries = 0;
+
   while (true) {
+    console.log('renderer checking for library')
+
     const loreData = window.loreData;
     entryForm.loreLib = loreData.getLore();
-    if (entryForm.loreLib.dateId) {
+
+    if (entryForm.loreLib && entryForm.loreLib.dateId > 0) {
+      console.log('renderer loop found a library', entryForm.loreLib.dateId )
+
       const templateData = window.templateData;
       templateMaker.templates = templateData.getMaps();
 
@@ -46,7 +53,7 @@ async function startUp() {
       break;
     }
 
-    await new Promise((resolve) => setTimeout(resolve, 5000)); // Wait for 1 second
+    await new Promise((resolve) => setTimeout(resolve, 1000)); // Wait for 1 second
 
     tries++;
     if (tries >= maxTries) {
@@ -57,6 +64,7 @@ async function startUp() {
 uiElements.fileBrowserButton.addEventListener("click", () => {
   window.electronAPI.openFileDialog();
   uiElements.settingsModal.style.display = "none";
+  startUp();
 
 });
 startUp();

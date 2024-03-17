@@ -20,7 +20,7 @@ const createWindow = () => {
   mainWindow.setMenuBarVisibility(false);
   mainWindow.loadURL(MAIN_WINDOW_WEBPACK_ENTRY);
 
-  // mainWindow.webContents.openDevTools();
+  mainWindow.webContents.openDevTools();
 };
 
 app.on("ready", createWindow);
@@ -51,18 +51,26 @@ app.on("activate", () => {
 });
 
 //* FILE SAVING *//
+let USER_PATH;
+
 const USER_DIR = "/data";
 const BACKUP_DIR = "/backup";
-let USER_PATH;
+
 let userDataPath;
 let dataDirPath;
 let backupPath;
 
 function setupLoreDir() {
+  console.log("setting up lore dir");
   userDataPath = USER_PATH;
+  console.log(userDataPath);
+
   dataDirPath = userDataPath + USER_DIR;
+  console.log(dataDirPath);
+
   backupPath = dataDirPath + BACKUP_DIR;
-  
+  console.log(backupPath);
+
   try {
     if (!fs.existsSync(dataDirPath)) {
       fs.mkdirSync(dataDirPath);
@@ -90,13 +98,15 @@ let tempFile;
 let backupFile;
 
 let loreData = {};
-let backupLoreData = {};
 
 function readLoreFile() {
+  console.log("reading lore file");
   mainFile = dataDirPath + LORE_LIBRARY;
+  console.log(mainFile);
   tempFile = dataDirPath + LORE_LIBRARY_TEMP;
+  console.log(tempFile);
   backupFile = dataDirPath + BACKUP_DIR + LORE_LIBRARY_BAK;
-
+  console.log(backupFile);
   // Check for existing library
   try {
     loreData = JSON.parse(fs.readFileSync(mainFile, "utf-8"));
@@ -117,7 +127,6 @@ function readLoreFile() {
   }
 
   // check for a temp file
-  // TODO offer an option to write the tempFile to main and set loreData with tempData or to quit and inspect manually
   try {
     const tempData = JSON.parse(fs.readFileSync(tempFile, "utf-8"));
 
@@ -159,6 +168,7 @@ function readLoreFile() {
   }
 
   // create a backup file
+  console.log("backing up loreData");
   fs.writeFile(backupFile, JSON.stringify(loreData), (err) => {
     if (err) {
       console.error("Error saving backup:");
@@ -170,18 +180,14 @@ function readLoreFile() {
 
 //* HANDLE LORE REQUEST *//
 ipcMain.on("request-lore-data", (event) => {
-  // Respond to the synchronous request with the lore data
-  mainWindow.setTitle(USER_PATH + " : Lore Library");
-
   console.log("Checking for data library...");
+  mainWindow.setTitle(USER_PATH + ": Lore Library");
+
   event.returnValue = loreData;
 });
-
 //*HANDLE LORE SAVE *//
 ipcMain.on("save-lore", (event, data) => {
   const filename = tempFile;
-
-  // Write data to a JSON file
   fs.writeFile(filename, JSON.stringify(data), (err) => {
     if (err) {
       console.error("Error saving lore:", err);
@@ -208,9 +214,15 @@ let spritesPath;
 let previewsPath;
 
 function setupSpritesDir() {
+  console.log("setting up sprites dir");
   assetsPath = dataDirPath + ASSETS_PATH;
+  console.log(assetsPath);
+
   spritesPath = assetsPath + SPRITES_DIR;
+  console.log(spritesPath);
+
   previewsPath = spritesPath + PREVIEWS_DIR;
+  console.log(previewsPath);
 
   try {
     if (!fs.existsSync(assetsPath)) {
@@ -234,16 +246,16 @@ function setupSpritesDir() {
 
 const SPRITE_LIBRARY = "/sprites.json";
 let imageList;
-let spritesData = {};
+let spritesData;
 
 function readImageList() {
   imageList = dataDirPath + SPRITE_LIBRARY;
-  // console.log("image list", imageList);
-  // Check for existing library and set value to contents or use defaults
+  console.log("reading image list", imageList);
   try {
     spritesData = JSON.parse(fs.readFileSync(imageList, "utf-8"));
   } catch (err) {
     console.error("Error loading sprites data:");
+    spritesData = {};
     spritesData[SPRITES_KEY] = {};
     fs.writeFile(imageList, JSON.stringify(spritesData), (err) => {
       if (err) {
@@ -257,14 +269,20 @@ function readImageList() {
 
 //* HANDLE IMAGE REQUEST *//
 ipcMain.on("request-image", (event, filename) => {
-  // Respond to the synchronous request with the image data or error
-  const imagePath = spritesData[SPRITES_KEY][filename][PREVIEWS_KEY]; //.preview
-  console.log("requested image", imagePath);
+  if (!spritesData[SPRITES_KEY][filename]) {
+    console.log("corrupted image list");
+    app.quit();
+  }
+  console.log("image request recieved", filename);
+  const imagePath = spritesData[SPRITES_KEY][filename][PREVIEWS_KEY];
+
   try {
-    const image = fs.readFileSync(imagePath);
-    event.returnValue = image;
+    if (imagePath) {
+      const image = fs.readFileSync(imagePath);
+      event.returnValue = image;
+    }
   } catch (error) {
-    console.error("Error loading image:", imagePath);
+    console.error("Error loading image");
   }
 });
 
@@ -345,7 +363,6 @@ function fillMissingLoreEntries() {
   }
   loreData = filledLoreData;
 }
-
 function readTemplateFile() {
   templatesPath = dataDirPath + TEMPLATES_FILE;
   // Check for existing library and set value to contents or use defaults
@@ -366,13 +383,11 @@ function readTemplateFile() {
   }
   fillMissingLoreEntries();
 }
-
 //* HANDLE TEMPLATE REQUEST *//
 ipcMain.on("request-templates", (event) => {
   // Respond to the synchronous request with the template data
   event.returnValue = templateData.template; // Only return templates section
 });
-
 //*HANDLE TEMPLATE SAVE *//
 ipcMain.on("save-templates", (event, data) => {
   // Ensure data contains only the templates section
@@ -397,34 +412,30 @@ ipcMain.on("save-templates", (event, data) => {
     }
   });
 });
-
+function loadLibraryData() {
+  setupLoreDir();
+  readLoreFile();
+  setupSpritesDir();
+  readTemplateFile();
+  readImageList();
+  console.log("library was loaded");
+}
 function openDialog() {
   dialog
     .showOpenDialog({ properties: ["openDirectory"] })
     .then((result) => {
       if (result.filePaths.length === 1) {
-        setUserDir(result.filePaths[0]);
+        USER_PATH = result.filePaths[0];
+
+        createDefaultConfig(USER_PATH);
       }
     })
     .catch((err) => {
       console.log(err);
     });
 }
-
-ipcMain.on("open-file-dialog", () => {
-  openDialog();
-});
-
-function loadLibraryData() {
-  setupLoreDir();
-  readLoreFile();
-  setupSpritesDir();
-  readImageList();
-  readTemplateFile();
-  console.log("library was loaded");
-}
-
-const configPath = app.getPath("userData") + "/config.json";
+const userData = app.getPath("userData");
+const configPath = userData + "/config.json";
 
 async function createDefaultConfig(userPath) {
   try {
@@ -435,37 +446,15 @@ async function createDefaultConfig(userPath) {
       JSON.stringify(defaultConfig, null, 2)
     );
     console.log("Config file created successfully.");
+    // TODO config success! load library data from new path
+    console.log("Config file updated with new user path.");
+
+    loadLibraryData();
+
+    mainWindow.close();
+    createWindow();
   } catch (err) {
     console.error("Error creating config file:", err);
-  }
-}
-
-async function setUserDir(path) {
-  try {
-    if (fs.existsSync(configPath)) {
-      const configData = JSON.parse(
-        await fs.promises.readFile(configPath, "utf-8")
-      );
-      if (configData.USER_PATH !== path) {
-        // Update if new path is different
-        configData.USER_PATH = path;
-        await fs.promises.writeFile(
-          configPath,
-          JSON.stringify(configData, null, 2)
-        );
-        console.log("Config file updated with new user path.");
-        mainWindow.close();
-        createWindow();  
-      }
-    } else {
-      // Create config if it doesn't exist
-      await createDefaultConfig(path);
-    }
-
-    USER_PATH = path; // Set global variable
-    loadLibraryData();
-  } catch (err) {
-    console.error("Error handling configuration:", err);
   }
 }
 async function checkConfig() {
@@ -475,14 +464,23 @@ async function checkConfig() {
         await fs.promises.readFile(configPath, "utf-8")
       );
       if (configData.hasOwnProperty("USER_PATH")) {
-        setUserDir(configData.USER_PATH);
+        USER_PATH = configData.USER_PATH;
         console.log("user dir: ", configData.USER_PATH);
+        // TODO Load Library from specified path
+        loadLibraryData();
       }
     } else {
+      // No setup detected, create a default config file
+      createDefaultConfig(app.getPath("userData"));
       console.log("No config file found.");
     }
   } catch (err) {
     console.error("Error checking config file:", err);
   }
 }
+
+ipcMain.on("open-file-dialog", () => {
+  openDialog();
+});
+
 checkConfig();
