@@ -20,7 +20,7 @@ const createWindow = () => {
   mainWindow.setMenuBarVisibility(false);
   mainWindow.loadURL(MAIN_WINDOW_WEBPACK_ENTRY);
 
-  mainWindow.webContents.openDevTools();
+  // mainWindow.webContents.openDevTools();
 };
 
 app.on("ready", createWindow);
@@ -187,6 +187,7 @@ ipcMain.on("request-lore-data", (event) => {
     event.returnValue = loreData;
   }
 });
+
 //*HANDLE LORE SAVE *//
 ipcMain.on("save-lore", (event, data) => {
   const filename = tempFile;
@@ -365,6 +366,7 @@ function fillMissingLoreEntries() {
   }
   loreData = filledLoreData;
 }
+
 function readTemplateFile() {
   templatesPath = dataDirPath + TEMPLATES_FILE;
   // Check for existing library and set value to contents or use defaults
@@ -385,11 +387,13 @@ function readTemplateFile() {
   }
   fillMissingLoreEntries();
 }
+
 //* HANDLE TEMPLATE REQUEST *//
 ipcMain.on("request-templates", (event) => {
   // Respond to the synchronous request with the template data
   event.returnValue = templateData.template; // Only return templates section
 });
+
 //*HANDLE TEMPLATE SAVE *//
 ipcMain.on("save-templates", (event, data) => {
   // Ensure data contains only the templates section
@@ -410,10 +414,10 @@ ipcMain.on("save-templates", (event, data) => {
       console.log("Templates saved successfully!");
       event.sender.send("save-success"); // Send success message
 
-      // update templateData with only templates section
     }
   });
 });
+
 function loadLibraryData() {
   setupLoreDir();
   readLoreFile();
@@ -422,6 +426,7 @@ function loadLibraryData() {
   readImageList();
   console.log("library was loaded");
 }
+
 function openDialog() {
   dialog
     .showOpenDialog({ properties: ["openDirectory"] })
@@ -436,6 +441,7 @@ function openDialog() {
       console.log(err);
     });
 }
+
 const userData = app.getPath("userData");
 const configPath = userData + "/config.json";
 
@@ -448,7 +454,6 @@ async function createDefaultConfig(userPath) {
       JSON.stringify(defaultConfig, null, 2)
     );
     console.log("Config file created successfully.");
-    // TODO config success! load library data from new path
     console.log("Config file updated with new user path.");
 
     loadLibraryData();
@@ -459,6 +464,7 @@ async function createDefaultConfig(userPath) {
     console.error("Error creating config file:", err);
   }
 }
+
 async function checkConfig() {
   try {
     if (fs.existsSync(configPath)) {
@@ -468,7 +474,6 @@ async function checkConfig() {
       if (configData.hasOwnProperty("USER_PATH")) {
         USER_PATH = configData.USER_PATH;
         console.log("user dir: ", configData.USER_PATH);
-        // TODO Load Library from specified path
         loadLibraryData();
       }
     } else {
