@@ -17,7 +17,6 @@ export class UIElements {
     this.entryForm = document.getElementById("entry-form");
     this.gameDataViewer = document.getElementById("game-data-viewer");
     this.detailsModal = document.getElementById("item-details-modal");
-    this.closeModalButton = document.querySelector(".close-modal");
     this.spriteContainer = document.getElementById("item-details-sprite");
     this.createFormContainer = document.getElementById("create-form-container");
     this.createButton = document.getElementById("create-button");
@@ -33,6 +32,10 @@ export class UIElements {
     this.templateDropdown = document.getElementById("template-dropdown");
     this.generatePromptButton = document.getElementById("generate-prompt");
     this.promptModal = document.getElementById("promptModal");
+
+    this.closeModalButton = document.querySelector(".close-modal");
+    this.modal = document.querySelector(".modal");
+
 
     this.ready();
   }

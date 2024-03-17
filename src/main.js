@@ -8,6 +8,7 @@ const { DEFAULT_TEMPLATES } = require("./app/constants");
 if (require("electron-squirrel-startup")) {
   app.quit();
 }
+
 let mainWindow;
 const createWindow = () => {
   mainWindow = new BrowserWindow({
@@ -20,7 +21,7 @@ const createWindow = () => {
   mainWindow.setMenuBarVisibility(false);
   mainWindow.loadURL(MAIN_WINDOW_WEBPACK_ENTRY);
 
-  // mainWindow.webContents.openDevTools();
+  mainWindow.webContents.openDevTools();
 };
 
 app.on("ready", createWindow);
@@ -56,16 +57,17 @@ let USER_PATH;
 const USER_DIR = "/data";
 const BACKUP_DIR = "/backup";
 
-let userDataPath;
+let userAppDataPath;
 let dataDirPath;
 let backupPath;
 
-function setupLoreDir() {
-  console.log("setting up lore dir");
-  userDataPath = USER_PATH;
-  console.log(userDataPath);
+function initializeProjectDirectories() {
+  console.log("Initializing project directories...");
 
-  dataDirPath = userDataPath + USER_DIR;
+  userAppDataPath = USER_PATH;
+  console.log(userAppDataPath);
+
+  dataDirPath = userAppDataPath + USER_DIR;
   console.log(dataDirPath);
 
   backupPath = dataDirPath + BACKUP_DIR;
@@ -74,7 +76,7 @@ function setupLoreDir() {
   try {
     if (!fs.existsSync(dataDirPath)) {
       fs.mkdirSync(dataDirPath);
-      console.log("creating", userDataPath + dataDirPath);
+      console.log("creating", userAppDataPath + dataDirPath);
     }
   } catch (err) {
     console.error("Error creating data directory:", err);
@@ -89,7 +91,7 @@ function setupLoreDir() {
   }
 }
 
-const LORE_LIBRARY = "/lib.json"; // + VERSION
+const LORE_LIBRARY = "/lib.json"; 
 const LORE_LIBRARY_TEMP = "/lib.temp.json";
 const LORE_LIBRARY_BAK = "/lib." + Date.now() + ".bak.json";
 
@@ -418,11 +420,13 @@ ipcMain.on("save-templates", (event, data) => {
 });
 
 function loadLibraryData() {
-  setupLoreDir();
-  readLoreFile();
+  initializeProjectDirectories();
   setupSpritesDir();
+
+  readLoreFile();
   readTemplateFile();
   readImageList();
+
   console.log("library was loaded");
 }
 
@@ -432,7 +436,6 @@ function openDialog() {
     .then((result) => {
       if (result.filePaths.length === 1) {
         USER_PATH = result.filePaths[0];
-
         createDefaultConfig(USER_PATH);
       }
     })
@@ -447,18 +450,18 @@ const configPath = userData + "/config.json";
 async function createDefaultConfig(userPath) {
   try {
     const defaultConfig = { USER_PATH: userPath };
-
+    console.log('CONFIG PATH',  configPath)
     await fs.promises.writeFile(
       configPath,
       JSON.stringify(defaultConfig, null, 2)
     );
-    console.log("Config file created successfully.");
-    console.log("Config file updated with new user path.");
-
+    USER_PATH = userPath;
     loadLibraryData();
 
     mainWindow.close();
     createWindow();
+
+    console.log("Config file updated with new user path.");
   } catch (err) {
     console.error("Error creating config file:", err);
   }
@@ -478,7 +481,10 @@ async function checkConfig() {
     } else {
       // No setup detected, create a default config file
       createDefaultConfig(app.getPath("userData"));
-      console.log("No config file found.");
+      console.log(
+        "No config file found. Creating directories.",
+        app.getPath("userData")
+      );
     }
   } catch (err) {
     console.error("Error checking config file:", err);

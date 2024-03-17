@@ -64,6 +64,7 @@ async function startUp() {
 }
 uiElements.fileBrowserButton.addEventListener("click", () => {
   window.electronAPI.openFileDialog();
+  
   uiElements.settingsModal.style.display = "none";
   startUp();
 });

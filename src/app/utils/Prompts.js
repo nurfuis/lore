@@ -12,8 +12,6 @@ import { promptTemplates } from "../promptTemplates";
 //   return filledTemplate;
 // }
 
-
-
 function copyPromptText() {
   const promptText = document.getElementById("promptText");
   const selection = window.getSelection();
