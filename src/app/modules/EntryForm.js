@@ -1,6 +1,6 @@
 import { UIElements } from "../UIElements";
 import { Image } from "../utils/Image";
-
+import { removeExtension } from "../utils/removeExtension";
 export class EntryForm {
   constructor() {
     this.image = new Image();
@@ -73,11 +73,13 @@ export class EntryForm {
     this.spriteName = undefined;
   }
   setPreview(filename) {
-    const imageSrc = this.image.get(filename);
+    const fileIndex = removeExtension(filename);
+
+    const imageSrc = this.image.get(fileIndex);
     this.ui.imagePreview.src = `${imageSrc}`;
     this.ui.imagePreview.style.display = "block";
 
-    this.spriteName = filename;
+    this.spriteName = fileIndex;
   }
   updateImagePreview(event) {
     const file = event.target.files[0];
@@ -97,11 +99,9 @@ export class EntryForm {
   updateForm() {
     const templateData = window.templateData;
     this.templates = templateData.getMaps();
-
     // Clear existing form elements
     this.clearImagePreview();
     this.ui.entryForm.innerHTML = "";
-    this.updatePrototypeDropdown();
 
     // Add elements to show/hide
     const elementsToShow = [
@@ -113,6 +113,7 @@ export class EntryForm {
     const elementsToHide = [];
 
     if (this.selectedTemplate) {
+
       const templateFields = this.templateMaker.templates[this.selectedTemplate];
 
       // Build form elements based on template data
@@ -237,7 +238,7 @@ export class EntryForm {
   }
   updatePrototypeDropdown() {
     this.ui.prototypeSelect.innerHTML = ""; // Clear existing options
-    this.selectedEntry = undefined;
+    // this.selectedEntry = undefined; // TODO Reason where this should happen
     this.ui.generatePromptButton.style.display = "none";
 
     const defaultOption = document.createElement("option");
@@ -246,6 +247,8 @@ export class EntryForm {
     this.ui.prototypeSelect.appendChild(defaultOption);
 
     // Call your renderer to get prototype names based on the selected template
+    console.log('this.selectedTemplate', Object.keys(this.loreLib), this.selectedTemplate)
+
     if (this.selectedTemplate) {
       const prototypeNames = Object.keys(this.loreLib[this.selectedTemplate]);
       if (prototypeNames) {
