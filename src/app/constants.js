@@ -1,4 +1,5 @@
 export const DEFAULT_TEMPLATES = {
+  template: {
     world: {
       name: { label: "Name", type: "text" },
       description: { label: "Description", type: "textarea" },
@@ -20,4 +21,5 @@ export const DEFAULT_TEMPLATES = {
         options: ["Common", "Uncommon", "Rare", "Epic", "Legendary"],
       },
     },
-  };
+  },
+};
