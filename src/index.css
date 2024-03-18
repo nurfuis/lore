@@ -1,5 +1,4 @@
 /* Global styles */
-
 /* fey */
 :root {
   --primary-color: #90e0e0; /* Light teal, like a misty pond */
@@ -12,7 +11,6 @@
   --form-background: #373a44; /* Darker purple for forms */
   --highlight-color: #ffff00; /* Yellow for highlights */
 }
-
 /* volcanic mntn */
 :root {
   --primary-color: #d33635;
@@ -22,7 +20,6 @@
   --button-color: #90ee90;
   --highlight-color: #ff00ff;
 }
-
 /* ocean */
 :root {
   --primary-color: #2d89af;
@@ -32,7 +29,6 @@
   --button-color: #ffd700;
   --highlight-color: #007fff;
 }
-
 /* celestial */
 :root {
   --primary-color: #2962ff;
@@ -42,7 +38,6 @@
   --button-color: #ffeb3b;
   --highlight-color: #9c27b0;
 }
-
 /* earth */
 :root {
   --primary-color: #a52a2a;
@@ -52,7 +47,6 @@
   --button-color: #808080;
   --highlight-color: #ffff00;
 }
-
 /* water */
 :root {
   --primary-color: #2d89af;
@@ -62,7 +56,6 @@
   --button-color: #007fff;
   --highlight-color: #c2c2f0;
 }
-
 /* fire */
 :root {
   --primary-color: #d33635;
@@ -72,7 +65,6 @@
   --button-color: #ff0000;
   --highlight-color: #ffff00;
 }
-
 /* ancient library */
 :root {
   --primary-color: #b4674e;
@@ -82,7 +74,6 @@
   --button-color: #c70039;
   --highlight-color: #00bcd4;
 }
-
 /* lush forest */
 :root {
   --primary-color: #38a3a5;
@@ -92,7 +83,6 @@
   --button-color: #c02942;
   --highlight-color: #ffff00;
 }
-
 /* enchanting glade! */
 :root {
   --primary-color: #90e0e0;
@@ -104,7 +94,6 @@
 }
 /* Import Merriweather */
 @import url("https://fonts.googleapis.com/css2?family=Merriweather:wght@300;400;700&display=swap");
-
 /* Import Open Sans */
 @import url("https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;700&display=swap");
 #info {
@@ -116,11 +105,9 @@ h2,
 h3 {
   font-family: "Merriweather", serif;
 }
-
 body {
   font-family: "Open Sans", sans-serif;
 }
-
 body {
   background-color: var(--background-color); /* Dark purple from theme */
   color: var(--text-color); /* White for readability */
@@ -128,11 +115,9 @@ body {
   justify-content: center; /* Center elements horizontally */
   align-items: center; /* Center elements vertically */
 }
-
 nav {
   text-align: center;
 }
-
 nav .button {
   display: inline-block; /* Allow buttons to sit next to each other */
   padding: 10px 20px;
@@ -145,20 +130,16 @@ nav .button {
   cursor: pointer; /* Indicate clickable element */
   transition: all 0.2s ease-in-out; /* Smooth transition on hover */
 }
-
 nav .button:hover {
   background-color: var(--button-hover-color); /* Darker purple on hover */
 }
-
 h1,
 h2 {
   margin-bottom: 1rem;
 }
-
 p {
   margin-top: 0.5rem;
 }
-
 /* Hide initially both containers */
 .form-container,
 .viewer-container {
@@ -168,12 +149,10 @@ p {
   margin-top: 10px;
   width: 92%; /* Take up full width */
 }
-
 #app-container {
   display: flex; /* Enable flexbox layout */
   flex-direction: column; /* Stack elements vertically */
 }
-
 /* Header (Optional) */
 .header {
   display: flex;
@@ -181,22 +160,18 @@ p {
   align-items: center; /* Align content vertically */
   padding: 1rem; /* Add padding */
 }
-
 .main-content {
   display: flex; /* Nested flexbox for horizontal arrangement */
   flex-grow: 1; /* Allow main content to fill remaining space */
 }
-
 .left-section {
   flex: 0 0 46%; /* Set width to 50% */
   padding: 1rem; /* Add padding */
 }
-
 .right-section {
   flex: 0 0 46%; /* Set width to 50% */
   padding: 1rem; /* Add padding */
 }
-
 #image-preview {
   display: none;
   width: 90%; /* Set image to fill available width */
@@ -207,14 +182,12 @@ p {
   margin-top: 0.5rem;
   margin-bottom: 1rem;
 }
-
 .footer {
   display: flex;
   justify-content: space-between; /* Distribute buttons and form evenly */
   align-items: center; /* Align content vertically */
   padding: 1rem; /* Add padding */
 }
-
 #entry-form {
   flex-grow: 1; /* Allow form to fill remaining space */
 }
@@ -226,20 +199,16 @@ p {
   border-radius: 5px;
   box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
 }
-
 label {
   display: block;
   margin: 0.5rem;
   color: var(--text-color); /* White for readability */
   font-weight: bold; /* Optional: Make labels stand out more */
 }
-
 label:after {
   content: ":"; /* Add colon after label text */
   margin-left: 0.5em; /* Separate colon from label text */
 }
-
-
 input,
 textarea,
 select {
@@ -249,7 +218,6 @@ select {
   border: 1px solid var(--secondary-color); /* Bright purple border */
   border-radius: 3px;
 }
-
 input {
   width: 300px;
 }
@@ -269,14 +237,12 @@ button {
   margin-bottom: 1rem;
   transition: all 0.2s ease-in-out; /* Add transition for smooth hover effects */
 }
-
 button:hover {
   background-color: var(--button-hover-color); /* Darker purple on hover */
   color: var(--highlight-color); /* Yellow highlight for contrast */
   /* Optional: Keep the text shadow for added depth */
   text-shadow: 0px 1px 1px rgba(0, 0, 0, 0.1);
 }
-
 /* Modal styles */
 .modal {
   display: none; /* Initially hidden */
@@ -293,7 +259,6 @@ button:hover {
 
   transition: filter 0.3s ease-in-out;
 }
-
 .modal-content {
   background-color: var(--form-background); /* Darker purple from theme */
   margin: 15% auto; /* 15% from top and centered */
@@ -308,8 +273,7 @@ button:hover {
   background-color: rgba(0, 0, 0, 0.2); /* Semi-transparent dark background */
   padding: 15px; /* Add some padding for better separation */
   border: 1px solid var(--secondary-color); /* Optional: Red border for emphasis */
-  list-style-type: square; 
-
+  list-style-type: square;
 }
 .modal-content li {
   margin: 1rem;
@@ -322,13 +286,11 @@ button:hover {
   font-weight: bold;
   overflow: hidden;
 }
-
 .close-modal:hover,
 .close-modal:focus {
   color: var(--button-color); /* Bright purple on hover */
   cursor: pointer;
 }
-
 #game-data-viewer ul {
   list-style: none;
   padding: 0;
@@ -343,22 +305,18 @@ button:hover {
   padding: 1rem;
   width: 100%;
 }
-
 #game-data-viewer button {
   background-color: var(--button-color); /* Bright purple from theme */
   margin-right: 1rem;
 }
-
 #confirm-delete {
   margin-left: 1rem;
   margin-right: 1rem;
 }
-
 #cancel-delete {
   margin-left: 1rem;
   margin-right: 1rem;
 }
-
 .category-card {
   border: 1px solid #ddd; /* Lighter border as requested */
   margin-bottom: 15px;
@@ -366,27 +324,22 @@ button:hover {
   display: flex;
   flex-direction: column;
 }
-
 .category-header {
   cursor: pointer;
 }
-
 .category-content {
   max-height: 0; /* Initially hidden */
   overflow: hidden;
   transition: max-height 0.3s ease-out; /* Smooth animation */
 }
-
 .category-card.expanded .category-content {
   max-height: none; /* Adjust as needed */
 }
-
 /* Transparent thin scrollbar for Chromium (Electron) */
 ::-webkit-scrollbar {
   width: 8px; /* Adjust width as desired */
   height: 8px; /* Adjust height as desired */
 }
-
 ::-webkit-scrollbar-track {
   background: transparent;
 }
@@ -400,50 +353,43 @@ button:hover {
   border-radius: 10px; /* Adjust roundness */
   border: none;
 }
-
 .welcome {
   text-align: center;
   padding: 20px;
   color: var(--text-color); /* White for readability */
 }
-
 .app-container {
   display: flex;
   flex-direction: column;
   align-items: center;
   margin-top: 20px;
 }
-
 .option-inputs {
   display: flex; /* Arrange options horizontally */
   flex-wrap: wrap; /* Allow options to wrap to multiple lines if needed */
   margin-top: 10px; /* Add some margin for spacing */
 }
-
 .option-input {
   margin-right: 10px; /* Add some margin between option inputs */
   padding: 5px; /* Add padding for better user interaction */
   border: 1px solid var(--secondary-color); /* Bright purple border */
   border-radius: 3px; /* Add rounded corners for a more polished look */
 }
-
 #template-nav {
   text-align: center;
   display: flex;
 }
-
 #template-select {
   margin-bottom: 1rem;
 }
-
-#delete-template, #advanced-options {
+#delete-template,
+#advanced-options {
   color: var(--highlight-color); /* Yellow for contrast */
   display: none;
   border: 1px solid var(--secondary-color); /* Optional: Red border for emphasis */
   text-shadow: 0px 1px 1px rgba(0, 0, 0, 0.1);
   display: none;
 }
-
 #save-entry {
   color: var(--button-text-color); /* White text for readability */
   display: none;
@@ -462,21 +408,32 @@ button:hover {
   margin-bottom: 2rem;
   background-color: var(--button-color); /* Bright purple from theme */
 }
-
 .item-preview {
   display: flex;
   width: 64px;
-  height:64px;
+  height: 64px;
 }
-
 .item-preview-text {
   font-family: monospace; /* Optional: Use a monospace font for better alignment */
   font-size: large;
   line-height: 1.2rem;
   white-space: pre-wrap; /* Wrap text without breaking words */
   margin-bottom: 0.5rem; /* Remove default margin for cleaner spacing */
-  /* Add other styles as needed (e.g., font-size, color) */
+  grid-area: item-preview-text;
 }
+
+.lore-summary__details-button {
+  grid-area: lore-summary-details-button;
+}
+.lore-summary__delete-entry-button {
+  grid-area: lore-summary-delete-entry-button;
+}
+/* block__element--modifier */
+.lore-summary {
+  display: grid;
+  grid-template-areas: "";
+}
+
 .prompt {
   display: block;
   padding: 0.5rem;
@@ -485,14 +442,12 @@ button:hover {
   margin-bottom: 0.5rem; /* Add some margin for better spacing */
   font-style: italic; /* Add italics for a more suggestive tone */
 }
-
 label {
-  margin-top:  1.5rem;
+  margin-top: 1.5rem;
   font-variant: small-caps;
-
 }
 hr {
-  color:  var(--secondary-color);
+  color: var(--secondary-color);
 }
 span {
   max-width: 280px;

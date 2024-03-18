@@ -1,4 +1,4 @@
-import { UIElements } from "./UIElements";
+import { UIElements } from "../UIElements";
 const uiElements = new UIElements();
 
 function toggleSettingsModal() {
@@ -21,11 +21,9 @@ export class Menu {
         uiElements.settingsModal.style.display = "none";
       }
     });
-    uiElements.closeModalButton.addEventListener("click", () => {
-      uiElements.detailsModal.style.display = "none";
-      uiElements.promptModal.style.display = "none";
-      uiElements.createTemplateModal.style.display = "none";
-      uiElements.settingsModal.style.display = "none";
+
+    uiElements.closeModalButton.addEventListener("click", function () {
+      uiElements.modal.style.display = "none";
     });
   }
   toggleView(showCreateForm) {
