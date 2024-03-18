@@ -68,42 +68,6 @@ app.on("activate", () => {
     createWindow();
   }
 });
-
-const configFile = app.getPath("userData") + "/configLore.json";
-checkConfig();
-async function checkConfig() {
-  try {
-    if (fs.existsSync(configFile)) {
-      const configData = JSON.parse(
-        await fs.promises.readFile(configFile, "utf-8")
-      );
-      if (configData.hasOwnProperty("USER_PATH")) {
-        console.log("User configured a directory: ", userPath);
-        return configData.USER_PATH;
-      }
-    } else {
-      writeConfig(app.getPath("userData"));
-      console.log("New configuration.");
-      return 
-    }
-  } catch (err) {
-    console.error("Error checking config file:", err);
-  }
-}
-async function writeConfig(path) {
-  try {
-    const defaultConfig = { USER_PATH: path };
-    console.log(defaultConfig);
-    await fs.promises.writeFile(
-      configFile,
-      JSON.stringify(defaultConfig, null, 2)
-    );
-    console.log("Config file updated.");
-  } catch (err) {
-    console.error("Error creating config file:", err);
-  }
-}
-
 const _DIR = "/data";
 const _BACKUP_DIR = "/backup";
 const _ASSETS_DIR = "/assets";
@@ -120,8 +84,10 @@ const LORE_LIBRARY = "/lib.json";
 const LORE_LIBRARY_TEMP = "/lib.temp.json";
 const LORE_LIBRARY_BAK = "/lib." + Date.now() + ".bak.json";
 
+const configFile = app.getPath("userData") + "/config.json";
+
 //* LIBRARY CARD CATALOG *//
-const catalog = initializeProjectDirectories();
+let catalog = initializeProjectDirectories();
 
 function initializeProjectDirectories() {
   console.log("Initializing project directories...");
@@ -164,7 +130,48 @@ function initializeProjectDirectories() {
   return loreFiles;
 }
 function getUserDataPath() {
-  return app.getPath("userData");
+  console.log("Reading user config file...");
+  let results;
+  try {
+    results = JSON.parse(fs.readFileSync(configFile, "utf-8"));
+    console.log("Success");
+  } catch (err) {
+    console.error("Error loading config data:", err);
+    console.log("Creating new config file...");
+    results = { USER_PATH: app.getPath("userData") };
+    fs.writeFile(configFile, JSON.stringify(results), (err) => {
+      if (err) {
+        console.error("Error saving config:", err);
+      } else {
+        console.log("Config saved successfully.");
+      }
+    });
+  }
+  if (!results.USER_PATH) {
+    console.log("FATAL ERROR");
+    app.quit();
+  }
+  return results.USER_PATH;
+}
+function openDialog() {
+  dialog
+    .showOpenDialog({ properties: ["openDirectory"] })
+    .then((result) => {
+      if (result.filePaths.length === 1) {
+        const data = { USER_PATH: result.filePaths[0] };
+        fs.writeFile(configFile, JSON.stringify(data), (err) => {
+          if (err) {
+            console.error("Error saving config:", err);
+          } else {
+            console.log("Config saved successfully.");
+            catalog = initializeProjectDirectories();
+          }
+        });
+      }
+    })
+    .catch((err) => {
+      console.log(err);
+    });
 }
 function createDirectoryIfNotExists(baseDirectory, directoryName) {
   const fullDirectoryPath = path.join(baseDirectory, directoryName);
@@ -305,7 +312,7 @@ function readLore(__data, templates) {
     console.log("Unsuccesful shutdown detected.");
   } catch (err) {
     if (err.code === "ENOENT") {
-      console.log("...");
+      console.log("Checking last shutdown...");
     } else {
       console.error("Error reading temp file.");
     }
@@ -369,7 +376,7 @@ ipcMain.on("request-lore-data", (event) => {
   console.log("Checking for library data ...");
   console.log("Card Catalog:", catalog);
   if (catalog) {
-    mainWindow.setTitle(catalog.lore.temp.path + ": Lore Library");
+    mainWindow.setTitle(catalog.lore.main.path + ": Lore Library");
     event.returnValue = catalog.lore.main.data;
   }
 });
@@ -516,15 +523,4 @@ ipcMain.on("open-file-dialog", () => {
   openDialog();
 });
 
-function openDialog() {
-  dialog
-    .showOpenDialog({ properties: ["openDirectory"] })
-    .then((result) => {
-      if (result.filePaths.length === 1) {
 
-      }
-    })
-    .catch((err) => {
-      console.log(err);
-    });
-}

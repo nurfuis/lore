@@ -25,6 +25,7 @@ viewer.entryForm = entryForm;
 
 menu.viewer = viewer;
 
+let libraryId = 0;
 async function startUp() {
   console.log("renderer startup");
 
@@ -37,7 +38,8 @@ async function startUp() {
     const loreData = window.loreData;
     entryForm.loreLib = loreData.getLore();
 
-    if (entryForm.loreLib && entryForm.loreLib.dateId > 0) {
+    if (entryForm.loreLib && entryForm.loreLib.dateId != libraryId) {
+      libraryId = entryForm.loreLib.dateId;
       console.log("renderer loop found a library", entryForm.loreLib.dateId);
 
       const templateData = window.templateData;
