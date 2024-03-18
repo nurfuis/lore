@@ -6,7 +6,7 @@ const image = new Image();
 function createDetailsButton(item) {
   const detailsButton = document.createElement("button");
   detailsButton.textContent = "Show Details";
-  detailsButton.className = "details-button";
+  detailsButton.className = "lore-summary__details-button";
 
   detailsButton.addEventListener("click", () => {
     updateDetailsModal(item);
@@ -104,7 +104,7 @@ export class Viewer {
   createDeleteButton(item) {
     const deleteButton = document.createElement("button");
     deleteButton.textContent = "Delete";
-    deleteButton.className = "delete-button";
+    deleteButton.className = "lore-summary__delete-entry-button";
 
     deleteButton.addEventListener("click", () => {
       this.deleteEntry(item);
@@ -112,11 +112,16 @@ export class Viewer {
 
     return deleteButton;
   }
+  // WE ARE HERE
   createItem(item) {
     const itemElement = document.createElement("li");
+    itemElement.classList.add("lore-summary"); 
+    
+    
+    // <grid-area-name></grid-area-name>
+
 
     let previewText = ""; // Empty string for text accumulation
-
     // Get the name and version keys (assuming they exist)
     const nameKey = "name"; // Adjust if the name key has a different name
     const versionKey = "version"; // Adjust if the version key has a different name

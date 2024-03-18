@@ -273,8 +273,7 @@ button:hover {
   background-color: rgba(0, 0, 0, 0.2); /* Semi-transparent dark background */
   padding: 15px; /* Add some padding for better separation */
   border: 1px solid var(--secondary-color); /* Optional: Red border for emphasis */
-  list-style-type: square; 
-
+  list-style-type: square;
 }
 .modal-content li {
   margin: 1rem;
@@ -383,7 +382,8 @@ button:hover {
 #template-select {
   margin-bottom: 1rem;
 }
-#delete-template, #advanced-options {
+#delete-template,
+#advanced-options {
   color: var(--highlight-color); /* Yellow for contrast */
   display: none;
   border: 1px solid var(--secondary-color); /* Optional: Red border for emphasis */
@@ -411,7 +411,7 @@ button:hover {
 .item-preview {
   display: flex;
   width: 64px;
-  height:64px;
+  height: 64px;
 }
 .item-preview-text {
   font-family: monospace; /* Optional: Use a monospace font for better alignment */
@@ -419,8 +419,21 @@ button:hover {
   line-height: 1.2rem;
   white-space: pre-wrap; /* Wrap text without breaking words */
   margin-bottom: 0.5rem; /* Remove default margin for cleaner spacing */
-  /* Add other styles as needed (e.g., font-size, color) */
+  grid-area: item-preview-text;
 }
+
+.lore-summary__details-button {
+  grid-area: lore-summary-details-button;
+}
+.lore-summary__delete-entry-button {
+  grid-area: lore-summary-delete-entry-button;
+}
+/* block__element--modifier */
+.lore-summary {
+  display: grid;
+  grid-template-areas: "";
+}
+
 .prompt {
   display: block;
   padding: 0.5rem;
@@ -430,12 +443,11 @@ button:hover {
   font-style: italic; /* Add italics for a more suggestive tone */
 }
 label {
-  margin-top:  1.5rem;
+  margin-top: 1.5rem;
   font-variant: small-caps;
-
 }
 hr {
-  color:  var(--secondary-color);
+  color: var(--secondary-color);
 }
 span {
   max-width: 280px;
