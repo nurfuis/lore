@@ -1,5 +1,5 @@
-import { UIElements } from "../UIElements";
-import { promptTemplates } from "../promptTemplates";
+import { UIElements } from '../UIElements';
+import { promptTemplates } from '../promptTemplates';
 
 // function fillTemplate(template, data) {
 //   let filledTemplate = template;
@@ -13,7 +13,7 @@ import { promptTemplates } from "../promptTemplates";
 // }
 
 function copyPromptText() {
-  const promptText = document.getElementById("promptText");
+  const promptText = document.getElementById('promptText');
   const selection = window.getSelection();
   const range = document.createRange();
   range.selectNodeContents(promptText);
@@ -23,49 +23,48 @@ function copyPromptText() {
   navigator.clipboard
     .writeText(promptText.textContent)
     .then(() => {
-      console.log("Prompt copied successfully!"); // Optional success message
+      console.log('Prompt copied successfully!'); // Optional success message
     })
     .catch(() => {
-      console.error("Failed to copy prompt!"); // Optional error message
+      console.error('Failed to copy prompt!'); // Optional error message
     });
   selection.removeAllRanges();
-  promptModal.style.display = "none";
-
+  promptModal.style.display = 'none';
 }
 
 export class Prompts {
   constructor() {
     this.ui = new UIElements();
     this.templates = promptTemplates;
-    const promptModal = document.getElementById("promptModal");
-    const copyPromptButton = document.getElementById("copyPromptButton");
+    const promptModal = document.getElementById('promptModal');
+    const copyPromptButton = document.getElementById('copyPromptButton');
 
-    copyPromptButton.addEventListener("click", copyPromptText);
+    copyPromptButton.addEventListener('click', copyPromptText);
 
-    this.ui.generatePromptButton.addEventListener("click", () => {
+    this.ui.generatePromptButton.addEventListener('click', () => {
       this.generatePrompt();
-      promptModal.style.display = "block";
+      promptModal.style.display = 'block';
     });
 
-    window.addEventListener("click", function (event) {
+    window.addEventListener('click', function (event) {
       if (event.target === promptModal) {
-        promptModal.style.display = "none";
+        promptModal.style.display = 'none';
       }
     });
   }
   generatePrompt() {
-    const promptText = document.getElementById("promptText");
+    const promptText = document.getElementById('promptText');
     const selectedTemplate = this.entryForm.selectedTemplate;
     const selectedEntry = this.entryForm.selectedEntry;
     const loreLib = this.entryForm.loreLib;
 
-    let promptString = "";
+    let promptString = '';
     if (selectedEntry != undefined) {
       promptString += `Please fill in the missing details for a lore library entry in the ${selectedTemplate} category. You can expand or adjust details to create a more convincing lore while preserving the main details provided.; `;
 
       // iterate over the entry fields
       for (const key in loreLib[selectedTemplate][selectedEntry]) {
-        if (key !== "valid" && key !== "version" && key != "sprite") {
+        if (key !== 'valid' && key !== 'version' && key != 'sprite') {
           // get field name
           const fieldValue = loreLib[selectedTemplate][selectedEntry][key];
           // console.log("prompt key", key);
@@ -98,10 +97,10 @@ export class Prompts {
         }
       }
     } else {
-      promptString = "Please select a lore entry to generate a prompt for.";
+      promptString = 'Please select a lore entry to generate a prompt for.';
     }
 
     promptText.textContent = promptString;
-    promptModal.style.display = "block"; // Open the modal after updating prompt
+    promptModal.style.display = 'block'; // Open the modal after updating prompt
   }
 }
