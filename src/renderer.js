@@ -5,15 +5,16 @@ import { Prompts } from "./app/utils/Prompts";
 import { TemplateMaker } from "./app/modules/TemplateMaker";
 import { Viewer } from "./app/modules/Viewer";
 import { Menu } from "./app/modules/Menu";
-
+import { Sprites } from "./app/utils/Sprites";
 const uiElements = new UIElements();
-
 //* MAIN FEATURE *//
+let catalog;
 const entryForm = new EntryForm();
 const prompts = new Prompts();
 const templateMaker = new TemplateMaker();
 const viewer = new Viewer();
 const menu = new Menu();
+const sprites = new Sprites();
 
 entryForm.prompts = prompts;
 prompts.entryForm = entryForm;
@@ -25,49 +26,35 @@ viewer.entryForm = entryForm;
 
 menu.viewer = viewer;
 
-let libraryId = 0;
-async function startUp() {
-  console.log("renderer startup");
 
-  const maxTries = 120;
-  let tries = 0;
 
-  while (true) {
-    console.log("renderer checking for library");
+// uiElements.fileBrowserButton.addEventListener("click", () => {
+//   window.electronAPI.openFileDialog();
+//   uiElements.settingsModal.style.display = "none";
+// });
 
-    const loreData = window.loreData;
-    entryForm.loreLib = loreData.getLore();
-
-    if (entryForm.loreLib && entryForm.loreLib.dateId != libraryId) {
-      libraryId = entryForm.loreLib.dateId;
-      console.log("renderer loop found a library", entryForm.loreLib.dateId);
-
-      const templateData = window.templateData;
-      templateMaker.templates = templateData.getMaps();
-
-      uiElements.welcomeDiv.innerText = "Select an option to begin...";
-      uiElements.createButton.style.display = "";
-      uiElements.viewButton.style.display = "";
-      uiElements.createTemplateButton.style.display = "";
-
-      viewer.renderGameData();
-      templateMaker.updateOptions();
-      entryForm.updateForm();
-      break;
-    }
-
-    await new Promise((resolve) => setTimeout(resolve, 1000)); // Wait for 1 second
-
-    tries++;
-    if (tries >= maxTries) {
-      break;
-    }
-  }
-}
-uiElements.fileBrowserButton.addEventListener("click", () => {
-  window.electronAPI.openFileDialog();
-  
-  uiElements.settingsModal.style.display = "none";
-  startUp();
+window.catalogAPI.onOpenProject((data) => {
+  catalog = data;
+  start(data);
 });
-startUp();
+
+function start(catalog) {
+  entryForm.loreLib = catalog.lore.main.data;
+  entryForm.templates = catalog.templates.data.template;
+  templateMaker.templates = catalog.templates.data.template;
+  
+  sprites.list = catalog.sprites;
+  entryForm.sprites = sprites.list;
+  viewer.sprites = sprites.list;
+
+
+  uiElements.welcomeDiv.innerText = "Select an option to begin...";
+  uiElements.createButton.style.display = "";
+  uiElements.viewButton.style.display = "";
+  uiElements.createTemplateButton.style.display = "";
+
+  viewer.renderGameData();
+  templateMaker.updateOptions();
+  entryForm.updateForm();
+}
+

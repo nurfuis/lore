@@ -8,8 +8,14 @@ const electronAPI = {
     ipcRenderer.send("open-file-dialog");
   },
 };
-
 contextBridge.exposeInMainWorld("electronAPI", electronAPI);
+
+
+contextBridge.exposeInMainWorld("catalogAPI", {
+  onOpenProject: (callback) =>
+    ipcRenderer.on("send:catalog", (_event, value) => callback(value)),
+});
+
 
 contextBridge.exposeInMainWorld("loreData", {
   getLore() {

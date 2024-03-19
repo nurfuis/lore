@@ -32,9 +32,9 @@ export class Menu {
     }
 
     if (showCreateForm) {
-      console.log("Showing edit entry form.");
+      console.log("Display the entry form.");
     } else {
-      console.log("Showing viewer.");
+      console.log("Display the viewer.");
       this.viewer.renderGameData();
     }
 
