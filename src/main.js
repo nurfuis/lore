@@ -23,8 +23,7 @@ function createWindow() {
       submenu: [
         {
           click: () => {
-            catalog = initializeProjectDirectories();
-            mainWindow.webContents.send("send:catalog", catalog);
+            reload();
           },
           label: "Quick Start...",
         },
@@ -65,16 +64,10 @@ app.on("ready", () => {
 });
 app.on("window-all-closed", () => {
   try {
-    fs.copyFileSync(catalog.lore.temp.path, catalog.lore.main.path);
-    console.log("Saved data to main file:", catalog.lore.main.path);
-
-    // files were saved and backed up so remove temp file
-    fs.unlinkSync(catalog.lore.temp.path);
-    console.log("Temporary file removed:", catalog.lore.temp.path);
+    saveChanges();
   } catch (error) {
     console.error("No data to write. Goodbye.");
   }
-
   if (process.platform !== "darwin") {
     app.quit();
   }
@@ -84,11 +77,10 @@ app.on("activate", () => {
     createWindow();
   }
 });
-//* PROJECT SETUP *//
-const ROOT = process.env.INIT_CWD;
+//* DIRECTORY SETUP *//
 const _DIR = "/data";
 const _BACKUP_DIR = "/backup";
-const BACKUP_ID = "o.o"
+const BACKUP_ID = "o.o";
 const _ASSETS_DIR = "/assets";
 const _SPRITES_DIR = "/sprites";
 const _PREVIEWS_DIR = "/previews";
@@ -99,6 +91,8 @@ const TEMPLATES_FILE = "/templates.json";
 const LORE_LIBRARY = "/lib.json";
 const LORE_LIBRARY_TEMP = "/lib.temp.json";
 const LORE_LIBRARY_BAK = "/lib." + BACKUP_ID + ".bak.json";
+//* ENV *//
+const root = process.env.INIT_CWD;
 //* LORE LIBRARY CARD CATALOG *//
 /**
  * Card Catalog: Represents the loaded project data structure.
@@ -127,10 +121,92 @@ const LORE_LIBRARY_BAK = "/lib." + BACKUP_ID + ".bak.json";
  *                                                         specific sections (e.g., world, creature, item).
  *   @property {string} templates.path - Path to the JSON file containing template data (templates.json).
  */
-let catalog = initializeProjectDirectories();
 //* START *//
+let catalog = initializeProjectDirectories();
+//* SYSTEM COMMANDS *//
+function reload() {
+  saveChanges();
+  console.log("Reloading __---__---__--_--_-");
+  catalog = initializeProjectDirectories();
+  mainWindow.webContents.send("send:catalog", catalog);
+  return true;
+}
+function saveChanges() {
+  try {
+    // Copy the temporary data to the main file
+    fs.copyFileSync(catalog.lore.temp.path, catalog.lore.main.path);
+    console.log("Saved data to main file:", catalog.lore.main.path);
+
+    // Files were saved and backed up, remove temporary file
+    fs.unlinkSync(catalog.lore.temp.path);
+    console.log("Temporary file removed:", catalog.lore.temp.path);
+  } catch (error) {
+    console.error("No changes to save.");
+    // Handle the error appropriately (e.g., display an error message to the user)
+  }
+}
+function changeUserDirectory() {
+  dialog
+    .showOpenDialog({ properties: ["openDirectory"] })
+    .then((result) => {
+      if (result.filePaths.length === 1) {
+        const configFile = root + "/config.json";
+        const data = { USER_PATH: result.filePaths[0] };
+        fs.writeFile(configFile, JSON.stringify(data), (err) => {
+          if (err) {
+            console.error("Error saving config:", err);
+          } else {
+            console.log("Config saved successfully.");
+            // init the new data & reload the window
+            reload();
+          }
+        });
+      }
+    })
+    .catch((err) => {
+      console.log(err);
+    });
+}
+function resolveBadShutdown() {
+  return new Promise((resolve, reject) => {
+    dialog
+      .showMessageBox({
+        type: "warning",
+        title: "Temporary Data Found",
+        message:
+          "The Lore Library app discovered a temporary file that might contain unsaved changes. What would you like to do?",
+        buttons: [
+          "Overwrite Main File",
+          "Proceed and Delete Temp",
+          "Exit to Inspect Manually",
+        ],
+        noLink: true,
+      })
+      .then((choice) => {
+        try {
+          if (choice.response === 0) {
+            // Overwrite main with temp
+            fs.copyFileSync(catalog.lore.temp.path, catalog.lore.main.path);
+            fs.unlinkSync(catalog.lore.temp.path);
+            console.log("Temp data overwritten to main file.");
+            resolve(true);
+          } else if (choice.response === 1) {
+            // Remove temp
+            fs.unlinkSync(catalog.lore.temp.path);
+            console.log("Temporary file removed.");
+            resolve(true);
+          } else {
+            resolve(false);
+          }
+        } catch (error) {
+          reject(error);
+        }
+      });
+  });
+}
+//* LIBRARY SCRIPTS *//
 function initializeProjectDirectories() {
-  console.log("Process started from:", ROOT)
+  console.log("Process started from:", root);
   console.log("Initializing project directories...");
 
   const userAppDataPath = getUserDataPath();
@@ -157,7 +233,7 @@ function initializeProjectDirectories() {
 }
 function getUserDataPath() {
   console.log("Reading user config file...");
-  const configFile = ROOT + "/config.json";
+  const configFile = root + "/config.json";
   let results;
   try {
     results = JSON.parse(fs.readFileSync(configFile, "utf-8"));
@@ -165,7 +241,7 @@ function getUserDataPath() {
   } catch (err) {
     console.error("Error loading config data:", err);
     console.log("Creating new config file...");
-    results = { USER_PATH: ROOT };
+    results = { USER_PATH: root };
     fs.writeFile(configFile, JSON.stringify(results), (err) => {
       if (err) {
         console.error("Error saving config:", err);
@@ -329,6 +405,7 @@ function readLore(__data, templates) {
   try {
     fileSet.temp.data = JSON.parse(fs.readFileSync(fileSet.temp.path, "utf-8"));
     console.log("Unsuccesful shutdown detected.");
+    resolveBadShutdown();
   } catch (err) {
     if (err.code === "ENOENT") {
       console.log("Checking last shutdown...");
@@ -352,78 +429,16 @@ function readLore(__data, templates) {
   );
   return fileSet;
 }
-//* SYSTEM *//
-function resolveBadShutdown() {
-  return new Promise((resolve, reject) => {
-    dialog
-      .showMessageBox({
-        type: "warning",
-        title: "Temporary Data Found",
-        message:
-          "The Lore Library app discovered a temporary file that might contain unsaved changes. What would you like to do?",
-        buttons: [
-          "Overwrite Main File",
-          "Proceed and Delete Temp",
-          "Exit to Inspect Manually",
-        ],
-        noLink: true,
-      })
-      .then((choice) => {
-        try {
-          if (choice.response === 0) {
-            // Overwrite main with temp
-            fs.copyFileSync(catalog.lore.temp.path, catalog.lore.main.path);
-            fs.unlinkSync(catalog.lore.temp.path);
-            console.log("Temp data overwritten to main file.");
-            resolve(true);
-          } else if (choice.response === 1) {
-            // Remove temp
-            fs.unlinkSync(catalog.lore.temp.path);
-            console.log("Temporary file removed.");
-            resolve(true);
-          } else {
-            resolve(false);
-          }
-        } catch (error) {
-          reject(error);
-        }
-      });
-  });
-}
-function changeUserDirectory() {
-  dialog
-    .showOpenDialog({ properties: ["openDirectory"] })
-    .then((result) => {
-      if (result.filePaths.length === 1) {
-        const configFile = ROOT + "/config.json";
-        const data = { USER_PATH: result.filePaths[0] };
-        fs.writeFile(configFile, JSON.stringify(data), (err) => {
-          if (err) {
-            console.error("Error saving config:", err);
-          } else {
-            console.log("Config saved successfully.");
-            // init the new data & reload the window
-            catalog = initializeProjectDirectories();
-            mainWindow.webContents.send("send:catalog", catalog);
-          }
-        });
-      }
-    })
-    .catch((err) => {
-      console.log(err);
-    });
-}
 //* LORE REQUEST *//
-ipcMain.on("request-lore-data", (event) => {
+ipcMain.on("lore-data-request", (event) => {
   console.log("Checking for library data ...");
   if (catalog) {
-    console.log("Card Catalog:", catalog);
     mainWindow.setTitle(catalog.lore.main.path + ": Lore Library");
     event.returnValue = catalog.lore.main.data;
   }
 });
 //* LORE SAVE *//
-ipcMain.on("save-lore", (event, data) => {
+ipcMain.on("save-lore-data", (event, data) => {
   const filename = catalog.lore.temp.path;
   console.log("Writing changes to temp:", filename);
   fs.writeFile(filename, JSON.stringify(data), (err) => {
@@ -549,4 +564,12 @@ ipcMain.on("save-templates", (event, data) => {
 //* CHANGE DIRECTORY *//
 ipcMain.on("open-file-dialog", () => {
   changeUserDirectory();
+});
+//* ROOT REQUEST *//
+ipcMain.on("request-root", (event) => {
+  event.returnValue = root;
+});
+//* RELOAD REQUEST *//
+ipcMain.on("request-reload", (event) => {
+  event.returnValue = reload();
 });

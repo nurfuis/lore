@@ -13,9 +13,24 @@ export class Menu {
     uiElements.viewButton.addEventListener("click", () =>
       this.toggleView(false)
     );
-    uiElements.settingsButton.addEventListener("click", () =>
-      toggleSettingsModal()
-    );
+    uiElements.settingsButton.addEventListener("click", () => {
+      toggleSettingsModal();
+
+      const userPath = process.getRoot();
+      const modalLabels = document.querySelectorAll(".modal-label");
+
+      for (const modalLabel of modalLabels) {
+        modalLabel.innerText = "";
+        modalLabel.innerText = "Project Path " + userPath;
+      }
+    });
+    uiElements.modalProceedButton[0].addEventListener("click", () => {
+      const result = reload.init()
+      if (result) {
+        uiElements.settingsModal.style.display = "none";
+      }
+    });
+
     window.addEventListener("click", function (event) {
       if (event.target === uiElements.settingsModal) {
         uiElements.settingsModal.style.display = "none";

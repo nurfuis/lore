@@ -8,7 +8,7 @@ contextBridge.exposeInMainWorld("catalogAPI", {
 
 //* ONE WAY TO MAIN *//
 const electronAPI = {
-  saveLore: (data) => ipcRenderer.send("save-lore", data),
+  saveLore: (data) => ipcRenderer.send("save-lore-data", data),
   saveImage: (data) => ipcRenderer.send("save-image", data),
   saveTemplates: (data) => ipcRenderer.send("save-templates", data),
   openFileDialog: () => {
@@ -26,13 +26,25 @@ contextBridge.exposeInMainWorld("request", {
 });
 contextBridge.exposeInMainWorld("loreData", {
   getLore() {
-    return ipcRenderer.sendSync("request-lore-data");
+    return ipcRenderer.sendSync("lore-data-request");
   },
 });
 contextBridge.exposeInMainWorld("templateData", {
   getMaps() {
     // Add filename argument
     const response = ipcRenderer.sendSync("request-templates");
+    return response;
+  },
+});
+contextBridge.exposeInMainWorld("process", {
+  getRoot() {
+    const response = ipcRenderer.sendSync("request-root");
+    return response;
+  },
+});
+contextBridge.exposeInMainWorld("reload", {
+  init() {
+    const response = ipcRenderer.sendSync("request-reload");
     return response;
   },
 });

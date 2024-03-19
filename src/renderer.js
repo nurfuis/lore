@@ -24,10 +24,12 @@ viewer.entryForm = entryForm;
 
 menu.viewer = viewer;
 
-// uiElements.fileBrowserButton.addEventListener("click", () => {
-//   window.electronAPI.openFileDialog();
-//   uiElements.settingsModal.style.display = "none";
-// });
+uiElements.fileBrowserButton.addEventListener("click", () => {
+  window.electronAPI.openFileDialog();
+  uiElements.settingsModal.style.display = "none";
+  uiElements.settingsButton.style.display = "none";
+
+});
 
 window.catalogAPI.onOpenProject((catalog) => {
   start(catalog);
