@@ -1,5 +1,5 @@
 import { UIElements } from "../UIElements";
-import { Image } from "../utils/Image";
+import { Image } from "./Image";
 import { removeExtension } from "../utils/removeExtension";
 export class EntryForm {
   constructor() {

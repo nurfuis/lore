@@ -1,5 +1,5 @@
 import { UIElements } from "../UIElements";
-import { Image } from "../utils/Image";
+import { Image } from "./Image";
 const uiElements = new UIElements();
 const image = new Image();
 

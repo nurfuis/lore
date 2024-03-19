@@ -1,7 +1,7 @@
 import "./index.css";
 import { UIElements } from "./app/UIElements";
 import { EntryForm } from "./app/modules/EntryForm";
-import { Prompts } from "./app/utils/Prompts";
+import { Prompts } from "./app/modules/Prompts";
 import { TemplateMaker } from "./app/modules/TemplateMaker";
 import { Viewer } from "./app/modules/Viewer";
 import { Menu } from "./app/modules/Menu";
