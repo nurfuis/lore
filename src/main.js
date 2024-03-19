@@ -88,6 +88,7 @@ app.on("activate", () => {
 const ROOT = process.env.INIT_CWD;
 const _DIR = "/data";
 const _BACKUP_DIR = "/backup";
+const BACKUP_ID = "o.o"
 const _ASSETS_DIR = "/assets";
 const _SPRITES_DIR = "/sprites";
 const _PREVIEWS_DIR = "/previews";
@@ -97,7 +98,7 @@ const SPRITE_LIBRARY = "/sprites.json";
 const TEMPLATES_FILE = "/templates.json";
 const LORE_LIBRARY = "/lib.json";
 const LORE_LIBRARY_TEMP = "/lib.temp.json";
-const LORE_LIBRARY_BAK = "/lib." + Date.now() + ".bak.json";
+const LORE_LIBRARY_BAK = "/lib." + BACKUP_ID + ".bak.json";
 //* LORE LIBRARY CARD CATALOG *//
 /**
  * Card Catalog: Represents the loaded project data structure.
@@ -129,7 +130,7 @@ const LORE_LIBRARY_BAK = "/lib." + Date.now() + ".bak.json";
 let catalog = initializeProjectDirectories();
 //* START *//
 function initializeProjectDirectories() {
-  console.log("Script ran from:", ROOT)
+  console.log("Process started from:", ROOT)
   console.log("Initializing project directories...");
 
   const userAppDataPath = getUserDataPath();
