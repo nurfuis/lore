@@ -5,69 +5,50 @@ import { Prompts } from "./app/utils/Prompts";
 import { TemplateMaker } from "./app/modules/TemplateMaker";
 import { Viewer } from "./app/modules/Viewer";
 import { Menu } from "./app/modules/Menu";
-
-const uiElements = new UIElements();
-
 //* MAIN FEATURE *//
+const uiElements = new UIElements();
 const entryForm = new EntryForm();
 const prompts = new Prompts();
 const templateMaker = new TemplateMaker();
 const viewer = new Viewer();
 const menu = new Menu();
-
+// Couple the entry form with prompts
 entryForm.prompts = prompts;
 prompts.entryForm = entryForm;
-
+// Couple the entry form with templates
 templateMaker.entryForm = entryForm;
 entryForm.templateMaker = templateMaker;
-
+// Inject the viewer with entryForm
 viewer.entryForm = entryForm;
-
+// Inject the menu with viewer
 menu.viewer = viewer;
-
-let libraryId = 0;
-async function startUp() {
-  console.log("renderer startup");
-
-  const maxTries = 120;
-  let tries = 0;
-
-  while (true) {
-    console.log("renderer checking for library");
-
-    const loreData = window.loreData;
-    entryForm.loreLib = loreData.getLore();
-
-    if (entryForm.loreLib && entryForm.loreLib.dateId != libraryId) {
-      libraryId = entryForm.loreLib.dateId;
-      console.log("renderer loop found a library", entryForm.loreLib.dateId);
-
-      const templateData = window.templateData;
-      templateMaker.templates = templateData.getMaps();
-
-      uiElements.welcomeDiv.innerText = "Select an option to begin...";
-      uiElements.createButton.style.display = "";
-      uiElements.viewButton.style.display = "";
-      uiElements.createTemplateButton.style.display = "";
-
-      viewer.renderGameData();
-      templateMaker.updateOptions();
-      entryForm.updateForm();
-      break;
-    }
-
-    await new Promise((resolve) => setTimeout(resolve, 1000)); // Wait for 1 second
-
-    tries++;
-    if (tries >= maxTries) {
-      break;
-    }
-  }
+// * OPEN THE CATALOG *//
+function start(catalog) {
+  entryForm.loreLib = catalog.lore.main.data;
+  entryForm.templates = catalog.templates.data.template;
+  // entry form is coupled to the templates now
+  // it can read templates from thetemplates module now
+  // and the references need to be updated in entryForm
+  // before unlinking templates from the entry form here
+  templateMaker.templates = catalog.templates.data.template;
+  // The block below configures the workspace elements
+  // it can probably be part of the menu and use a method to run it
+  uiElements.welcomeDiv.innerText = "Select an option to begin...";
+  uiElements.createButton.style.display = "";
+  uiElements.viewButton.style.display = "";
+  uiElements.createTemplateButton.style.display = "";
+  // The next part tells the modules that their data is loaded
+  // and to hurry up and set their initial states
+  viewer.renderGameData();
+  templateMaker.updateOptions();
+  entryForm.updateForm();
 }
-uiElements.fileBrowserButton.addEventListener("click", () => {
-  window.electronAPI.openFileDialog();
-  
-  uiElements.settingsModal.style.display = "none";
-  startUp();
+// Listen for start command and its data pack
+electronAPI.onOpenProject((catalog) => {
+  start(catalog);
+  // TODO add an electronAPI.setTitle func in preload to set title,
+  // instead of using getLore, the return data redundant now that
+  // the start is being signaled from main and includes the built pack
+  const loreCatalog = electronAPI.getLore();
+  console.log(loreCatalog);
 });
-startUp();

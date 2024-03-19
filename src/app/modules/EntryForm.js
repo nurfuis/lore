@@ -79,7 +79,7 @@ export class EntryForm {
     this.ui.imagePreview.src = `${imageSrc}`;
     this.ui.imagePreview.style.display = "block";
 
-    this.spriteName = fileIndex;
+    this.spriteName = filename;
   }
   updateImagePreview(event) {
     const file = event.target.files[0];
@@ -97,8 +97,7 @@ export class EntryForm {
     }, 200);
   }
   updateForm() {
-    const templateData = window.templateData;
-    this.templates = templateData.getMaps();
+    this.templates = electronAPI.getTemplates();
     // Clear existing form elements
     this.clearImagePreview();
     this.ui.entryForm.innerHTML = "";

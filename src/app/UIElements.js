@@ -35,13 +35,14 @@ export class UIElements {
 
     this.closeModalButton = document.querySelector(".close-modal");
     this.modal = document.querySelector(".modal");
-
+    this.modalProceedButton = document.querySelectorAll(".modal-proceed");
 
     this.ready();
   }
   ready() {
-    // this.createButton.style.display = "none";
-    // this.viewButton.style.display = "none";
-    // this.createTemplateButton.style.display = "none";
+    this.createButton.style.display = "none";
+    this.viewButton.style.display = "none";
+    this.createTemplateButton.style.display = "none";
+    this.settingsButton.style.display = "";
   }
 }

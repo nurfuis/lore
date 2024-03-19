@@ -6,16 +6,18 @@
   </head>
 
   <body>
+    <!-- <img src="../data/assets/sprites/previews/chip.png" width="100px" height="100px" alt="" /> -->
     <nav>
       <button id="create-button" class="button">Edit Entry</button>
       <button id="create-template" class="button">Create Template</button>
       <button id="view-button" class="button">View Lore</button>
-      <button id="settings-button" class="button">Config</button>
     </nav>
 
     <div id="welcome-message" class="welcome">
       <h1>Welcome to the Lore Editor!</h1>
       <p>Select a directory to get started.</p>
+      <button id="settings-button" class="button">Config</button>
+
     </div>
 
     <div id="app-container" class="app-container">
@@ -134,8 +136,10 @@
             You may choose to select a directory that is a tracked repo like a
             github project for easy collaboration or version control.
           </p>
-          <label for="project-path">Project Path:</label>
+          <label class="modal-label" for="project-path">Project Path </label>
           <button id="file-browser-button" type="button">Browse</button>
+          <button class="modal-proceed" type="button">Proceed</button>
+
         </form>
       </div>
     </div>
