@@ -368,10 +368,10 @@ export class TemplateMaker {
       );
     }
 
-    window.electronAPI.saveTemplates(this.templates); // Save updated gameData
+    electronAPI.saveTemplates(this.templates); // Save updated gameData
 
     // TODO offload this to entryForm so each module manages its own save and data
-    window.electronAPI.saveLore(this.entryForm.loreLib); // Save updated gameData
+    electronAPI.saveLore(this.entryForm.loreLib); // Save updated gameData
 
     // 5. Close the modal
     const createTemplateModal = document.getElementById(

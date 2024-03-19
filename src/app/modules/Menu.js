@@ -42,7 +42,7 @@ export class Menu {
     });
     // Listen for
     uiElements.fileBrowserButton.addEventListener("click", () => {
-      window.electronAPI.openFileDialog();
+      electronAPI.openFileDialog();
       uiElements.settingsModal.style.display = "none";
       uiElements.settingsButton.style.display = "none";
     });

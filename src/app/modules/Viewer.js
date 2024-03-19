@@ -66,7 +66,7 @@ export class Viewer {
 
   deleteConfirmed(itemToDelete, type) {
     delete this.entryForm.loreLib[type][itemToDelete.name];
-    window.electronAPI.saveLore(this.entryForm.loreLib); // Save the updated data
+    electronAPI.saveLore(this.entryForm.loreLib); // Save the updated data
 
     // Update UI (optional)
     uiElements.information.innerText = `Entry "${itemToDelete.name}" deleted successfully!`;

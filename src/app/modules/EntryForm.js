@@ -210,7 +210,7 @@ export class EntryForm {
       // Add the new entry to the gameData object under the corresponding key
       this.loreLib[entryType][entryKey] = newEntry;
 
-      window.electronAPI.saveLore(this.loreLib);
+      electronAPI.saveLore(this.loreLib);
 
       // Update the UI or perform any other actions after saving (optional)
       this.ui.information.innerText = `Entry "${newEntry.name}" type: ${entryType} saved successfully!`;
