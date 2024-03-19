@@ -438,7 +438,7 @@ ipcMain.on("lore-data-request", (event) => {
   }
 });
 //* LORE SAVE *//
-ipcMain.on("save-lore-data", (event, data) => {
+ipcMain.on("lore-data-save", (event, data) => {
   const filename = catalog.lore.temp.path;
   console.log("Writing changes to temp:", filename);
   fs.writeFile(filename, JSON.stringify(data), (err) => {
@@ -453,7 +453,7 @@ ipcMain.on("save-lore-data", (event, data) => {
   });
 });
 //* IMAGE REQUEST *//
-ipcMain.on("request-image", (event, fileIndex) => {
+ipcMain.on("image-request", (event, fileIndex) => {
   if (!catalog.sprites.data[SPRITES_KEY][fileIndex]) {
     console.log("Quitting, sprites list is corrupted.");
     app.quit();
@@ -471,7 +471,7 @@ ipcMain.on("request-image", (event, fileIndex) => {
   }
 });
 //* IMAGE SAVE *//
-ipcMain.on("save-image", (event, filePath) => {
+ipcMain.on("image-save", (event, filePath) => {
   const filename = path.basename(filePath);
   const newImageFile = `${catalog.sprites.directory}/${filename}`;
   // Proceed with image saving
@@ -535,14 +535,14 @@ ipcMain.on("save-image", (event, filePath) => {
   });
 });
 //* TEMPLATE REQUEST *//
-ipcMain.on("request-templates", (event) => {
+ipcMain.on("templates-request", (event) => {
   // Respond to the synchronous request with the template data
   if (catalog) {
     event.returnValue = catalog.templates.data.template;
   }
 });
 //* TEMPLATE SAVE *//
-ipcMain.on("save-templates", (event, data) => {
+ipcMain.on("templates-save", (event, data) => {
   // Ensure data contains only the templates section
   if (!data) {
     console.error("Invalid data format: Missing templates section");
@@ -562,14 +562,14 @@ ipcMain.on("save-templates", (event, data) => {
   });
 });
 //* CHANGE DIRECTORY *//
-ipcMain.on("open-file-dialog", () => {
+ipcMain.on("dialog-file-open", () => {
   changeUserDirectory();
 });
 //* ROOT REQUEST *//
-ipcMain.on("request-root", (event) => {
+ipcMain.on("root-request", (event) => {
   event.returnValue = root;
 });
 //* RELOAD REQUEST *//
-ipcMain.on("request-reload", (event) => {
+ipcMain.on("reload-request", (event) => {
   event.returnValue = reload();
 });

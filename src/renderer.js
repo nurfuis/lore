@@ -31,7 +31,7 @@ uiElements.fileBrowserButton.addEventListener("click", () => {
 
 });
 
-window.catalogAPI.onOpenProject((catalog) => {
+electronAPI.onOpenProject((catalog) => {
   start(catalog);
 });
 

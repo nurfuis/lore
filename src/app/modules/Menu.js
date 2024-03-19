@@ -16,7 +16,7 @@ export class Menu {
     uiElements.settingsButton.addEventListener("click", () => {
       toggleSettingsModal();
 
-      const userPath = process.getRoot();
+      const userPath = electronAPI.getRoot();
       const modalLabels = document.querySelectorAll(".modal-label");
 
       for (const modalLabel of modalLabels) {
@@ -25,7 +25,7 @@ export class Menu {
       }
     });
     uiElements.modalProceedButton[0].addEventListener("click", () => {
-      const result = reload.init()
+      const result = electronAPI.init()
       if (result) {
         uiElements.settingsModal.style.display = "none";
       }

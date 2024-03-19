@@ -97,8 +97,7 @@ export class EntryForm {
     }, 200);
   }
   updateForm() {
-    const templateData = window.templateData;
-    this.templates = templateData.getMaps();
+    this.templates = electronAPI.getTemplates();
     // Clear existing form elements
     this.clearImagePreview();
     this.ui.entryForm.innerHTML = "";

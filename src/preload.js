@@ -1,50 +1,35 @@
 const { contextBridge, ipcRenderer } = require("electron");
 
-//* ONE WAY FROM MAIN *//
-contextBridge.exposeInMainWorld("catalogAPI", {
+const electronAPI = {
+  //* ONE WAY FROM MAIN *//
   onOpenProject: (callback) =>
     ipcRenderer.on("send:catalog", (_event, value) => callback(value)),
-});
-
-//* ONE WAY TO MAIN *//
-const electronAPI = {
-  saveLore: (data) => ipcRenderer.send("save-lore-data", data),
-  saveImage: (data) => ipcRenderer.send("save-image", data),
-  saveTemplates: (data) => ipcRenderer.send("save-templates", data),
+  //* ONE WAY TO MAIN *//
+  saveLore: (data) => ipcRenderer.send("lore-data-save", data),
+  saveImage: (data) => ipcRenderer.send("image-save", data),
+  saveTemplates: (data) => ipcRenderer.send("templates-save", data),
   openFileDialog: () => {
-    ipcRenderer.send("open-file-dialog");
+    ipcRenderer.send("dialog-file-open");
   },
-};
-contextBridge.exposeInMainWorld("electronAPI", electronAPI);
-
-//* CALL AND RESPONSE *//
-contextBridge.exposeInMainWorld("request", {
-  getImage(filename) {
-    const response = ipcRenderer.sendSync("request-image", filename);
+  //* CALL AND RESPONSE *//
+  getRoot() {
+    const response = ipcRenderer.sendSync("root-request");
     return response;
   },
-});
-contextBridge.exposeInMainWorld("loreData", {
+  getImage(filename) {
+    const response = ipcRenderer.sendSync("image-request", filename);
+    return response;
+  },
   getLore() {
     return ipcRenderer.sendSync("lore-data-request");
   },
-});
-contextBridge.exposeInMainWorld("templateData", {
-  getMaps() {
-    // Add filename argument
-    const response = ipcRenderer.sendSync("request-templates");
+  getTemplates() {
+    const response = ipcRenderer.sendSync("templates-request");
     return response;
   },
-});
-contextBridge.exposeInMainWorld("process", {
-  getRoot() {
-    const response = ipcRenderer.sendSync("request-root");
-    return response;
-  },
-});
-contextBridge.exposeInMainWorld("reload", {
   init() {
-    const response = ipcRenderer.sendSync("request-reload");
+    const response = ipcRenderer.sendSync("reload-request");
     return response;
   },
-});
+};
+contextBridge.exposeInMainWorld("electronAPI", electronAPI);
