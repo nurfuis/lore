@@ -204,7 +204,7 @@ function resolveBadShutdown() {
       });
   });
 }
-//* LIBRARY SCRIPTS *//
+//* LIBRARY BUILD SCRIPTS *//
 function initializeProjectDirectories() {
   console.log("Process started from:", root);
   console.log("Initializing project directories...");
@@ -433,7 +433,7 @@ function readLore(__data, templates) {
 ipcMain.on("lore-data-request", (event) => {
   console.log("Checking for library data ...");
   if (catalog) {
-    mainWindow.setTitle(catalog.lore.main.path + ": Lore Library");
+    mainWindow.setTitle("Lore: " + catalog.lore.main.path);
     event.returnValue = catalog.lore.main.data;
   }
 });

@@ -25,7 +25,7 @@ export class Menu {
       }
     });
     uiElements.modalProceedButton[0].addEventListener("click", () => {
-      const result = electronAPI.init()
+      const result = electronAPI.init();
       if (result) {
         uiElements.settingsModal.style.display = "none";
       }
@@ -39,6 +39,12 @@ export class Menu {
 
     uiElements.closeModalButton.addEventListener("click", function () {
       uiElements.modal.style.display = "none";
+    });
+    // Listen for
+    uiElements.fileBrowserButton.addEventListener("click", () => {
+      window.electronAPI.openFileDialog();
+      uiElements.settingsModal.style.display = "none";
+      uiElements.settingsButton.style.display = "none";
     });
   }
   toggleView(showCreateForm) {
