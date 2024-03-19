@@ -41,7 +41,7 @@ function createWindow() {
   Menu.setApplicationMenu(menu);
   mainWindow.setMenuBarVisibility(true);
   mainWindow.loadURL(MAIN_WINDOW_WEBPACK_ENTRY);
-  // mainWindow.webContents.openDevTools();
+  mainWindow.webContents.openDevTools();
 }
 app.on("ready", () => {
   if (catalog.lore.temp.data) {
@@ -85,6 +85,7 @@ app.on("activate", () => {
   }
 });
 //* PROJECT SETUP *//
+const ROOT = process.env.INIT_CWD;
 const _DIR = "/data";
 const _BACKUP_DIR = "/backup";
 const _ASSETS_DIR = "/assets";
@@ -128,6 +129,7 @@ const LORE_LIBRARY_BAK = "/lib." + Date.now() + ".bak.json";
 let catalog = initializeProjectDirectories();
 //* START *//
 function initializeProjectDirectories() {
+  console.log("Script ran from:", ROOT)
   console.log("Initializing project directories...");
 
   const userAppDataPath = getUserDataPath();
@@ -154,7 +156,7 @@ function initializeProjectDirectories() {
 }
 function getUserDataPath() {
   console.log("Reading user config file...");
-  const configFile = app.getPath("userData") + "/config.json";
+  const configFile = ROOT + "/config.json";
   let results;
   try {
     results = JSON.parse(fs.readFileSync(configFile, "utf-8"));
@@ -162,7 +164,7 @@ function getUserDataPath() {
   } catch (err) {
     console.error("Error loading config data:", err);
     console.log("Creating new config file...");
-    results = { USER_PATH: app.getPath("userData") };
+    results = { USER_PATH: ROOT };
     fs.writeFile(configFile, JSON.stringify(results), (err) => {
       if (err) {
         console.error("Error saving config:", err);
@@ -187,20 +189,18 @@ function tryMakeDirectory(baseDirectory, directoryName) {
 }
 function readProjectData(__data) {
   const sprites = readSprites(__data);
-
+  //* LOAD SPRITES DATA *//
   for (const spriteName in sprites.data[SPRITES_KEY]) {
-    if (!sprites.data[SPRITES_KEY][spriteName].previewData) {
-      const imagePath =
-        sprites.directory + sprites.data[SPRITES_KEY][spriteName][PREVIEWS_KEY];
-      fs.readFile(imagePath, (err, imageData) => {
-        if (err) {
-          console.error(`Error reading image: ${err}`);
-        } else {
-          sprites.data[SPRITES_KEY][spriteName].previewData = { imageData };
-          console.log('Loading image data:', spriteName)
-        }
-      });
-    }
+    const imagePath =
+      sprites.directory + sprites.data[SPRITES_KEY][spriteName][PREVIEWS_KEY];
+    fs.readFile(imagePath, (err, imageData) => {
+      if (err) {
+        console.error(`Error reading image: ${err}`);
+      } else {
+        sprites.data[SPRITES_KEY][spriteName].previewData = {};
+        console.log("Loading image data:", spriteName);
+      }
+    });
   }
   const templates = readTemplates(__data);
 
@@ -394,7 +394,7 @@ function changeUserDirectory() {
     .showOpenDialog({ properties: ["openDirectory"] })
     .then((result) => {
       if (result.filePaths.length === 1) {
-        const configFile = app.getPath("userData") + "/config.json";
+        const configFile = ROOT + "/config.json";
         const data = { USER_PATH: result.filePaths[0] };
         fs.writeFile(configFile, JSON.stringify(data), (err) => {
           if (err) {
