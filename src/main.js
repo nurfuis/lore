@@ -104,23 +104,6 @@ ipcMain.on("lore-data-save", (event, data) => {
     }
   });
 });
-ipcMain.on("image-request", (event, fileIndex) => {
-  if (!catalog.sprites.data[SPRITES_KEY][fileIndex]) {
-    console.log("Quitting, sprites list is corrupted.");
-    app.quit();
-  }
-  const imagePath =
-    catalog.sprites.directory +
-    catalog.sprites.data[SPRITES_KEY][fileIndex][PREVIEWS_KEY];
-  try {
-    if (imagePath) {
-      const image = fs.readFileSync(imagePath);
-      event.returnValue = image;
-    }
-  } catch (error) {
-    console.error("Error loading image");
-  }
-});
 ipcMain.on("image-save", (event, filePath) => {
   const filename = path.basename(filePath);
   const newImageFile = `${catalog.sprites.directory}/${filename}`;

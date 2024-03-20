@@ -1,9 +1,9 @@
-const rules = require('./webpack.rules');
-const CopyPlugin = require('copy-webpack-plugin');
+const rules = require("./webpack.rules");
+const CopyPlugin = require("copy-webpack-plugin");
 
 rules.push({
   test: /\.css$/,
-  use: [{ loader: 'style-loader' }, { loader: 'css-loader' }],
+  use: [{ loader: "style-loader" }, { loader: "css-loader" }],
 });
 
 module.exports = {
@@ -11,14 +11,16 @@ module.exports = {
   module: {
     rules,
   },
-  mode: 'development',
-
+  devServer: {
+    hot: false,
+    inline: false,
+  },
   plugins: [
     new CopyPlugin({
       patterns: [
         {
-          from: 'data/assets',
-          to: 'data/assets',
+          from: "data/assets",
+          to: "data/assets",
         },
       ],
     }),

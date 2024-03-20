@@ -26,6 +26,9 @@ menu.viewer = viewer;
 function start(catalog) {
   entryForm.loreLib = catalog.lore.main.data;
   entryForm.templates = catalog.templates.data;
+  // TODO start move over to new catalog property?
+  entryForm.sprites = catalog.sprites;
+  viewer.sprites = catalog.sprites;
   console.log(
     "renderer templates injection to entry form",
     catalog.templates.data

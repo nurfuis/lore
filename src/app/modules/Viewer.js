@@ -1,27 +1,22 @@
 import { UIElements } from "../UIElements";
-import { Image } from "./Image";
 const uiElements = new UIElements();
-const image = new Image();
 
 function createDetailsButton(item) {
   const detailsButton = document.createElement("button");
   detailsButton.textContent = "Show Details";
   detailsButton.className = "lore-summary__details-button";
-
   detailsButton.addEventListener("click", () => {
     updateDetailsModal(item);
   });
 
   return detailsButton;
 }
-
 function updateDetailsModal(item) {
   document.getElementById("item-details-name").textContent = item.name;
   document.getElementById("item-details-description").textContent =
     item.description || "No description available";
 
   const detailsList = createEntryList(item);
-
   const existingEntries = document.getElementById(
     "item-details-description"
   ).nextElementSibling;
@@ -33,18 +28,16 @@ function updateDetailsModal(item) {
     uiElements.spriteContainer.innerHTML = ""; // Clear any existing sprite
 
     const spriteImage = document.createElement("img");
-    spriteImage.src = image.get(item.sprite);
+    spriteImage.src = '../data/assets/sprites/' + this.sprites.data.sprite[item.sprite].preview;
     spriteImage.alt = "Item Sprite";
     uiElements.spriteContainer.appendChild(spriteImage);
   }
-
   document
     .getElementById("item-details-description")
     .parentElement.appendChild(detailsList);
 
   uiElements.detailsModal.style.display = "block"; // Show the modal
 }
-
 function createEntryList(item) {
   const detailsList = document.createElement("ul");
   for (const entry in item) {
@@ -54,7 +47,6 @@ function createEntryList(item) {
   }
   return detailsList;
 }
-
 export class Viewer {
   constructor() {
     window.addEventListener("click", function (event) {
@@ -63,7 +55,6 @@ export class Viewer {
       }
     });
   }
-
   deleteConfirmed(itemToDelete, type) {
     delete this.entryForm.loreLib[type][itemToDelete.name];
     electronAPI.saveLore(this.entryForm.loreLib); // Save the updated data
@@ -72,7 +63,6 @@ export class Viewer {
     uiElements.information.innerText = `Entry "${itemToDelete.name}" deleted successfully!`;
     this.renderGameData();
   }
-
   deleteEntry(itemToDelete) {
     const type = Object.keys(this.entryForm.loreLib).find((key) =>
       this.entryForm.loreLib[key].hasOwnProperty(itemToDelete.name)
@@ -86,7 +76,7 @@ export class Viewer {
         this.deleteConfirmed(itemToDelete, type); // Call function to delete after confirmation
         confirmationModal.style.display = "none"; // Hide the modal
       });
-
+      
       const cancelDeleteButton = document.getElementById("cancel-delete");
       cancelDeleteButton.addEventListener("click", () => {
         confirmationModal.style.display = "none"; // Hide the modal on cancel
@@ -147,7 +137,9 @@ export class Viewer {
 
     if (item.sprite) {
       const previewElement = document.createElement("img");
-      previewElement.src = image.get(item.sprite);
+
+
+      previewElement.src = '../data/assets/sprites/' + this.sprites.data.sprite[item.sprite].preview;
       previewElement.classList.add("item-preview");
       itemElement.appendChild(previewElement);
     }
