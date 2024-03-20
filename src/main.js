@@ -5,73 +5,73 @@ const {
   dialog,
   Menu,
   Notification,
-} = require('electron');
-const fs = require('fs');
-const path = require('path');
-const sharp = require('sharp');
-const { DEFAULT_TEMPLATES } = require('./app/constants');
-const { removeExtension } = require('./app/utils/removeExtension');
-const { cycleBackgrounds } = require('./main/cycleBackgrounds');
-const { toggleTheme } = require('./main/toggleTheme');
-if (require('electron-squirrel-startup')) {
+} = require("electron");
+const fs = require("fs");
+const path = require("path");
+const sharp = require("sharp");
+const { DEFAULT_TEMPLATES } = require("./app/constants");
+const { removeExtension } = require("./app/utils/removeExtension");
+const { cycleBackgrounds } = require("./main/cycleBackgrounds");
+const { toggleTheme } = require("./main/toggleTheme");
+if (require("electron-squirrel-startup")) {
   app.quit();
 }
 //* ENV *//
-process.env['ELECTRON_DISABLE_SECURITY_WARNINGS'] = true;
+process.env["ELECTRON_DISABLE_SECURITY_WARNINGS"] = true;
 const root = process.env.INIT_CWD;
 let currentDirectory = root;
-app.setAppUserModelId('Lore');
+app.setAppUserModelId("Lore");
 //* WINDOW *//
 let mainWindow;
-app.on('ready', () => {
+app.on("ready", () => {
   if (catalog.lore.temp.data) {
     resolveBadShutdown()
       .then((tempFileHandledSuccessfully) => {
         if (tempFileHandledSuccessfully) {
           createWindow();
-          console.log('Temp file handled successfully.');
+          console.log("Temp file handled successfully.");
         } else {
-          console.warn('Quitting, user chose to exit for manual inspection.');
+          console.warn("Quitting, user chose to exit for manual inspection.");
           app.quit();
         }
       })
       .catch((error) => {
-        console.error('Unexpected error handling temporary file:', error);
+        console.error("Unexpected error handling temporary file:", error);
         app.quit();
       });
   } else {
     createWindow();
   }
 });
-app.on('window-all-closed', () => {
+app.on("window-all-closed", () => {
   try {
-    saveChanges({ reason: 'exit' });
+    saveChanges({ reason: "exit" });
   } catch (error) {
-    console.error('No data to write. Goodbye.');
+    console.error("No data to write. Goodbye.");
   }
-  if (process.platform !== 'darwin') {
+  if (process.platform !== "darwin") {
     app.quit();
   }
 });
-app.on('activate', () => {
+app.on("activate", () => {
   if (BrowserWindow.getAllWindows().length === 0) {
     createWindow();
   }
 });
 //* DIRECTORY SETUP *//
-const _DIR = '/data';
-const _BACKUP_DIR = '/backup';
-const BACKUP_ID = 'o.o';
-const _ASSETS_DIR = '/assets';
-const _SPRITES_DIR = '/sprites';
-const _PREVIEWS_DIR = '/previews';
-const SPRITES_KEY = 'sprite';
-const PREVIEWS_KEY = 'preview';
-const SPRITE_LIBRARY = '/sprites.json';
-const TEMPLATES_FILE = '/templates.json';
-const LORE_LIBRARY = '/lib.json';
-const LORE_LIBRARY_TEMP = '/lib.temp.json';
-const LORE_LIBRARY_BAK = '/lib.' + BACKUP_ID + '.bak.json';
+const _DIR = "/data";
+const _BACKUP_DIR = "/backup";
+const BACKUP_ID = "o.o";
+const _ASSETS_DIR = "/assets";
+const _SPRITES_DIR = "/sprites";
+const _PREVIEWS_DIR = "/previews";
+const SPRITES_KEY = "sprite";
+const PREVIEWS_KEY = "preview";
+const SPRITE_LIBRARY = "/sprites.json";
+const TEMPLATES_FILE = "/templates.json";
+const LORE_LIBRARY = "/lib.json";
+const LORE_LIBRARY_TEMP = "/lib.temp.json";
+const LORE_LIBRARY_BAK = "/lib." + BACKUP_ID + ".bak.json";
 //* LORE LIBRARY CARD CATALOG *//
 /**
  * Card Catalog: Represents the loaded project data structure.
@@ -102,7 +102,7 @@ const LORE_LIBRARY_BAK = '/lib.' + BACKUP_ID + '.bak.json';
  */
 let catalog = initializeProjectDirectories();
 //* SYSTEM COMMANDS *//
-const appIcon = './data/assets/lore-library-icon-ai-1.png';
+const appIcon = "./data/assets/lore-library-icon-ai-1.png";
 function createWindow() {
   mainWindow = new BrowserWindow({
     width: 900,
@@ -114,36 +114,36 @@ function createWindow() {
   });
   const menu = Menu.buildFromTemplate([
     {
-      label: 'File',
+      label: "File",
       submenu: [
         {
           click: () => {
             reload();
           },
-          label: 'Quick Start...',
+          label: "Quick Start...",
         },
         {
           click: () => {
-            handleOpenDialog({ cause: 'menuAction' });
+            handleOpenDialog({ cause: "menuAction" });
           },
-          label: 'Open Project...',
+          label: "Open Project...",
         },
         {
           click: () => {
-            saveChanges({ reason: 'save' });
+            saveChanges({ reason: "save" });
           },
-          label: 'Save Changes...',
+          label: "Save Changes...",
         },
       ],
     },
     {
-      label: 'Cycle Backgrounds',
+      label: "Cycle Backgrounds",
       click: () => {
         cycleBackgrounds(mainWindow);
       },
     },
     {
-      label: 'Toggle Theme',
+      label: "Toggle Theme",
       click: () => {
         toggleTheme(mainWindow);
       },
@@ -156,15 +156,15 @@ function createWindow() {
 }
 function showSavedNotification() {
   new Notification({
-    title: 'Changes Saved',
-    body: 'Your lore data has been successfully saved.',
+    title: "Changes Saved",
+    body: "Your lore data has been successfully saved.",
     icon: appIcon, // Replace with your app icon path
   }).show();
 }
 function showNoDataSavedNotification() {
   new Notification({
-    title: 'No Changes Detected',
-    body: 'There were no changes to save in your lore data.',
+    title: "No Changes Detected",
+    body: "There were no changes to save in your lore data.",
     icon: appIcon,
   }).show();
 }
@@ -172,32 +172,32 @@ function saveChanges({ reason }) {
   try {
     // Copy the temporary data to the main file
     fs.copyFileSync(catalog.lore.temp.path, catalog.lore.main.path);
-    console.log('Saved data to main file:', catalog.lore.main.path);
+    console.log("Saved data to main file:", catalog.lore.main.path);
 
     // Files were saved and backed up, remove temporary file
     fs.unlinkSync(catalog.lore.temp.path);
-    console.log('Temporary file removed:', catalog.lore.temp.path);
+    console.log("Temporary file removed:", catalog.lore.temp.path);
     showSavedNotification();
   } catch (error) {
-    console.error('No changes to save.');
-    if (reason == 'save') {
+    console.error("No changes to save.");
+    if (reason == "save") {
       showNoDataSavedNotification();
     }
   }
 }
 function reload() {
-  saveChanges({ reason: 'reload' });
-  console.log('Reloading __---__---__--_--_-');
+  saveChanges({ reason: "reload" });
+  console.log("Reloading __---__---__--_--_-");
   catalog = initializeProjectDirectories();
-  mainWindow.webContents.send('send:catalog', catalog);
+  mainWindow.webContents.send("send:catalog", catalog);
   return true;
 }
 async function handleOpenDialog({ cause }) {
   const { canceled, filePaths } = await dialog.showOpenDialog({
-    properties: ['openDirectory'],
+    properties: ["openDirectory"],
   });
   if (!canceled) {
-    if (cause == 'menuAction') {
+    if (cause == "menuAction") {
       updateCurrentDirectory(filePaths[0]);
       reload();
     }
@@ -206,13 +206,13 @@ async function handleOpenDialog({ cause }) {
 }
 function updateCurrentDirectory(filePath) {
   currentDirectory = filePath;
-  const configFile = root + '/config.json';
+  const configFile = root + "/config.json";
   const data = { USER_PATH: filePath };
   fs.writeFile(configFile, JSON.stringify(data), (err) => {
     if (err) {
-      console.error('Error saving config:', err);
+      console.error("Error saving config:", err);
     } else {
-      console.log('Config updated.', data);
+      console.log("Config updated.", data);
     }
   });
 }
@@ -220,14 +220,14 @@ function resolveBadShutdown() {
   return new Promise((resolve, reject) => {
     dialog
       .showMessageBox({
-        type: 'warning',
-        title: 'Temporary Data Found',
+        type: "warning",
+        title: "Temporary Data Found",
         message:
-          'The Lore Library app discovered a temporary file that might contain unsaved changes. What would you like to do?',
+          "The Lore Library app discovered a temporary file that might contain unsaved changes. What would you like to do?",
         buttons: [
-          'Overwrite Main File',
-          'Proceed and Delete Temp',
-          'Exit to Inspect Manually',
+          "Overwrite Main File",
+          "Proceed and Delete Temp",
+          "Exit to Inspect Manually",
         ],
         noLink: true,
       })
@@ -237,12 +237,12 @@ function resolveBadShutdown() {
             // Overwrite main with temp
             fs.copyFileSync(catalog.lore.temp.path, catalog.lore.main.path);
             fs.unlinkSync(catalog.lore.temp.path);
-            console.log('Temp data overwritten to main file.');
+            console.log("Temp data overwritten to main file.");
             resolve(true);
           } else if (choice.response === 1) {
             // Remove temp
             fs.unlinkSync(catalog.lore.temp.path);
-            console.log('Temporary file removed.');
+            console.log("Temporary file removed.");
             resolve(true);
           } else {
             resolve(false);
@@ -255,52 +255,52 @@ function resolveBadShutdown() {
 }
 //* LIBRARY BUILD SCRIPTS *//
 function initializeProjectDirectories() {
-  console.log('Process started from:', root);
-  console.log('Initializing project directories...');
+  console.log("Process started from:", root);
+  console.log("Initializing project directories...");
 
   const userAppDataPath = getUserDataPath();
-  console.log('User Data Path:', userAppDataPath);
+  console.log("User Data Path:", userAppDataPath);
 
   const projectDataDirectory = tryMakeDirectory(userAppDataPath, _DIR);
-  console.log('Initialized project data directory:', projectDataDirectory);
+  console.log("Initialized project data directory:", projectDataDirectory);
 
   const backupDirectory = tryMakeDirectory(projectDataDirectory, _BACKUP_DIR);
-  console.log('Initialized backup directory:', backupDirectory);
+  console.log("Initialized backup directory:", backupDirectory);
 
   const assetsDirectory = tryMakeDirectory(projectDataDirectory, _ASSETS_DIR);
-  console.log('Initialized assets directory:', assetsDirectory);
+  console.log("Initialized assets directory:", assetsDirectory);
 
   const spritesDirectory = tryMakeDirectory(assetsDirectory, _SPRITES_DIR);
-  console.log('Initialized sprites directory', spritesDirectory);
+  console.log("Initialized sprites directory", spritesDirectory);
 
   const previewsPath = tryMakeDirectory(spritesDirectory, _PREVIEWS_DIR);
-  console.log('Initialized previews directory', previewsPath);
+  console.log("Initialized previews directory", previewsPath);
 
   const loreFiles = readProjectData(projectDataDirectory);
   return loreFiles;
 }
 function getUserDataPath() {
-  console.log('Reading user config file...');
-  const configFile = root + '/config.json';
-  console.log(configFile)
+  console.log("Reading user config file...");
+  const configFile = root + "/config.json";
+  console.log(configFile);
   let result;
   try {
-    result = JSON.parse(fs.readFileSync(configFile, 'utf-8'));
-    console.log('Success');
+    result = JSON.parse(fs.readFileSync(configFile, "utf-8"));
+    console.log("Success");
   } catch (err) {
-    console.error('Error loading config data:', err);
-    console.log('Creating new config file...');
+    console.error("Error loading config data:", err);
+    console.log("Creating new config file...");
     result = { USER_PATH: root };
     fs.writeFile(configFile, JSON.stringify(result), (err) => {
       if (err) {
-        console.error('Error saving config:', err);
+        console.error("Error saving config:", err);
       } else {
-        console.log('Config saved.', result);
+        console.log("Config saved.", result);
       }
     });
   }
   if (!result.USER_PATH) {
-    console.log('FATAL ERROR ;(');
+    console.log("FATAL ERROR ;(");
     app.quit();
   }
   currentDirectory = result.USER_PATH;
@@ -309,7 +309,7 @@ function getUserDataPath() {
 function tryMakeDirectory(baseDirectory, directoryName) {
   const fullDirectoryPath = path.join(baseDirectory, directoryName);
   if (!fs.existsSync(fullDirectoryPath)) {
-    console.log('Make directory:', fullDirectoryPath);
+    console.log("Make directory:", fullDirectoryPath);
     fs.mkdirSync(fullDirectoryPath);
   }
   return fullDirectoryPath;
@@ -327,10 +327,10 @@ function readProjectData(__data) {
         sprites.directory + sprites.data[SPRITES_KEY][spriteName][PREVIEWS_KEY];
       fs.readFile(imagePath, (err, imageData) => {
         if (err) {
-          console.error('Error reading image:', err);
+          console.error("Error reading image:", err);
         } else {
           sprites.data[SPRITES_KEY][spriteName].previewData = {};
-          console.log('Loading image data:', spriteName);
+          console.log("Loading image data:", spriteName);
         }
       });
     }
@@ -338,13 +338,13 @@ function readProjectData(__data) {
 }
 function readSprites(__data) {
   const spritesLibraryFile = __data + SPRITE_LIBRARY;
-  console.log('Reading sprites file...');
+  console.log("Reading sprites file...");
   let results;
   try {
-    results = JSON.parse(fs.readFileSync(spritesLibraryFile, 'utf-8'));
-    console.log('Success');
+    results = JSON.parse(fs.readFileSync(spritesLibraryFile, "utf-8"));
+    console.log("Success");
   } catch (err) {
-    console.error('Error loading sprites data:', err);
+    console.error("Error loading sprites data:", err);
     results = newSprites(spritesLibraryFile);
   }
   return {
@@ -361,9 +361,9 @@ function newSprites(spritesLibraryFile) {
     JSON.stringify(emptySpritesObject),
     (err) => {
       if (err) {
-        console.error('Error creating sprite list:', err);
+        console.error("Error creating sprite list:", err);
       } else {
-        console.log('Sprites library created succesfully.');
+        console.log("Sprites library created succesfully.");
       }
     }
   );
@@ -371,21 +371,21 @@ function newSprites(spritesLibraryFile) {
 }
 function readTemplates(__data) {
   const templatesFile = __data + TEMPLATES_FILE;
-  console.log('Reading templates file...');
+  console.log("Reading templates file...");
   let results;
   try {
-    results = JSON.parse(fs.readFileSync(templatesFile, 'utf-8'));
-    console.log('Success');
+    results = JSON.parse(fs.readFileSync(templatesFile, "utf-8"));
+    console.log("Success");
   } catch (err) {
-    console.error('Error loading template data:', err);
+    console.error("Error loading template data:", err);
     const preset = DEFAULT_TEMPLATES; // Assuming you have default templates
     results = preset;
-    console.log('Creating new templates file.');
+    console.log("Creating new templates file.");
     fs.writeFile(templatesFile, JSON.stringify(results), (err) => {
       if (err) {
-        console.error('Error saving templates:', err);
+        console.error("Error saving templates:", err);
       } else {
-        console.log('Templates saved successfully!');
+        console.log("Templates saved successfully!");
       }
     });
   }
@@ -396,13 +396,13 @@ function fillMissingLoreEntries(loreData, templates) {
   for (const key in templates) {
     if (!filledLoreData.hasOwnProperty(key)) {
       filledLoreData[key] = {};
-      console.log('Key added to lore library:', key);
+      console.log("Key added to lore library:", key);
     }
   }
   return filledLoreData;
 }
 function readLore(__data, templates) {
-  console.log('Reading lore file...');
+  console.log("Reading lore file...");
 
   const fileSet = {
     main: {
@@ -420,88 +420,88 @@ function readLore(__data, templates) {
   };
   // main
   try {
-    fileSet.main.data = JSON.parse(fs.readFileSync(fileSet.main.path, 'utf-8'));
-    console.log('Success');
+    fileSet.main.data = JSON.parse(fs.readFileSync(fileSet.main.path, "utf-8"));
+    console.log("Success");
   } catch (err) {
-    if (err.code === 'ENOENT') {
-      console.log('No main file found, making new library', templates.data);
+    if (err.code === "ENOENT") {
+      console.log("No main file found, making new library", templates.data);
       const newLibrary = { dateId: Date.now() };
       fileSet.main.data = fillMissingLoreEntries(
         newLibrary,
         templates.data.template
       );
-      console.log('main.data:', fileSet.main.data);
+      console.log("main.data:", fileSet.main.data);
       fs.writeFile(
         fileSet.main.path,
         JSON.stringify(fileSet.main.data),
         (err) => {
           if (err) {
-            console.error('Error saving library:', err);
+            console.error("Error saving library:", err);
             return; // Exit on error
           }
-          console.log('Lore library created successfully.');
+          console.log("Lore library created successfully.");
         }
       );
     } else {
-      console.error('Error loading lore data.');
+      console.error("Error loading lore data.");
       return; // Exit on error
     }
   }
   // temp
   try {
-    fileSet.temp.data = JSON.parse(fs.readFileSync(fileSet.temp.path, 'utf-8'));
-    console.log('Unsuccesful shutdown detected.');
+    fileSet.temp.data = JSON.parse(fs.readFileSync(fileSet.temp.path, "utf-8"));
+    console.log("Unsuccesful shutdown detected.");
     resolveBadShutdown();
   } catch (err) {
-    if (err.code === 'ENOENT') {
-      console.log('Checking last shutdown...');
+    if (err.code === "ENOENT") {
+      console.log("Checking last shutdown...");
     } else {
-      console.error('Error reading temp file.');
+      console.error("Error reading temp file.");
     }
   }
   // backup
-  console.log('Backing up loreData...');
+  console.log("Backing up loreData...");
   fs.writeFile(
     fileSet.backup.path,
     JSON.stringify(fileSet.main.data),
     (err) => {
       if (err) {
-        console.error('Error saving backup:', err);
+        console.error("Error saving backup:", err);
       } else {
         fileSet.backup.data = fileSet.main.data;
-        console.log('Backup created successfully.', fileSet.backup.path);
+        console.log("Backup created successfully.", fileSet.backup.path);
       }
     }
   );
   return fileSet;
 }
 //* LORE REQUEST *//
-ipcMain.on('lore-data-request', (event) => {
-  console.log('Checking for library data ...');
+ipcMain.on("lore-data-request", (event) => {
+  console.log("Checking for library data ...");
   if (catalog) {
-    mainWindow.setTitle('Lore: ' + catalog.lore.main.path);
+    mainWindow.setTitle("Lore: " + catalog.lore.main.path);
     event.returnValue = catalog.lore.main.data;
   }
 });
 //* LORE SAVE *//
-ipcMain.on('lore-data-save', (event, data) => {
+ipcMain.on("lore-data-save", (event, data) => {
   const filename = catalog.lore.temp.path;
-  console.log('Writing changes to temp:', filename);
+  console.log("Writing changes to temp:", filename);
   fs.writeFile(filename, JSON.stringify(data), (err) => {
     if (err) {
-      console.error('Error saving lore:', err);
-      event.sender.send('save-failed');
+      console.error("Error saving lore:", err);
+      event.sender.send("save-failed");
     } else {
-      event.sender.send('save-success', filename);
+      event.sender.send("save-success", filename);
       catalog.lore.temp.data = data;
-      console.log('Lore saved to temp file successfully.');
+      console.log("Lore saved to temp file successfully.");
     }
   });
 });
 //* IMAGE REQUEST *//
-ipcMain.on('image-request', (event, fileIndex) => {
+ipcMain.on("image-request", (event, fileIndex) => {
   if (!catalog.sprites.data[SPRITES_KEY][fileIndex]) {
-    console.log('Quitting, sprites list is corrupted.');
+    console.log("Quitting, sprites list is corrupted.");
     app.quit();
   }
   const imagePath =
@@ -513,17 +513,17 @@ ipcMain.on('image-request', (event, fileIndex) => {
       event.returnValue = image;
     }
   } catch (error) {
-    console.error('Error loading image');
+    console.error("Error loading image");
   }
 });
 //* IMAGE SAVE *//
-ipcMain.on('image-save', (event, filePath) => {
+ipcMain.on("image-save", (event, filePath) => {
   const filename = path.basename(filePath);
   const newImageFile = `${catalog.sprites.directory}/${filename}`;
   // Proceed with image saving
   fs.readFile(filePath, (err, imageData) => {
     if (err) {
-      console.error('Error reading image file:', err);
+      console.error("Error reading image file:", err);
       return; // Exit on failure
     }
     // Create a preview image (adjust width/height as needed)
@@ -531,24 +531,24 @@ ipcMain.on('image-save', (event, filePath) => {
       .resize(156, 156)
       .toBuffer((err, previewData) => {
         if (err) {
-          console.error('Error creating preview:', err);
+          console.error("Error creating preview:", err);
         } else {
           // Save the preview image
           const newImagePreview = `${catalog.sprites.directory}${_PREVIEWS_DIR}/${filename}`;
           fs.writeFile(newImagePreview, previewData, (err) => {
             if (err) {
-              console.error('Error saving preview image:', err);
+              console.error("Error saving preview image:", err);
             } else {
-              console.log('Preview image saved successfully!', newImagePreview);
+              console.log("Preview image saved successfully!", newImagePreview);
             }
           });
         }
       });
     fs.writeFile(newImageFile, imageData, (err) => {
       if (err) {
-        console.error('Error saving image:');
+        console.error("Error saving image:");
       } else {
-        console.log('Image saved successfully!', newImageFile);
+        console.log("Image saved successfully!", newImageFile);
         try {
           // update catalog
           const fileIndex = removeExtension(filename);
@@ -561,65 +561,65 @@ ipcMain.on('image-save', (event, filePath) => {
             JSON.stringify(catalog.sprites.data),
             (err) => {
               if (err) {
-                console.error('Error saving updated sprites data:', err);
-                event.sender.send('save-failed');
+                console.error("Error saving updated sprites data:", err);
+                event.sender.send("save-failed");
               } else {
                 console.log(
-                  'Sprites data updated with image reference:',
+                  "Sprites data updated with image reference:",
                   fileIndex
                 );
-                event.sender.send('save-success');
+                event.sender.send("save-success");
               }
             }
           );
         } catch (err) {
-          console.error('Error updating sprites data:');
-          event.sender.send('save-failed');
+          console.error("Error updating sprites data:");
+          event.sender.send("save-failed");
         }
       }
     });
   });
 });
 //* TEMPLATE REQUEST *//
-ipcMain.on('templates-request', (event) => {
+ipcMain.on("templates-request", (event) => {
   // Respond to the synchronous request with the template data
   if (catalog) {
     event.returnValue = catalog.templates.data.template;
   }
 });
 //* TEMPLATE SAVE *//
-ipcMain.on('templates-save', (event, data) => {
+ipcMain.on("templates-save", (event, data) => {
   // Ensure data contains only the templates section
   if (!data) {
-    console.error('Invalid data format: Missing templates section');
-    event.sender.send('save-failed', 'Invalid data format'); // Send error message
+    console.error("Invalid data format: Missing templates section");
+    event.sender.send("save-failed", "Invalid data format"); // Send error message
     return;
   }
   const templateData = (catalog.templates.data.template = data);
   // Write data to the templates file
   fs.writeFile(catalog.templates.path, JSON.stringify(templateData), (err) => {
     if (err) {
-      console.error('Error saving templates:');
-      event.sender.send('save-failed', 'Error saving templates');
+      console.error("Error saving templates:");
+      event.sender.send("save-failed", "Error saving templates");
     } else {
-      console.log('Templates saved successfully!');
-      event.sender.send('save-success'); // Send success message
+      console.log("Templates saved successfully!");
+      event.sender.send("save-success"); // Send success message
     }
   });
 });
 //* ROOT REQUEST *//
-ipcMain.on('root-request', (event) => {
+ipcMain.on("root-request", (event) => {
   event.returnValue = root;
 });
 //* CURRENT DIRECTORY REQUEST *//
-ipcMain.on('current-directory-request', (event) => {
+ipcMain.on("current-directory-request", (event) => {
   event.returnValue = currentDirectory;
 });
 //* RELOAD REQUEST *//
-ipcMain.on('reload-request', (event, path) => {
+ipcMain.on("reload-request", (event, path) => {
   updateCurrentDirectory(path);
-  const result = event.returnValue = reload();
-  console.log('Loading...', result)
+  const result = (event.returnValue = reload());
+  console.log("Loading...", result);
 });
 //* CHANGE DIRECTORY *//
-ipcMain.handle('dialog-file-open', handleOpenDialog);
+ipcMain.handle("dialog-file-open", handleOpenDialog);
