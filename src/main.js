@@ -147,6 +147,8 @@ function loreAppLoadProjectDirectory() {
   const catalogData = initializeProjectDirectories();
   catalog = catalogData;
   mainWindow.webContents.send("send:catalog-data", catalogData);
+  mainWindow.webContents.send("send:current-directory", currentDirectory);
+
   return true;
 }
 function saveChanges({ reason }) {

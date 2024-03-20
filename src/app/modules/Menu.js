@@ -69,22 +69,8 @@ function initializeWelcomeButtonStart() {
     ".welcome__button--start"
   );
   welcomeButtonStart[0].addEventListener("click", () => {
-    const currentLoreProjectDirectory = setDetailsProjectDirectory();
-    console.log(
-      "Welcome Start Button set it's current directory to:",
-      currentLoreProjectDirectory,
-      "and updated the details project path"
-    );
-    const catalog = electronAPI.fetchLoreData(currentLoreProjectDirectory);
+    const catalog = electronAPI.fetchLoreData();
     console.log("Project directory is loaded", catalog);
   });
 }
-function setDetailsProjectDirectory() {
-  const userPath = electronAPI.getCurrentDirectory();
-  const detailsProjectDirectory = document.querySelectorAll(
-    ".details__project-directory"
-  );
-  detailsProjectDirectory[0].innerText = "";
-  detailsProjectDirectory[0].innerText = "Project Path " + userPath;
-  return userPath;
-}
+
