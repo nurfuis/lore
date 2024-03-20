@@ -1,17 +1,17 @@
 import { UIElements } from "../UIElements";
 const uiElements = new UIElements();
 
-function createDetailsButton(item) {
+function createDetailsButton(item, sprites) {
   const detailsButton = document.createElement("button");
   detailsButton.textContent = "Show Details";
   detailsButton.className = "lore-summary__details-button";
   detailsButton.addEventListener("click", () => {
-    updateDetailsModal(item);
+    updateDetailsModal(item, sprites);
   });
 
   return detailsButton;
 }
-function updateDetailsModal(item) {
+function updateDetailsModal(item, sprites) {
   document.getElementById("item-details-name").textContent = item.name;
   document.getElementById("item-details-description").textContent =
     item.description || "No description available";
@@ -28,7 +28,7 @@ function updateDetailsModal(item) {
     uiElements.spriteContainer.innerHTML = ""; // Clear any existing sprite
 
     const spriteImage = document.createElement("img");
-    spriteImage.src = '../data/assets/sprites/' + this.sprites.data.sprite[item.sprite].preview;
+    spriteImage.src = '../data/assets/sprites/' + sprites.data.sprite[item.sprite].preview;
     spriteImage.alt = "Item Sprite";
     uiElements.spriteContainer.appendChild(spriteImage);
   }
@@ -103,7 +103,7 @@ export class Viewer {
     return deleteButton;
   }
   // WE ARE HERE
-  createItem(item) {
+  createItem(item, sprites) {
     const itemElement = document.createElement("li");
     itemElement.classList.add("lore-summary");
 
@@ -144,7 +144,7 @@ export class Viewer {
       itemElement.appendChild(previewElement);
     }
 
-    const detailsButton = createDetailsButton(item);
+    const detailsButton = createDetailsButton(item, sprites);
     itemElement.appendChild(detailsButton);
 
     const deleteButton = this.createDeleteButton(item);
@@ -167,7 +167,7 @@ export class Viewer {
 
     // Create cards for items in alphabetical order
     sortedKeys.forEach((key) => {
-      const itemElement = this.createItem(this.entryForm.loreLib[type][key]);
+      const itemElement = this.createItem(this.entryForm.loreLib[type][key], this.sprites);
       itemsContainer.appendChild(itemElement);
     });
 
