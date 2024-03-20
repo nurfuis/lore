@@ -63,6 +63,7 @@ body {
   background-repeat: repeat;
   background-position: center;
   background-size: cover;
+  background-attachment: fixed;
   color: var(--text-color);
   margin: 1rem;
   justify-content: center;
