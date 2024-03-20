@@ -1,9 +1,6 @@
 import { UIElements } from "../UIElements";
-import { Image } from "./Image";
-import { removeExtension } from "../utils/removeExtension";
 export class EntryForm {
   constructor() {
-    this.image = new Image();
     this.ui = new UIElements();
     this.spriteName = undefined;
     this.selectedTemplate = undefined;
@@ -73,12 +70,11 @@ export class EntryForm {
     this.spriteName = undefined;
   }
   setPreview(filename) {
-    const fileIndex = removeExtension(filename);
+    console.log("fetchImageSrc from lib data", filename);
 
-    const imageSrc = this.image.get(fileIndex);
-    this.ui.imagePreview.src = `${imageSrc}`;
+    this.ui.imagePreview.src =
+      "../data/assets/sprites/" + this.sprites.data.sprite[filename].preview;
     this.ui.imagePreview.style.display = "block";
-
     this.spriteName = filename;
   }
   updateImagePreview(event) {
@@ -90,18 +86,18 @@ export class EntryForm {
       console.error("Please select an image file!");
       return;
     }
-    this.image.save(file);
+    electronAPI.saveImage(file.path);
 
     setTimeout(() => {
       this.setPreview(file.name);
     }, 200);
   }
   updateForm() {
-    console.log("Updating the form...")
+    console.log("Updating the form...");
     // Clear existing form elements
     this.clearImagePreview();
     this.ui.entryForm.innerHTML = "";
-    console.log("Cleared the form...")
+    console.log("Cleared the form...");
     // Add elements to show/hide
     const elementsToShow = [
       this.ui.entryForm,
@@ -109,10 +105,10 @@ export class EntryForm {
       this.ui.imageUpload,
       this.ui.clearForm,
     ];
-    console.log("Showing elements:", elementsToShow)
+    console.log("Showing elements:", elementsToShow);
     const elementsToHide = [];
-    console.log("available templates:", this.templates)
-    console.log("selected template:", this.selectedTemplate)
+    console.log("available templates:", this.templates);
+    console.log("selected template:", this.selectedTemplate);
     if (this.selectedTemplate) {
       const templateFields =
         this.templateMaker.templates[this.selectedTemplate];

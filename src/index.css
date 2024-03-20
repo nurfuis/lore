@@ -33,33 +33,33 @@
   --highlight-color: var(--highlight-color-earth);
 }
 @font-face {
-  font-family: 'Merriweather';
-  src: url('../data/assets/css/Merriweather/Merriweather-Regular.ttf')
-    format('truetype');
+  font-family: "Merriweather";
+  src: url("../data/assets/css/Merriweather/Merriweather-Regular.ttf")
+    format("truetype");
 }
 @font-face {
-  font-family: 'Merriweather-italics';
-  src: url('../data/assets/css/Merriweather/Merriweather-LightItalic.ttf')
-    format('truetype');
+  font-family: "Merriweather-italics";
+  src: url("../data/assets/css/Merriweather/Merriweather-LightItalic.ttf")
+    format("truetype");
 }
 @font-face {
-  font-family: 'Open Sans';
-  src: url('../data/assets/css/Open_Sans/static/OpenSans-Regular.ttf')
-    format('truetype');
+  font-family: "Open Sans";
+  src: url("../data/assets/css/Open_Sans/static/OpenSans-Regular.ttf")
+    format("truetype");
 }
 
 /* Apply fonts */
 h1,
 h2,
 h3 {
-  font-family: 'Merriweather';
+  font-family: "Merriweather";
 }
 body {
-  font-family: 'Open Sans', sans-serif;
+  font-family: "Open Sans", sans-serif;
 }
 body {
   background-color: var(--background-color);
-  background-image: url('../data/assets/images/backgrounds/lore-library-tile-8.png');
+  background-image: url("../data/assets/images/backgrounds/lore-library-tile-1.png");
   background-repeat: repeat;
   background-position: center;
   background-size: cover;
@@ -155,7 +155,7 @@ label {
   font-weight: bold; /* Optional: Make labels stand out more */
 }
 label:after {
-  content: ':'; /* Add colon after label text */
+  content: ":"; /* Add colon after label text */
   margin-left: 0.5em; /* Separate colon from label text */
 }
 input,
@@ -379,8 +379,8 @@ button:hover {
 }
 /* block__element--modifier */
 .lore-summary {
-  display: "";
-  grid-template-areas: '';
+  display: grid;
+  grid-template-areas: "";
 }
 
 .prompt {
@@ -415,8 +415,11 @@ span {
   margin-right: auto;
 }
 .details__project-directory {
-  font-family: 'Merriweather-italics';
+  font-family: "Merriweather-italics";
 }
 #info {
   color: var(--highlight-color);
+}
+#item-details-sprite img {
+  max-width: 50%;
 }

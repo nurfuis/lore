@@ -7,30 +7,15 @@ function toggleSettingsModal() {
 
 export class Menu {
   constructor() {
-    this.currentDirectory = electronAPI.getCurrentDirectory();
 
-    const welcomeButtonStart = document.querySelectorAll(
-      ".welcome__button--start"
-    );
-    welcomeButtonStart[0].addEventListener("click", () => {
-      this.currentDirectory = setDetailsProjectDirectory();
-      console.log(
-        "Welcome Start Button set it's current directory to:",
-        this.currentDirectory,
-        "and updated the details project path"
-      );
-      this.currentDirectoryIsLoaded = electronAPI.init(this.currentDirectory);
-      console.log("Project directory is loaded", this.currentDirectoryIsLoaded);
-    });
+    initializeWelcomeButtonStart();
+    
     uiElements.createButton.addEventListener("click", () =>
       this.toggleView(true)
     );
     uiElements.viewButton.addEventListener("click", () =>
       this.toggleView(false)
     );
-
-
-
     uiElements.fileBrowserButton.addEventListener("click", async () => {
       const result = await electronAPI.openFileDialog();
       this.currentDirectory = result;
@@ -79,12 +64,13 @@ export class Menu {
     uiElements.gameDataViewer.style.display = showCreateForm ? "none" : "block";
   }
 }
-function setDetailsProjectDirectory() {
-  const userPath = electronAPI.getCurrentDirectory();
-  const detailsProjectDirectory = document.querySelectorAll(
-    ".details__project-directory"
+function initializeWelcomeButtonStart() {
+  const welcomeButtonStart = document.querySelectorAll(
+    ".welcome__button--start"
   );
-  detailsProjectDirectory[0].innerText = "";
-  detailsProjectDirectory[0].innerText = "Project Path " + userPath;
-  return userPath;
+  welcomeButtonStart[0].addEventListener("click", () => {
+    const catalog = electronAPI.fetchLoreData();
+    console.log("Project directory is loaded", catalog);
+  });
 }
+
