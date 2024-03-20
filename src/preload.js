@@ -32,9 +32,6 @@ const electronAPI = {
     const response = ipcRenderer.sendSync("image-request", filename);
     return response;
   },
-  getLore() {
-    return ipcRenderer.sendSync("lore-data-request");
-  },
   getTemplates() {
     const response = ipcRenderer.sendSync("templates-request");
     return response;

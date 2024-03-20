@@ -469,14 +469,6 @@ function readLore(projectDataDirectory, templates) {
   );
   return fileSet;
 }
-//* LORE REQUEST *//
-ipcMain.on("lore-data-request", (event) => {
-  console.log("Checking for library data ...");
-  if (catalog) {
-    mainWindow.setTitle("Lore: " + catalog.lore.main.path);
-    event.returnValue = catalog.lore.main.data;
-  }
-});
 //* LORE SAVE *//
 ipcMain.on("lore-data-save", (event, data) => {
   const filename = catalog.lore.temp.path;
