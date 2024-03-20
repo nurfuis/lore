@@ -568,13 +568,6 @@ ipcMain.on("image-save", (event, filePath) => {
   });
 });
 
-//* TEMPLATE REQUEST *//
-ipcMain.on("templates-request", (event) => {
-  // Respond to the synchronous request with the template data
-  if (catalog) {
-    event.returnValue = catalog.templates.data.template;
-  }
-});
 //* TEMPLATE SAVE *//
 ipcMain.on("templates-save", (event, data) => {
   // Ensure data contains only the templates section

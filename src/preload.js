@@ -32,10 +32,6 @@ const electronAPI = {
     const response = ipcRenderer.sendSync("image-request", filename);
     return response;
   },
-  getTemplates() {
-    const response = ipcRenderer.sendSync("templates-request");
-    return response;
-  },
   fetchLoreData(path) {
     const response = ipcRenderer.sendSync(
       "load:lore-data-project-directory",
