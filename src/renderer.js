@@ -55,7 +55,6 @@ electronAPI.onOpenProject((catalog) => {
 electronAPI.onSetProjectDirectory((currentDirectory) => {
   setDetailsProjectDirectory(currentDirectory)
   function setDetailsProjectDirectory(currentDirectory) {
-    const userPath = electronAPI.getCurrentDirectory();
     const detailsProjectDirectory = document.querySelectorAll(
       ".details__project-directory"
     );

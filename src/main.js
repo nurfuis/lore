@@ -586,8 +586,3 @@ ipcMain.on("templates-save", (event, data) => {
     }
   });
 });
-
-//* CURRENT DIRECTORY REQUEST *//
-ipcMain.on("current-directory-request", (event) => {
-  event.returnValue = currentDirectory;
-});

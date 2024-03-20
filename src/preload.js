@@ -20,10 +20,6 @@ const electronAPI = {
     const response = ipcRenderer.invoke("dialog-file-open");
     return response;
   },
-  getCurrentDirectory() {
-    const response = ipcRenderer.sendSync("current-directory-request");
-    return response;
-  },
   getImage(filename) {
     const response = ipcRenderer.sendSync("image-request", filename);
     return response;
