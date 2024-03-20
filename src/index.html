@@ -2,27 +2,25 @@
 <html>
   <head>
     <meta charset="UTF-8" />
-    <title>Fey Brewster Lore Library</title>
-    <link href="../data/assets/lore-library-icon-ai.png" type="image" />
+    <title>Lore</title>
   </head>
 
-  <body>
-    <img
-      src="../data/assets/sprites/previews/chip.png"
-      width="100px"
-      height="100px"
-      alt=""
-    />
-    <nav>
-      <button id="create-button" class="button">Edit Entry</button>
-      <button id="create-template" class="button">Create Template</button>
-      <button id="view-button" class="button">View Lore</button>
+  <body class ="lore-app__body">
+    <div class="lore-app__details">
+      <div class="details__icon"></div>
+      <div><h4 class="details__project-directory"></h4></div>
+    </div>
+
+    <nav class ="lore-app__navigation">
+      <button id="create-button" class="button navigation__button">Edit Entry</button>
+      <button id="create-template" class="button navigation__button">Create Template</button>
+      <button id="view-button" class="button navigation__button">View Lore</button>
     </nav>
 
     <div id="welcome-message" class="welcome">
-      <h1>Welcome to the Lore Editor!</h1>
-      <p>Select a directory to get started.</p>
-      <button id="settings-button" class="button">Config</button>
+      <h1>Welcome!</h1>
+      <p>Organize and explore your world's lore.</p>
+      <button id="settings-button" class="button">Start</button>
     </div>
 
     <div id="app-container" class="app-container">

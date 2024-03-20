@@ -11,12 +11,14 @@ module.exports = {
   module: {
     rules,
   },
+  mode: 'development',
+
   plugins: [
     new CopyPlugin({
       patterns: [
         {
-          from: 'data/assets/sprites',
-          to: 'data/assets/sprites',
+          from: 'data/assets',
+          to: 'data/assets',
         },
       ],
     }),

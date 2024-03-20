@@ -1,146 +1,91 @@
-/* Global styles */
-/* fey */
 :root {
-  --primary-color: #90e0e0; /* Light teal, like a misty pond */
-  --secondary-color: #a020f0; /* Bright purple, like magical flowers */
-  --background-color: #282a35; /* Dark purple, like a night sky */
-  --text-color: #fff; /* White for readability */
-  --button-color: #a020f0; /* Bright purple for buttons */
-  --button-hover-color: #801aa0; /* Darker purple for button hover */
-  --button-text-color: #fff; /* White button text */
-  --form-background: #373a44; /* Darker purple for forms */
-  --highlight-color: #ffff00; /* Yellow for highlights */
+  /* Earth Theme */
+  --primary-color-earth: #a52a2a;
+  --secondary-color-earth: #bdb76b;
+  --background-color-earth: #38a3a5;
+  --text-color-earth: #fff;
+  --button-color-earth: #808080;
+  --button-hover-color-earth: #691f1f;
+  --button-text-color-earth: #fff;
+  --form-background-earth: #373a44;
+  --highlight-color-earth: #ffff00;
+
+  /* Fey Theme */
+  --primary-color-fey: #90e0e0;
+  --secondary-color-fey: #c2c2f0;
+  --background-color-fey: #282a35;
+  --text-color-fey: #fff;
+  --button-color-fey: #a020f0;
+  --button-hover-color-fey: #801aa0;
+  --button-text-color-fey: #fff;
+  --form-background-fey: #373a44;
+  --highlight-color-fey: #ff00ff;
+
+  /* Current Theme (initially set to earth) */
+  --primary-color: var(--primary-color-earth);
+  --secondary-color: var(--secondary-color-earth);
+  --background-color: var(--background-color-earth);
+  --text-color: var(--text-color-earth);
+  --button-color: var(--button-color-earth);
+  --button-hover-color: var(--button-hover-color-earth);
+  --button-text-color: var(--text-color-earth);
+  --form-background: var(--form-background-earth);
+  --highlight-color: var(--highlight-color-earth);
 }
-/* volcanic mntn */
-:root {
-  --primary-color: #d33635;
-  --secondary-color: #ffcc00;
-  --background-color: #282a35;
-  --text-color: #fff;
-  --button-color: #90ee90;
-  --highlight-color: #ff00ff;
+@font-face {
+  font-family: 'Merriweather';
+  src: url('../data/assets/css/Merriweather/Merriweather-Regular.ttf')
+    format('truetype');
 }
-/* ocean */
-:root {
-  --primary-color: #2d89af;
-  --secondary-color: #a0e0f0;
-  --background-color: #343a40;
-  --text-color: #fff;
-  --button-color: #ffd700;
-  --highlight-color: #007fff;
+@font-face {
+  font-family: 'Merriweather-italics';
+  src: url('../data/assets/css/Merriweather/Merriweather-LightItalic.ttf')
+    format('truetype');
 }
-/* celestial */
-:root {
-  --primary-color: #2962ff;
-  --secondary-color: #ffd700;
-  --background-color: #343a40;
-  --text-color: #fff;
-  --button-color: #ffeb3b;
-  --highlight-color: #9c27b0;
+@font-face {
+  font-family: 'Open Sans';
+  src: url('../data/assets/css/Open_Sans/static/OpenSans-Regular.ttf')
+    format('truetype');
 }
-/* earth */
-:root {
-  --primary-color: #a52a2a;
-  --secondary-color: #bdb76b;
-  --background-color: #38a3a5;
-  --text-color: #fff;
-  --button-color: #808080;
-  --highlight-color: #ffff00;
-}
-/* water */
-:root {
-  --primary-color: #2d89af;
-  --secondary-color: #a0e0f0;
-  --background-color: #343a40;
-  --text-color: #fff;
-  --button-color: #007fff;
-  --highlight-color: #c2c2f0;
-}
-/* fire */
-:root {
-  --primary-color: #d33635;
-  --secondary-color: #ffcc00;
-  --background-color: #282a35;
-  --text-color: #fff;
-  --button-color: #ff0000;
-  --highlight-color: #ffff00;
-}
-/* ancient library */
-:root {
-  --primary-color: #b4674e;
-  --secondary-color: #eedc82;
-  --background-color: #282a35;
-  --text-color: #fff;
-  --button-color: #c70039;
-  --highlight-color: #00bcd4;
-}
-/* lush forest */
-:root {
-  --primary-color: #38a3a5;
-  --secondary-color: #bdb76b;
-  --background-color: #212f3c;
-  --text-color: #fff;
-  --button-color: #c02942;
-  --highlight-color: #ffff00;
-}
-/* enchanting glade! */
-:root {
-  --primary-color: #90e0e0;
-  --secondary-color: #c2c2f0;
-  --background-color: #282a35;
-  --text-color: #fff;
-  --button-color: #a020f0;
-  --highlight-color: #ff00ff;
-}
-/* Import Merriweather */
-@import url("https://fonts.googleapis.com/css2?family=Merriweather:wght@300;400;700&display=swap");
-/* Import Open Sans */
-@import url("https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;700&display=swap");
-#info {
-  color: var(--highlight-color);
-}
+
 /* Apply fonts */
 h1,
 h2,
 h3 {
-  font-family: "Merriweather", serif;
+  font-family: 'Merriweather';
 }
 body {
-  font-family: "Open Sans", sans-serif;
+  font-family: 'Open Sans', sans-serif;
 }
 body {
-  background-color: var(--background-color); /* Dark purple from theme */
-  color: var(--text-color); /* White for readability */
+  background-color: var(--background-color);
+  background-image: url('../data/assets/images/backgrounds/lore-library-tile-8.png');
+  background-repeat: repeat;
+  background-position: center;
+  background-size: cover;
+  color: var(--text-color);
   margin: 1rem;
-  justify-content: center; /* Center elements horizontally */
-  align-items: center; /* Center elements vertically */
+  justify-content: center;
+  align-items: center;
 }
 nav {
   text-align: center;
 }
 nav .button {
-  display: inline-block; /* Allow buttons to sit next to each other */
+  display: inline-block;
   padding: 10px 20px;
   border: none;
-  border-radius: 5px; /* Rounded corners */
-  background-color: var(--button-color); /* Bright purple from theme */
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Subtle shadow */
-  text-decoration: none; /* Remove underline */
-  color: var(--button-text-color); /* White button text */
-  cursor: pointer; /* Indicate clickable element */
-  transition: all 0.2s ease-in-out; /* Smooth transition on hover */
+  border-radius: 5px;
+  background-color: var(--button-color);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  text-decoration: none;
+  color: var(--button-text-color);
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
 }
 nav .button:hover {
-  background-color: var(--button-hover-color); /* Darker purple on hover */
+  background-color: var(--button-hover-color);
 }
-h1,
-h2 {
-  margin-bottom: 1rem;
-}
-p {
-  margin-top: 0.5rem;
-}
-/* Hide initially both containers */
 .form-container,
 .viewer-container {
   display: none;
@@ -152,6 +97,9 @@ p {
 #app-container {
   display: flex; /* Enable flexbox layout */
   flex-direction: column; /* Stack elements vertically */
+  max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
 }
 /* Header (Optional) */
 .header {
@@ -206,7 +154,7 @@ label {
   font-weight: bold; /* Optional: Make labels stand out more */
 }
 label:after {
-  content: ":"; /* Add colon after label text */
+  content: ':'; /* Add colon after label text */
   margin-left: 0.5em; /* Separate colon from label text */
 }
 input,
@@ -219,10 +167,10 @@ select {
   border-radius: 3px;
 }
 input {
-  width: 300px;
+  width: 400px;
 }
 textarea {
-  width: 300px;
+  width: 400px;
   height: 80px;
 }
 button {
@@ -431,7 +379,7 @@ button:hover {
 /* block__element--modifier */
 .lore-summary {
   display: grid;
-  grid-template-areas: "";
+  grid-template-areas: '';
 }
 
 .prompt {
@@ -452,4 +400,22 @@ hr {
 span {
   max-width: 280px;
   overflow: auto;
+}
+.lore-app__details {
+  text-align: center;
+}
+.details__icon {
+  background-image: url(../data/assets/lore-library-icon-ai-1.png);
+  width: 128px;
+  height: 128px;
+  background-size: cover;
+  background-repeat: no-repeat;
+  margin-left: auto;
+  margin-right: auto;
+}
+.details__project-directory {
+  font-family: 'Merriweather-italics';
+}
+#info {
+  color: var(--highlight-color);
 }

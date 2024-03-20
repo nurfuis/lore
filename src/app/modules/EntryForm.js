@@ -246,11 +246,11 @@ export class EntryForm {
     this.ui.prototypeSelect.appendChild(defaultOption);
 
     // Call your renderer to get prototype names based on the selected template
-    console.log(
-      'this.selectedTemplate',
-      Object.keys(this.loreLib),
-      this.selectedTemplate
-    );
+    // console.log(
+    //   'this.selectedTemplate',
+    //   Object.keys(this.loreLib),
+    //   this.selectedTemplate
+    // );
 
     if (this.selectedTemplate) {
       const prototypeNames = Object.keys(this.loreLib[this.selectedTemplate]);

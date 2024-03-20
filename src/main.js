@@ -1,50 +1,28 @@
-const { app, BrowserWindow, ipcMain, dialog, Menu, Tray } = require('electron');
+const {
+  app,
+  BrowserWindow,
+  ipcMain,
+  dialog,
+  Menu,
+  Notification,
+} = require('electron');
 const fs = require('fs');
 const path = require('path');
 const sharp = require('sharp');
 const { DEFAULT_TEMPLATES } = require('./app/constants');
 const { removeExtension } = require('./app/utils/removeExtension');
-//* ENV *//
-const root = process.env.INIT_CWD;
+const { cycleBackgrounds } = require('./main/cycleBackgrounds');
+const { toggleTheme } = require('./main/toggleTheme');
 if (require('electron-squirrel-startup')) {
   app.quit();
 }
+//* ENV *//
+process.env['ELECTRON_DISABLE_SECURITY_WARNINGS'] = true;
+const root = process.env.INIT_CWD;
+let currentDirectory = root;
+app.setAppUserModelId('Lore');
 //* WINDOW *//
 let mainWindow;
-function createWindow() {
-  mainWindow = new BrowserWindow({
-    width: 900,
-    height: 600,
-    icon: './data/assets/lore-library-icon-ai.png',
-    webPreferences: {
-      preload: MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY,
-    },
-  });
-  const menu = Menu.buildFromTemplate([
-    {
-      label: 'File',
-      submenu: [
-        {
-          click: () => {
-            reload();
-          },
-          label: 'Quick Start...',
-        },
-        {
-          click: () => {
-            changeUserDirectory();
-          },
-          label: 'Open Project...',
-        },
-      ],
-    },
-  ]);
-
-  Menu.setApplicationMenu(menu);
-  mainWindow.setMenuBarVisibility(true);
-  mainWindow.loadURL(MAIN_WINDOW_WEBPACK_ENTRY);
-  mainWindow.webContents.openDevTools();
-}
 app.on('ready', () => {
   if (catalog.lore.temp.data) {
     resolveBadShutdown()
@@ -67,7 +45,7 @@ app.on('ready', () => {
 });
 app.on('window-all-closed', () => {
   try {
-    saveChanges();
+    saveChanges({ reason: 'exit' });
   } catch (error) {
     console.error('No data to write. Goodbye.');
   }
@@ -94,7 +72,6 @@ const TEMPLATES_FILE = '/templates.json';
 const LORE_LIBRARY = '/lib.json';
 const LORE_LIBRARY_TEMP = '/lib.temp.json';
 const LORE_LIBRARY_BAK = '/lib.' + BACKUP_ID + '.bak.json';
-
 //* LORE LIBRARY CARD CATALOG *//
 /**
  * Card Catalog: Represents the loaded project data structure.
@@ -123,17 +100,75 @@ const LORE_LIBRARY_BAK = '/lib.' + BACKUP_ID + '.bak.json';
  *                                                         specific sections (e.g., world, creature, item).
  *   @property {string} templates.path - Path to the JSON file containing template data (templates.json).
  */
-//* START *//
 let catalog = initializeProjectDirectories();
 //* SYSTEM COMMANDS *//
-function reload() {
-  saveChanges();
-  console.log('Reloading __---__---__--_--_-');
-  catalog = initializeProjectDirectories();
-  mainWindow.webContents.send('send:catalog', catalog);
-  return true;
+const appIcon = './data/assets/lore-library-icon-ai-1.png';
+function createWindow() {
+  mainWindow = new BrowserWindow({
+    width: 900,
+    height: 600,
+    icon: appIcon,
+    webPreferences: {
+      preload: MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY,
+    },
+  });
+  const menu = Menu.buildFromTemplate([
+    {
+      label: 'File',
+      submenu: [
+        {
+          click: () => {
+            reload();
+          },
+          label: 'Quick Start...',
+        },
+        {
+          click: () => {
+            handleOpenDialog({ cause: 'menuAction' });
+          },
+          label: 'Open Project...',
+        },
+        {
+          click: () => {
+            saveChanges({ reason: 'save' });
+          },
+          label: 'Save Changes...',
+        },
+      ],
+    },
+    {
+      label: 'Cycle Backgrounds',
+      click: () => {
+        cycleBackgrounds(mainWindow);
+      },
+    },
+    {
+      label: 'Toggle Theme',
+      click: () => {
+        toggleTheme(mainWindow);
+      },
+    },
+  ]);
+  Menu.setApplicationMenu(menu);
+  mainWindow.setMenuBarVisibility(true);
+  mainWindow.loadURL(MAIN_WINDOW_WEBPACK_ENTRY);
+  mainWindow.webContents.openDevTools();
 }
-function saveChanges() {
+function showSavedNotification() {
+  new Notification({
+    title: 'Changes Saved',
+    body: 'Your lore data has been successfully saved.',
+    icon: appIcon, // Replace with your app icon path
+  }).show();
+}
+function showNoDataSavedNotification() {
+  new Notification({
+    title: 'No Changes Detected',
+    body: 'There were no changes to save in your lore data.',
+    icon: appIcon,
+  }).show();
+}
+function saveChanges({ reason }) {
   try {
     // Copy the temporary data to the main file
     fs.copyFileSync(catalog.lore.temp.path, catalog.lore.main.path);
@@ -142,32 +177,44 @@ function saveChanges() {
     // Files were saved and backed up, remove temporary file
     fs.unlinkSync(catalog.lore.temp.path);
     console.log('Temporary file removed:', catalog.lore.temp.path);
+    showSavedNotification();
   } catch (error) {
     console.error('No changes to save.');
-    // Handle the error appropriately (e.g., display an error message to the user)
+    if (reason == 'save') {
+      showNoDataSavedNotification();
+    }
   }
 }
-function changeUserDirectory() {
-  dialog
-    .showOpenDialog({ properties: ['openDirectory'] })
-    .then((result) => {
-      if (result.filePaths.length === 1) {
-        const configFile = root + '/config.json';
-        const data = { USER_PATH: result.filePaths[0] };
-        fs.writeFile(configFile, JSON.stringify(data), (err) => {
-          if (err) {
-            console.error('Error saving config:', err);
-          } else {
-            console.log('Config saved successfully.');
-            // init the new data & reload the window
-            reload();
-          }
-        });
-      }
-    })
-    .catch((err) => {
-      console.log(err);
-    });
+function reload() {
+  saveChanges({ reason: 'reload' });
+  console.log('Reloading __---__---__--_--_-');
+  catalog = initializeProjectDirectories();
+  mainWindow.webContents.send('send:catalog', catalog);
+  return true;
+}
+async function handleOpenDialog({ cause }) {
+  const { canceled, filePaths } = await dialog.showOpenDialog({
+    properties: ['openDirectory'],
+  });
+  if (!canceled) {
+    if (cause == 'menuAction') {
+      updateCurrentDirectory(filePaths[0]);
+      reload();
+    }
+    return filePaths[0];
+  }
+}
+function updateCurrentDirectory(filePath) {
+  currentDirectory = filePath;
+  const configFile = root + '/config.json';
+  const data = { USER_PATH: filePath };
+  fs.writeFile(configFile, JSON.stringify(data), (err) => {
+    if (err) {
+      console.error('Error saving config:', err);
+    } else {
+      console.log('Config updated.', data);
+    }
+  });
 }
 function resolveBadShutdown() {
   return new Promise((resolve, reject) => {
@@ -235,6 +282,7 @@ function initializeProjectDirectories() {
 function getUserDataPath() {
   console.log('Reading user config file...');
   const configFile = root + '/config.json';
+  console.log(configFile)
   let result;
   try {
     result = JSON.parse(fs.readFileSync(configFile, 'utf-8'));
@@ -247,7 +295,7 @@ function getUserDataPath() {
       if (err) {
         console.error('Error saving config:', err);
       } else {
-        console.log('Config saved successfully.');
+        console.log('Config saved.', result);
       }
     });
   }
@@ -255,6 +303,7 @@ function getUserDataPath() {
     console.log('FATAL ERROR ;(');
     app.quit();
   }
+  currentDirectory = result.USER_PATH;
   return result.USER_PATH;
 }
 function tryMakeDirectory(baseDirectory, directoryName) {
@@ -558,15 +607,19 @@ ipcMain.on('templates-save', (event, data) => {
     }
   });
 });
-//* CHANGE DIRECTORY *//
-ipcMain.on('dialog-file-open', () => {
-  changeUserDirectory();
-});
 //* ROOT REQUEST *//
 ipcMain.on('root-request', (event) => {
   event.returnValue = root;
 });
-//* RELOAD REQUEST *//
-ipcMain.on('reload-request', (event) => {
-  event.returnValue = reload();
+//* CURRENT DIRECTORY REQUEST *//
+ipcMain.on('current-directory-request', (event) => {
+  event.returnValue = currentDirectory;
 });
+//* RELOAD REQUEST *//
+ipcMain.on('reload-request', (event, path) => {
+  updateCurrentDirectory(path);
+  const result = event.returnValue = reload();
+  console.log('Loading...', result)
+});
+//* CHANGE DIRECTORY *//
+ipcMain.handle('dialog-file-open', handleOpenDialog);

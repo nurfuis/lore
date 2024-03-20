@@ -6,10 +6,10 @@
       "**/node_modules/@img/**/*"
     ]
   },
-  "name": "lore",
+  "name": "Lore",
   "productName": "lore",
   "version": "1.0.0",
-  "description": "My Electron application description",
+  "description": "Create, edit and store lore entries for games and stories using json maps.",
   "main": ".webpack/main",
   "scripts": {
     "start": "electron-forge start",

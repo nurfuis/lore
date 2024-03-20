@@ -7,30 +7,44 @@ function toggleSettingsModal() {
 
 export class Menu {
   constructor() {
-    uiElements.createButton.addEventListener('click', () =>
-      this.toggleView(true)
-    );
-    uiElements.viewButton.addEventListener('click', () =>
-      this.toggleView(false)
-    );
+    this.currentDirectory = electronAPI.getCurrentDirectory();
+    // Listen for
+    uiElements.fileBrowserButton.addEventListener('click', async () => {
+      const result = await electronAPI.openFileDialog();
+      this.currentDirectory = result;
+      console.log(this.currentDirectory);
+      const modalLabels = document.querySelectorAll('.modal-label');
+      for (const modalLabel of modalLabels) {
+        modalLabel.innerText = '';
+        modalLabel.innerText = 'Project Path ' + result;
+      }
+    });
+
     uiElements.settingsButton.addEventListener('click', () => {
       toggleSettingsModal();
-
-      const userPath = electronAPI.getRoot();
+      const userPath = electronAPI.getCurrentDirectory();
       const modalLabels = document.querySelectorAll('.modal-label');
-
       for (const modalLabel of modalLabels) {
         modalLabel.innerText = '';
         modalLabel.innerText = 'Project Path ' + userPath;
       }
     });
     uiElements.modalProceedButton[0].addEventListener('click', () => {
-      const result = electronAPI.init();
+      const result = electronAPI.init(this.currentDirectory);
+      console.log(result);
       if (result) {
         uiElements.settingsModal.style.display = 'none';
+        const pathDisplay = document.querySelectorAll('.details__project-directory');
+        pathDisplay[0].innerText = '';
+        pathDisplay[0].innerText = 'Project Path ' + this.currentDirectory;
       }
     });
-
+    uiElements.createButton.addEventListener('click', () =>
+      this.toggleView(true)
+    );
+    uiElements.viewButton.addEventListener('click', () =>
+      this.toggleView(false)
+    );
     window.addEventListener('click', function (event) {
       if (event.target === uiElements.settingsModal) {
         uiElements.settingsModal.style.display = 'none';
@@ -40,12 +54,6 @@ export class Menu {
     uiElements.closeModalButton.addEventListener('click', function () {
       uiElements.modal.style.display = 'none';
     });
-    // Listen for
-    uiElements.fileBrowserButton.addEventListener('click', () => {
-      electronAPI.openFileDialog();
-      uiElements.settingsModal.style.display = 'none';
-      uiElements.settingsButton.style.display = 'none';
-    });
   }
   toggleView(showCreateForm) {
     if (uiElements.welcomeDiv.style.display != 'none') {
@@ -53,9 +61,9 @@ export class Menu {
     }
 
     if (showCreateForm) {
-      console.log('Display the entry form.');
+      // console.log('Display the entry form.');
     } else {
-      console.log('Display the viewer.');
+      // console.log('Display the viewer.');
       this.viewer.renderGameData();
     }
 

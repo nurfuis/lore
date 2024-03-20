@@ -1,10 +1,10 @@
-import "./index.css";
-import { UIElements } from "./app/UIElements";
-import { EntryForm } from "./app/modules/EntryForm";
-import { Prompts } from "./app/modules/Prompts";
-import { TemplateMaker } from "./app/modules/TemplateMaker";
-import { Viewer } from "./app/modules/Viewer";
-import { Menu } from "./app/modules/Menu";
+import './index.css';
+import { UIElements } from './app/UIElements';
+import { EntryForm } from './app/modules/EntryForm';
+import { Prompts } from './app/modules/Prompts';
+import { TemplateMaker } from './app/modules/TemplateMaker';
+import { Viewer } from './app/modules/Viewer';
+import { Menu } from './app/modules/Menu';
 //* MAIN FEATURE *//
 const uiElements = new UIElements();
 const entryForm = new EntryForm();
@@ -33,10 +33,10 @@ function start(catalog) {
   templateMaker.templates = catalog.templates.data.template;
   // The block below configures the workspace elements
   // it can probably be part of the menu and use a method to run it
-  uiElements.welcomeDiv.innerText = "Select an option to begin...";
-  uiElements.createButton.style.display = "";
-  uiElements.viewButton.style.display = "";
-  uiElements.createTemplateButton.style.display = "";
+  uiElements.welcomeDiv.innerText = 'Select an option to begin...';
+  uiElements.createButton.style.display = '';
+  uiElements.viewButton.style.display = '';
+  uiElements.createTemplateButton.style.display = '';
   // The next part tells the modules that their data is loaded
   // and to hurry up and set their initial states
   viewer.renderGameData();
@@ -46,9 +46,13 @@ function start(catalog) {
 // Listen for start command and its data pack
 electronAPI.onOpenProject((catalog) => {
   start(catalog);
-  // TODO add an electronAPI.setTitle func in preload to set title,
-  // instead of using getLore, the return data redundant now that
-  // the start is being signaled from main and includes the built pack
-  const loreCatalog = electronAPI.getLore();
-  console.log(loreCatalog);
+  updatePathDisplay();
 });
+function updatePathDisplay() {
+  const userPath = electronAPI.getCurrentDirectory();
+  menu.currentDirectory = userPath;
+  console.log(menu.currentDirectory)
+  const pathDisplay = document.querySelectorAll('.details__project-directory');
+  pathDisplay[0].innerText = '';
+  pathDisplay[0].innerText = 'Project Path ' + userPath;
+}
