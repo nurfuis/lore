@@ -20,10 +20,6 @@ const electronAPI = {
     const response = ipcRenderer.invoke("dialog-file-open");
     return response;
   },
-  getRoot() {
-    const response = ipcRenderer.sendSync("root-request");
-    return response;
-  },
   getCurrentDirectory() {
     const response = ipcRenderer.sendSync("current-directory-request");
     return response;

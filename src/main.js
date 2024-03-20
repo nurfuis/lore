@@ -484,7 +484,6 @@ ipcMain.on("lore-data-save", (event, data) => {
     }
   });
 });
-
 //* IMAGE REQUEST *//
 ipcMain.on("image-request", (event, fileIndex) => {
   if (!catalog.sprites.data[SPRITES_KEY][fileIndex]) {
@@ -567,7 +566,6 @@ ipcMain.on("image-save", (event, filePath) => {
     });
   });
 });
-
 //* TEMPLATE SAVE *//
 ipcMain.on("templates-save", (event, data) => {
   // Ensure data contains only the templates section
@@ -589,10 +587,6 @@ ipcMain.on("templates-save", (event, data) => {
   });
 });
 
-//* ROOT REQUEST *//
-ipcMain.on("root-request", (event) => {
-  event.returnValue = root;
-});
 //* CURRENT DIRECTORY REQUEST *//
 ipcMain.on("current-directory-request", (event) => {
   event.returnValue = currentDirectory;
