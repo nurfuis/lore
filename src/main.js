@@ -8,7 +8,6 @@ const {
 } = require("electron");
 const fs = require("fs");
 const path = require("path");
-const sharp = require("sharp");
 const { DEFAULT_TEMPLATES } = require("./app/constants");
 const { removeExtension } = require("./app/utils/removeExtension");
 const { cycleBackgrounds } = require("./main/cycleBackgrounds");
@@ -19,7 +18,7 @@ if (require("electron-squirrel-startup")) {
 //* ENV *//
 const root = process.env.INIT_CWD;
 let currentDirectory = root;
-const appIcon = "./data/assets/lore-library-icon-ai-1.png";
+const appIcon = root + "/data/assets/lore-library-icon-ai-1.png";
 process.env["ELECTRON_DISABLE_SECURITY_WARNINGS"] = true;
 app.setAppUserModelId("Lore");
 //* WINDOW *//
@@ -106,67 +105,56 @@ ipcMain.on("lore-data-save", (event, data) => {
 });
 ipcMain.on("image-save", (event, filePath) => {
   const filename = path.basename(filePath);
-  const newImageFile = `${catalog.sprites.directory}/${filename}`;
-  // Proceed with image saving
+  const newImageFile = `${filename}`;
+
+  // Proceed with image saving without resizing
   fs.readFile(filePath, (err, imageData) => {
     if (err) {
       console.error("Error reading image file:", err);
+      event.sender.send("save-failed"); // Send failure message to renderer
       return; // Exit on failure
     }
-    // Create a preview image (adjust width/height as needed)
-    sharp(imageData)
-      .resize(156, 156)
-      .toBuffer((err, previewData) => {
-        if (err) {
-          console.error("Error creating preview:", err);
-        } else {
-          // Save the preview image
-          const newImagePreview = `${catalog.sprites.directory}${_PREVIEWS_DIR}/${filename}`;
-          fs.writeFile(newImagePreview, previewData, (err) => {
-            if (err) {
-              console.error("Error saving preview image:", err);
-            } else {
-              console.log("Preview image saved successfully!", newImagePreview);
-            }
-          });
-        }
-      });
+
+    // Save the original image file directly
     fs.writeFile(newImageFile, imageData, (err) => {
       if (err) {
-        console.error("Error saving image:");
+        console.error("Error saving image:", err);
+        event.sender.send("save-failed"); // Send failure message to renderer
       } else {
         console.log("Image saved successfully!", newImageFile);
+        event.sender.send("save-success"); // Send success message to renderer
+
+        // Update catalog with the full-size image path
         try {
-          // update catalog
           const fileIndex = removeExtension(filename);
           catalog.sprites.data[SPRITES_KEY][fileIndex] = {};
-          catalog.sprites.data[SPRITES_KEY][fileIndex][
-            PREVIEWS_KEY
-          ] = `${_PREVIEWS_DIR}/${filename}`;
+          catalog.sprites.data[SPRITES_KEY][fileIndex][PREVIEWS_KEY] =
+            newImageFile; // Set full path as preview
+
           fs.writeFile(
             catalog.sprites.path,
             JSON.stringify(catalog.sprites.data),
             (err) => {
               if (err) {
                 console.error("Error saving updated sprites data:", err);
-                event.sender.send("save-failed");
+                event.sender.send("save-failed"); // Send failure message to renderer
               } else {
                 console.log(
-                  "Sprites data updated with image reference:",
+                  "Sprites data updated with full-size image reference:",
                   fileIndex
                 );
-                event.sender.send("save-success");
               }
             }
           );
         } catch (err) {
-          console.error("Error updating sprites data:");
-          event.sender.send("save-failed");
+          console.error("Error updating sprites data:", err);
+          event.sender.send("save-failed"); // Send failure message to renderer
         }
       }
     });
   });
 });
+
 ipcMain.on("templates-save", (event, data) => {
   // Ensure data contains only the templates section
   if (!data) {
@@ -223,7 +211,7 @@ function createWindow() {
     {
       label: "Cycle Backgrounds",
       click: () => {
-        cycleBackgrounds(mainWindow);
+        cycleBackgrounds(mainWindow, root);
       },
     },
     {

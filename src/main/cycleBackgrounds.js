@@ -1,9 +1,9 @@
 const fs = require('fs');
 
 let currentBackgroundIndex = 0;
-const backgroundPath = './data/assets/images/backgrounds/';
-function cycleBackgrounds(mainWindow) {
-  const files = fs.readdirSync(backgroundPath, (err, files) => {
+const backgroundPath = '/data/assets/images/backgrounds/';
+function cycleBackgrounds(mainWindow, root) {
+  const files = fs.readdirSync(root + backgroundPath, (err, files) => {
     if (err) {
       console.error('Error reading background files:', err);
       return;

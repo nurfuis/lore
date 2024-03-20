@@ -11,6 +11,7 @@ module.exports = {
   module: {
     rules,
   },
+  mode: "development",
   devServer: {
     hot: false,
     inline: false,
