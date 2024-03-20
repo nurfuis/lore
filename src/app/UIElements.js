@@ -23,7 +23,6 @@ export class UIElements {
     this.viewButton = document.getElementById("view-button");
     this.advancedOptions = document.getElementById("advanced-options");
     this.prototypeSelect = document.getElementById("prototype-select");
-    this.settingsButton = document.getElementById("settings-button");
     this.settingsModal = document.getElementById("settings-modal");
     this.settingsForm = document.getElementById("settings-form");
     this.projectPathInput = document.getElementById("project-path");
@@ -43,6 +42,5 @@ export class UIElements {
     this.createButton.style.display = "none";
     this.viewButton.style.display = "none";
     this.createTemplateButton.style.display = "none";
-    this.settingsButton.style.display = "";
   }
 }

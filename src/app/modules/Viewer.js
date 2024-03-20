@@ -1,14 +1,14 @@
-import { UIElements } from '../UIElements';
-import { Image } from './Image';
+import { UIElements } from "../UIElements";
+import { Image } from "./Image";
 const uiElements = new UIElements();
 const image = new Image();
 
 function createDetailsButton(item) {
-  const detailsButton = document.createElement('button');
-  detailsButton.textContent = 'Show Details';
-  detailsButton.className = 'lore-summary__details-button';
+  const detailsButton = document.createElement("button");
+  detailsButton.textContent = "Show Details";
+  detailsButton.className = "lore-summary__details-button";
 
-  detailsButton.addEventListener('click', () => {
+  detailsButton.addEventListener("click", () => {
     updateDetailsModal(item);
   });
 
@@ -16,39 +16,39 @@ function createDetailsButton(item) {
 }
 
 function updateDetailsModal(item) {
-  document.getElementById('item-details-name').textContent = item.name;
-  document.getElementById('item-details-description').textContent =
-    item.description || 'No description available';
+  document.getElementById("item-details-name").textContent = item.name;
+  document.getElementById("item-details-description").textContent =
+    item.description || "No description available";
 
   const detailsList = createEntryList(item);
 
   const existingEntries = document.getElementById(
-    'item-details-description'
+    "item-details-description"
   ).nextElementSibling;
-  if (existingEntries && existingEntries.tagName === 'UL') {
+  if (existingEntries && existingEntries.tagName === "UL") {
     existingEntries.remove();
-    uiElements.spriteContainer.innerHTML = ''; // Clear any existing sprite
+    uiElements.spriteContainer.innerHTML = ""; // Clear any existing sprite
   }
   if (item.sprite) {
-    uiElements.spriteContainer.innerHTML = ''; // Clear any existing sprite
+    uiElements.spriteContainer.innerHTML = ""; // Clear any existing sprite
 
-    const spriteImage = document.createElement('img');
+    const spriteImage = document.createElement("img");
     spriteImage.src = image.get(item.sprite);
-    spriteImage.alt = 'Item Sprite';
+    spriteImage.alt = "Item Sprite";
     uiElements.spriteContainer.appendChild(spriteImage);
   }
 
   document
-    .getElementById('item-details-description')
+    .getElementById("item-details-description")
     .parentElement.appendChild(detailsList);
 
-  uiElements.detailsModal.style.display = 'block'; // Show the modal
+  uiElements.detailsModal.style.display = "block"; // Show the modal
 }
 
 function createEntryList(item) {
-  const detailsList = document.createElement('ul');
+  const detailsList = document.createElement("ul");
   for (const entry in item) {
-    const entryItem = document.createElement('li');
+    const entryItem = document.createElement("li");
     entryItem.textContent = `${entry}: ${item[entry]}`; // Combine entry name and value
     detailsList.appendChild(entryItem);
   }
@@ -57,9 +57,9 @@ function createEntryList(item) {
 
 export class Viewer {
   constructor() {
-    window.addEventListener('click', function (event) {
+    window.addEventListener("click", function (event) {
       if (event.target === uiElements.detailsModal) {
-        uiElements.detailsModal.style.display = 'none';
+        uiElements.detailsModal.style.display = "none";
       }
     });
   }
@@ -78,35 +78,35 @@ export class Viewer {
       this.entryForm.loreLib[key].hasOwnProperty(itemToDelete.name)
     );
     if (type) {
-      const confirmationModal = document.getElementById('confirmation-modal');
-      confirmationModal.style.display = 'block'; // Show the modal
+      const confirmationModal = document.getElementById("confirmation-modal");
+      confirmationModal.style.display = "block"; // Show the modal
 
-      const confirmDeleteButton = document.getElementById('confirm-delete');
-      confirmDeleteButton.addEventListener('click', () => {
+      const confirmDeleteButton = document.getElementById("confirm-delete");
+      confirmDeleteButton.addEventListener("click", () => {
         this.deleteConfirmed(itemToDelete, type); // Call function to delete after confirmation
-        confirmationModal.style.display = 'none'; // Hide the modal
+        confirmationModal.style.display = "none"; // Hide the modal
       });
 
-      const cancelDeleteButton = document.getElementById('cancel-delete');
-      cancelDeleteButton.addEventListener('click', () => {
-        confirmationModal.style.display = 'none'; // Hide the modal on cancel
+      const cancelDeleteButton = document.getElementById("cancel-delete");
+      cancelDeleteButton.addEventListener("click", () => {
+        confirmationModal.style.display = "none"; // Hide the modal on cancel
       });
     } else {
-      console.error('Error: Entry not found in gameData');
+      console.error("Error: Entry not found in gameData");
     }
   }
   createItemsContainer() {
-    const itemsContainer = document.createElement('ul');
-    itemsContainer.classList.add('game-data-items');
-    itemsContainer.classList.add('category-content');
+    const itemsContainer = document.createElement("ul");
+    itemsContainer.classList.add("game-data-items");
+    itemsContainer.classList.add("category-content");
     return itemsContainer;
   }
   createDeleteButton(item) {
-    const deleteButton = document.createElement('button');
-    deleteButton.textContent = 'Delete';
-    deleteButton.className = 'lore-summary__delete-entry-button';
+    const deleteButton = document.createElement("button");
+    deleteButton.textContent = "Delete";
+    deleteButton.className = "lore-summary__delete-entry-button";
 
-    deleteButton.addEventListener('click', () => {
+    deleteButton.addEventListener("click", () => {
       this.deleteEntry(item);
     });
 
@@ -114,16 +114,16 @@ export class Viewer {
   }
   // WE ARE HERE
   createItem(item) {
-    const itemElement = document.createElement('li');
-    itemElement.classList.add('lore-summary');
+    const itemElement = document.createElement("li");
+    itemElement.classList.add("lore-summary");
 
     // <grid-area-name></grid-area-name>
 
-    let previewText = ''; // Empty string for text accumulation
+    let previewText = ""; // Empty string for text accumulation
     // Get the name and version keys (assuming they exist)
-    const nameKey = 'name'; // Adjust if the name key has a different name
-    const versionKey = 'version'; // Adjust if the version key has a different name
-    const descriptionKey = 'description';
+    const nameKey = "name"; // Adjust if the name key has a different name
+    const versionKey = "version"; // Adjust if the version key has a different name
+    const descriptionKey = "description";
 
     const nameValue = item[nameKey];
     const versionValue = item[versionKey];
@@ -140,15 +140,15 @@ export class Viewer {
       previewText += `Description: ${descriptionValue}\n`;
     }
 
-    const itemPreview = document.createElement('p');
-    itemPreview.classList.add('item-preview-text'); // Add a class for styling
+    const itemPreview = document.createElement("p");
+    itemPreview.classList.add("item-preview-text"); // Add a class for styling
     itemPreview.textContent = previewText.trim(); // Trim trailing newline
     itemElement.appendChild(itemPreview);
 
     if (item.sprite) {
-      const previewElement = document.createElement('img');
+      const previewElement = document.createElement("img");
       previewElement.src = image.get(item.sprite);
-      previewElement.classList.add('item-preview');
+      previewElement.classList.add("item-preview");
       itemElement.appendChild(previewElement);
     }
 
@@ -161,8 +161,8 @@ export class Viewer {
     return itemElement;
   }
   createCard(type) {
-    const card = document.createElement('div');
-    card.classList.add('category-card');
+    const card = document.createElement("div");
+    card.classList.add("category-card");
 
     const sectionHeader = this.createCardHeader(type, card);
     card.appendChild(sectionHeader);
@@ -183,21 +183,21 @@ export class Viewer {
   }
 
   createCardHeader(type, card) {
-    const sectionHeader = document.createElement('h2');
+    const sectionHeader = document.createElement("h2");
     sectionHeader.textContent = `${type} (${
       Object.keys(this.entryForm.loreLib[type]).length
     })`; // Add key count
-    sectionHeader.classList.add('category-header');
+    sectionHeader.classList.add("category-header");
 
-    sectionHeader.addEventListener('click', () => {
-      card.classList.toggle('expanded'); /* Add or remove expanded class */
+    sectionHeader.addEventListener("click", () => {
+      card.classList.toggle("expanded"); /* Add or remove expanded class */
     });
 
     return sectionHeader;
   }
 
   renderGameData() {
-    uiElements.gameDataViewer.innerHTML = ''; // Clear any existing content
+    uiElements.gameDataViewer.innerHTML = ""; // Clear any existing content
 
     for (const type in this.entryForm.loreLib) {
       // Check if the type has any keys (properties)

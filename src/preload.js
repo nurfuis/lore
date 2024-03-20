@@ -37,5 +37,7 @@ const electronAPI = {
     const response = ipcRenderer.sendSync("reload-request", path);
     return response;
   },
+
+  
 };
 contextBridge.exposeInMainWorld("electronAPI", electronAPI);

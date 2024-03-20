@@ -25,12 +25,13 @@ menu.viewer = viewer;
 // * OPEN THE CATALOG *//
 function start(catalog) {
   entryForm.loreLib = catalog.lore.main.data;
-  entryForm.templates = catalog.templates.data.template;
+  entryForm.templates = catalog.templates.data;
+  console.log("renderer templates injection to entry form", catalog.templates.data)
   // entry form is coupled to the templates now
   // it can read templates from thetemplates module now
   // and the references need to be updated in entryForm
   // before unlinking templates from the entry form here
-  templateMaker.templates = catalog.templates.data.template;
+  templateMaker.templates = catalog.templates.data;
   // The block below configures the workspace elements
   // it can probably be part of the menu and use a method to run it
   uiElements.welcomeDiv.innerText = 'Select an option to begin...';
@@ -46,13 +47,4 @@ function start(catalog) {
 // Listen for start command and its data pack
 electronAPI.onOpenProject((catalog) => {
   start(catalog);
-  updatePathDisplay();
 });
-function updatePathDisplay() {
-  const userPath = electronAPI.getCurrentDirectory();
-  menu.currentDirectory = userPath;
-  console.log(menu.currentDirectory)
-  const pathDisplay = document.querySelectorAll('.details__project-directory');
-  pathDisplay[0].innerText = '';
-  pathDisplay[0].innerText = 'Project Path ' + userPath;
-}

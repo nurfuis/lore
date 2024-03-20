@@ -24,24 +24,7 @@ app.setAppUserModelId("Lore");
 //* WINDOW *//
 let mainWindow;
 app.on("ready", () => {
-  if (catalog.lore.temp.data) {
-    resolveBadShutdown()
-      .then((tempFileHandledSuccessfully) => {
-        if (tempFileHandledSuccessfully) {
-          createWindow();
-          console.log("Temp file handled successfully.");
-        } else {
-          console.warn("Quitting, user chose to exit for manual inspection.");
-          app.quit();
-        }
-      })
-      .catch((error) => {
-        console.error("Unexpected error handling temporary file:", error);
-        app.quit();
-      });
-  } else {
-    createWindow();
-  }
+  createWindow();
 });
 app.on("window-all-closed", () => {
   try {
@@ -100,7 +83,7 @@ const LORE_LIBRARY_BAK = "/lib." + BACKUP_ID + ".bak.json";
  *                                                         specific sections (e.g., world, creature, item).
  *   @property {string} templates.path - Path to the JSON file containing template data (templates.json).
  */
-let catalog = initializeProjectDirectories();
+let catalog;
 //* SYSTEM COMMANDS *//
 const appIcon = "./data/assets/lore-library-icon-ai-1.png";
 function createWindow() {
@@ -113,29 +96,29 @@ function createWindow() {
     },
   });
   const menu = Menu.buildFromTemplate([
-    {
-      label: "File",
-      submenu: [
-        {
-          click: () => {
-            reload();
-          },
-          label: "Quick Start...",
-        },
-        {
-          click: () => {
-            handleOpenDialog({ cause: "menuAction" });
-          },
-          label: "Open Project...",
-        },
-        {
-          click: () => {
-            saveChanges({ reason: "save" });
-          },
-          label: "Save Changes...",
-        },
-      ],
-    },
+    // {
+    //   label: "File",
+    //   submenu: [
+    //     {
+    //       click: () => {
+    //         loreAppLoadProjectDirectory();
+    //       },
+    //       label: "Quick Start...",
+    //     },
+    //     {
+    //       click: () => {
+    //         handleOpenDialog();
+    //       },
+    //       label: "Open Project...",
+    //     },
+    //     {
+    //       click: () => {
+    //         saveChanges({ reason: "save" });
+    //       },
+    //       label: "Save Changes...",
+    //     },
+    //   ],
+    // },
     {
       label: "Cycle Backgrounds",
       click: () => {
@@ -177,6 +160,7 @@ function saveChanges({ reason }) {
     // Files were saved and backed up, remove temporary file
     fs.unlinkSync(catalog.lore.temp.path);
     console.log("Temporary file removed:", catalog.lore.temp.path);
+
     showSavedNotification();
   } catch (error) {
     console.error("No changes to save.");
@@ -185,36 +169,12 @@ function saveChanges({ reason }) {
     }
   }
 }
-function reload() {
+function loreAppLoadProjectDirectory() {
   saveChanges({ reason: "reload" });
   console.log("Reloading __---__---__--_--_-");
   catalog = initializeProjectDirectories();
   mainWindow.webContents.send("send:catalog", catalog);
-  return true;
-}
-async function handleOpenDialog({ cause }) {
-  const { canceled, filePaths } = await dialog.showOpenDialog({
-    properties: ["openDirectory"],
-  });
-  if (!canceled) {
-    if (cause == "menuAction") {
-      updateCurrentDirectory(filePaths[0]);
-      reload();
-    }
-    return filePaths[0];
-  }
-}
-function updateCurrentDirectory(filePath) {
-  currentDirectory = filePath;
-  const configFile = root + "/config.json";
-  const data = { USER_PATH: filePath };
-  fs.writeFile(configFile, JSON.stringify(data), (err) => {
-    if (err) {
-      console.error("Error saving config:", err);
-    } else {
-      console.log("Config updated.", data);
-    }
-  });
+  return catalog;
 }
 function resolveBadShutdown() {
   return new Promise((resolve, reject) => {
@@ -251,6 +211,28 @@ function resolveBadShutdown() {
           reject(error);
         }
       });
+  });
+}
+async function handleOpenDialog() {
+  const { canceled, filePaths } = await dialog.showOpenDialog({
+    properties: ["openDirectory"],
+  });
+  if (!canceled) {
+    console.log("dialog result", filePaths[0]);
+    return filePaths[0];
+  }
+}
+function updateCurrentDirectory(filePath) {
+  currentDirectory = filePath;
+  const configFile = root + "/config.json";
+  const data = { USER_PATH: filePath };
+  console.log("update USER_PATH", data);
+  fs.writeFile(configFile, JSON.stringify(data), (err) => {
+    if (err) {
+      console.error("Error saving config:", err);
+    } else {
+      console.log("Config updated.", data);
+    }
   });
 }
 //* LIBRARY BUILD SCRIPTS *//
@@ -291,6 +273,8 @@ function getUserDataPath() {
     console.error("Error loading config data:", err);
     console.log("Creating new config file...");
     result = { USER_PATH: root };
+    console.log("initialize USER_PATH", result);
+
     fs.writeFile(configFile, JSON.stringify(result), (err) => {
       if (err) {
         console.error("Error saving config:", err);
@@ -617,8 +601,26 @@ ipcMain.on("current-directory-request", (event) => {
 });
 //* RELOAD REQUEST *//
 ipcMain.on("reload-request", (event, path) => {
-  updateCurrentDirectory(path);
-  const result = (event.returnValue = reload());
+  // updateCurrentDirectory(path);
+  const result = loreAppLoadProjectDirectory();
+
+  if (result && catalog.lore.temp.data) {
+    resolveBadShutdown()
+      .then((tempFileHandledSuccessfully) => {
+        if (tempFileHandledSuccessfully) {
+          createWindow();
+          console.log("Temp file handled successfully.");
+        } else {
+          console.warn("Quitting, user chose to exit for manual inspection.");
+          app.quit();
+        }
+      })
+      .catch((error) => {
+        console.error("Unexpected error handling temporary file:", error);
+        app.quit();
+      });
+  }
+  event.returnValue = result
   console.log("Loading...", result);
 });
 //* CHANGE DIRECTORY *//

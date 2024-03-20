@@ -378,7 +378,7 @@ button:hover {
 }
 /* block__element--modifier */
 .lore-summary {
-  display: grid;
+  display: "";
   grid-template-areas: '';
 }
 

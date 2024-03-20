@@ -1,65 +1,71 @@
-import { UIElements } from '../UIElements';
+import { UIElements } from "../UIElements";
 const uiElements = new UIElements();
 
 function toggleSettingsModal() {
-  uiElements.settingsModal.style.display = 'block';
+  uiElements.settingsModal.style.display = "block";
 }
 
 export class Menu {
   constructor() {
     this.currentDirectory = electronAPI.getCurrentDirectory();
-    // Listen for
-    uiElements.fileBrowserButton.addEventListener('click', async () => {
+
+    const welcomeButtonStart = document.querySelectorAll(
+      ".welcome__button--start"
+    );
+    welcomeButtonStart[0].addEventListener("click", () => {
+      this.currentDirectory = setDetailsProjectDirectory();
+      console.log(
+        "Welcome Start Button set it's current directory to:",
+        this.currentDirectory,
+        "and updated the details project path"
+      );
+      this.currentDirectoryIsLoaded = electronAPI.init(this.currentDirectory);
+      console.log("Project directory is loaded", this.currentDirectoryIsLoaded);
+    });
+    uiElements.createButton.addEventListener("click", () =>
+      this.toggleView(true)
+    );
+    uiElements.viewButton.addEventListener("click", () =>
+      this.toggleView(false)
+    );
+
+
+
+    uiElements.fileBrowserButton.addEventListener("click", async () => {
       const result = await electronAPI.openFileDialog();
       this.currentDirectory = result;
       console.log(this.currentDirectory);
-      const modalLabels = document.querySelectorAll('.modal-label');
+      const modalLabels = document.querySelectorAll(".modal-label");
       for (const modalLabel of modalLabels) {
-        modalLabel.innerText = '';
-        modalLabel.innerText = 'Project Path ' + result;
+        modalLabel.innerText = "";
+        modalLabel.innerText = "Project Path " + result;
       }
     });
-
-    uiElements.settingsButton.addEventListener('click', () => {
-      toggleSettingsModal();
-      const userPath = electronAPI.getCurrentDirectory();
-      const modalLabels = document.querySelectorAll('.modal-label');
-      for (const modalLabel of modalLabels) {
-        modalLabel.innerText = '';
-        modalLabel.innerText = 'Project Path ' + userPath;
-      }
-    });
-    uiElements.modalProceedButton[0].addEventListener('click', () => {
+    uiElements.modalProceedButton[0].addEventListener("click", () => {
       const result = electronAPI.init(this.currentDirectory);
       console.log(result);
       if (result) {
-        uiElements.settingsModal.style.display = 'none';
-        const pathDisplay = document.querySelectorAll('.details__project-directory');
-        pathDisplay[0].innerText = '';
-        pathDisplay[0].innerText = 'Project Path ' + this.currentDirectory;
+        uiElements.settingsModal.style.display = "none";
+        const pathDisplay = document.querySelectorAll(
+          ".details__project-directory"
+        );
+        pathDisplay[0].innerText = "";
+        pathDisplay[0].innerText = "Project Path " + this.currentDirectory;
       }
     });
-    uiElements.createButton.addEventListener('click', () =>
-      this.toggleView(true)
-    );
-    uiElements.viewButton.addEventListener('click', () =>
-      this.toggleView(false)
-    );
-    window.addEventListener('click', function (event) {
+    window.addEventListener("click", function (event) {
       if (event.target === uiElements.settingsModal) {
-        uiElements.settingsModal.style.display = 'none';
+        uiElements.settingsModal.style.display = "none";
       }
     });
-
-    uiElements.closeModalButton.addEventListener('click', function () {
-      uiElements.modal.style.display = 'none';
+    uiElements.closeModalButton.addEventListener("click", function () {
+      uiElements.modal.style.display = "none";
     });
   }
   toggleView(showCreateForm) {
-    if (uiElements.welcomeDiv.style.display != 'none') {
-      uiElements.welcomeDiv.style.display = 'none';
+    if (uiElements.welcomeDiv.style.display != "none") {
+      uiElements.welcomeDiv.style.display = "none";
     }
-
     if (showCreateForm) {
       // console.log('Display the entry form.');
     } else {
@@ -68,8 +74,17 @@ export class Menu {
     }
 
     uiElements.createFormContainer.style.display = showCreateForm
-      ? 'block'
-      : 'none';
-    uiElements.gameDataViewer.style.display = showCreateForm ? 'none' : 'block';
+      ? "block"
+      : "none";
+    uiElements.gameDataViewer.style.display = showCreateForm ? "none" : "block";
   }
+}
+function setDetailsProjectDirectory() {
+  const userPath = electronAPI.getCurrentDirectory();
+  const detailsProjectDirectory = document.querySelectorAll(
+    ".details__project-directory"
+  );
+  detailsProjectDirectory[0].innerText = "";
+  detailsProjectDirectory[0].innerText = "Project Path " + userPath;
+  return userPath;
 }
