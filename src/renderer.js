@@ -53,13 +53,13 @@ electronAPI.onOpenProject((catalog) => {
 });
 // make an event to listen for the update
 electronAPI.onSetProjectDirectory((currentDirectory) => {
-  setDetailsProjectDirectory(currentDirectory)
+  setDetailsProjectDirectory(currentDirectory);
   function setDetailsProjectDirectory(currentDirectory) {
     const detailsProjectDirectory = document.querySelectorAll(
       ".details__project-directory"
     );
     detailsProjectDirectory[0].innerText = "";
     detailsProjectDirectory[0].innerText = "Project Path " + currentDirectory;
-    return userPath;
+    return true;
   }
 });

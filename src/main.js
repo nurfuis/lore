@@ -22,7 +22,6 @@ let currentDirectory = root;
 const appIcon = "./data/assets/lore-library-icon-ai-1.png";
 process.env["ELECTRON_DISABLE_SECURITY_WARNINGS"] = true;
 app.setAppUserModelId("Lore");
-
 //* WINDOW *//
 let mainWindow;
 app.on("ready", () => {
@@ -58,6 +57,7 @@ const LORE_LIBRARY = "/lib.json";
 const LORE_LIBRARY_TEMP = "/lib.temp.json";
 const LORE_LIBRARY_BAK = "/lib." + BACKUP_ID + ".bak.json";
 //* LORE LIBRARY CARD CATALOG *//
+let catalog; // TODO phasing this global out
 /**
  * Card Catalog: Represents the loaded project data structure.
  *
@@ -85,7 +85,125 @@ const LORE_LIBRARY_BAK = "/lib." + BACKUP_ID + ".bak.json";
  *                                                         specific sections (e.g., world, creature, item).
  *   @property {string} templates.path - Path to the JSON file containing template data (templates.json).
  */
-let catalog; // TODO phasing this global out
+ipcMain.on("load:lore-data-project-directory", (event, path) => {
+  const sendCatalogSuccess = loreAppLoadProjectDirectory();
+  event.returnValue = sendCatalogSuccess;
+  console.log("Loading catalog data...", sendCatalogSuccess);
+});
+ipcMain.on("lore-data-save", (event, data) => {
+  const filename = catalog.lore.temp.path;
+  console.log("Writing changes to temp:", filename);
+  fs.writeFile(filename, JSON.stringify(data), (err) => {
+    if (err) {
+      console.error("Error saving lore:", err);
+      event.sender.send("save-failed");
+    } else {
+      event.sender.send("save-success", filename);
+      catalog.lore.temp.data = data;
+      console.log("Lore saved to temp file successfully.");
+    }
+  });
+});
+ipcMain.on("image-request", (event, fileIndex) => {
+  if (!catalog.sprites.data[SPRITES_KEY][fileIndex]) {
+    console.log("Quitting, sprites list is corrupted.");
+    app.quit();
+  }
+  const imagePath =
+    catalog.sprites.directory +
+    catalog.sprites.data[SPRITES_KEY][fileIndex][PREVIEWS_KEY];
+  try {
+    if (imagePath) {
+      const image = fs.readFileSync(imagePath);
+      event.returnValue = image;
+    }
+  } catch (error) {
+    console.error("Error loading image");
+  }
+});
+ipcMain.on("image-save", (event, filePath) => {
+  const filename = path.basename(filePath);
+  const newImageFile = `${catalog.sprites.directory}/${filename}`;
+  // Proceed with image saving
+  fs.readFile(filePath, (err, imageData) => {
+    if (err) {
+      console.error("Error reading image file:", err);
+      return; // Exit on failure
+    }
+    // Create a preview image (adjust width/height as needed)
+    sharp(imageData)
+      .resize(156, 156)
+      .toBuffer((err, previewData) => {
+        if (err) {
+          console.error("Error creating preview:", err);
+        } else {
+          // Save the preview image
+          const newImagePreview = `${catalog.sprites.directory}${_PREVIEWS_DIR}/${filename}`;
+          fs.writeFile(newImagePreview, previewData, (err) => {
+            if (err) {
+              console.error("Error saving preview image:", err);
+            } else {
+              console.log("Preview image saved successfully!", newImagePreview);
+            }
+          });
+        }
+      });
+    fs.writeFile(newImageFile, imageData, (err) => {
+      if (err) {
+        console.error("Error saving image:");
+      } else {
+        console.log("Image saved successfully!", newImageFile);
+        try {
+          // update catalog
+          const fileIndex = removeExtension(filename);
+          catalog.sprites.data[SPRITES_KEY][fileIndex] = {};
+          catalog.sprites.data[SPRITES_KEY][fileIndex][
+            PREVIEWS_KEY
+          ] = `${_PREVIEWS_DIR}/${filename}`;
+          fs.writeFile(
+            catalog.sprites.path,
+            JSON.stringify(catalog.sprites.data),
+            (err) => {
+              if (err) {
+                console.error("Error saving updated sprites data:", err);
+                event.sender.send("save-failed");
+              } else {
+                console.log(
+                  "Sprites data updated with image reference:",
+                  fileIndex
+                );
+                event.sender.send("save-success");
+              }
+            }
+          );
+        } catch (err) {
+          console.error("Error updating sprites data:");
+          event.sender.send("save-failed");
+        }
+      }
+    });
+  });
+});
+ipcMain.on("templates-save", (event, data) => {
+  // Ensure data contains only the templates section
+  if (!data) {
+    console.error("Invalid data format: Missing templates section");
+    event.sender.send("save-failed", "Invalid data format"); // Send error message
+    return;
+  }
+  const templateData = (catalog.templates.data.template = data);
+  // Write data to the templates file
+  fs.writeFile(catalog.templates.path, JSON.stringify(templateData), (err) => {
+    if (err) {
+      console.error("Error saving templates:");
+      event.sender.send("save-failed", "Error saving templates");
+    } else {
+      console.log("Templates saved successfully!");
+      event.sender.send("save-success"); // Send success message
+    }
+  });
+});
+//* SYSTEM COMMANDS *//
 function createWindow() {
   mainWindow = new BrowserWindow({
     width: 900,
@@ -137,18 +255,12 @@ function createWindow() {
   mainWindow.loadURL(MAIN_WINDOW_WEBPACK_ENTRY);
   mainWindow.webContents.openDevTools();
 }
-ipcMain.on("load:lore-data-project-directory", (event, path) => {
-  const sendCatalogSuccess = loreAppLoadProjectDirectory();
-  event.returnValue = sendCatalogSuccess;
-  console.log("Loading catalog data...", sendCatalogSuccess);
-});
 function loreAppLoadProjectDirectory() {
   console.log("Loading...");
   const catalogData = initializeProjectDirectories();
   catalog = catalogData;
   mainWindow.webContents.send("send:catalog-data", catalogData);
   mainWindow.webContents.send("send:current-directory", currentDirectory);
-
   return true;
 }
 function saveChanges({ reason }) {
@@ -220,31 +332,6 @@ function resolveBadShutdown() {
       });
   });
 }
-// * PROJECT SELECTION IN DEVELOPMENT *//
-// ipcMain.handle("dialog-file-open", handleOpenDialog);
-// async function handleOpenDialog() {
-//   const { canceled, filePaths } = await dialog.showOpenDialog({
-//     properties: ["openDirectory"],
-//   });
-//   if (!canceled) {
-//     console.log("dialog result", filePaths[0]);
-//     return filePaths[0];
-//   }
-// }
-// function updateCurrentDirectory(filePath) {
-//   currentDirectory = filePath;
-//   const configFile = root + "/config.json";
-//   const data = { USER_PATH: filePath };
-//   console.log("update USER_PATH", data);
-//   fs.writeFile(configFile, JSON.stringify(data), (err) => {
-//     if (err) {
-//       console.error("Error saving config:", err);
-//     } else {
-//       console.log("Config updated.", data);
-//     }
-//   });
-// }
-
 //* LIBRARY BUILD SCRIPTS *//
 function initializeProjectDirectories() {
   console.log("Process started from:", root);
@@ -469,120 +556,27 @@ function readLore(projectDataDirectory, templates) {
   );
   return fileSet;
 }
-//* LORE SAVE *//
-ipcMain.on("lore-data-save", (event, data) => {
-  const filename = catalog.lore.temp.path;
-  console.log("Writing changes to temp:", filename);
-  fs.writeFile(filename, JSON.stringify(data), (err) => {
-    if (err) {
-      console.error("Error saving lore:", err);
-      event.sender.send("save-failed");
-    } else {
-      event.sender.send("save-success", filename);
-      catalog.lore.temp.data = data;
-      console.log("Lore saved to temp file successfully.");
-    }
-  });
-});
-//* IMAGE REQUEST *//
-ipcMain.on("image-request", (event, fileIndex) => {
-  if (!catalog.sprites.data[SPRITES_KEY][fileIndex]) {
-    console.log("Quitting, sprites list is corrupted.");
-    app.quit();
-  }
-  const imagePath =
-    catalog.sprites.directory +
-    catalog.sprites.data[SPRITES_KEY][fileIndex][PREVIEWS_KEY];
-  try {
-    if (imagePath) {
-      const image = fs.readFileSync(imagePath);
-      event.returnValue = image;
-    }
-  } catch (error) {
-    console.error("Error loading image");
-  }
-});
-//* IMAGE SAVE *//
-ipcMain.on("image-save", (event, filePath) => {
-  const filename = path.basename(filePath);
-  const newImageFile = `${catalog.sprites.directory}/${filename}`;
-  // Proceed with image saving
-  fs.readFile(filePath, (err, imageData) => {
-    if (err) {
-      console.error("Error reading image file:", err);
-      return; // Exit on failure
-    }
-    // Create a preview image (adjust width/height as needed)
-    sharp(imageData)
-      .resize(156, 156)
-      .toBuffer((err, previewData) => {
-        if (err) {
-          console.error("Error creating preview:", err);
-        } else {
-          // Save the preview image
-          const newImagePreview = `${catalog.sprites.directory}${_PREVIEWS_DIR}/${filename}`;
-          fs.writeFile(newImagePreview, previewData, (err) => {
-            if (err) {
-              console.error("Error saving preview image:", err);
-            } else {
-              console.log("Preview image saved successfully!", newImagePreview);
-            }
-          });
-        }
-      });
-    fs.writeFile(newImageFile, imageData, (err) => {
-      if (err) {
-        console.error("Error saving image:");
-      } else {
-        console.log("Image saved successfully!", newImageFile);
-        try {
-          // update catalog
-          const fileIndex = removeExtension(filename);
-          catalog.sprites.data[SPRITES_KEY][fileIndex] = {};
-          catalog.sprites.data[SPRITES_KEY][fileIndex][
-            PREVIEWS_KEY
-          ] = `${_PREVIEWS_DIR}/${filename}`;
-          fs.writeFile(
-            catalog.sprites.path,
-            JSON.stringify(catalog.sprites.data),
-            (err) => {
-              if (err) {
-                console.error("Error saving updated sprites data:", err);
-                event.sender.send("save-failed");
-              } else {
-                console.log(
-                  "Sprites data updated with image reference:",
-                  fileIndex
-                );
-                event.sender.send("save-success");
-              }
-            }
-          );
-        } catch (err) {
-          console.error("Error updating sprites data:");
-          event.sender.send("save-failed");
-        }
-      }
-    });
-  });
-});
-//* TEMPLATE SAVE *//
-ipcMain.on("templates-save", (event, data) => {
-  // Ensure data contains only the templates section
-  if (!data) {
-    console.error("Invalid data format: Missing templates section");
-    event.sender.send("save-failed", "Invalid data format"); // Send error message
-    return;
-  }
-  const templateData = (catalog.templates.data.template = data);
-  // Write data to the templates file
-  fs.writeFile(catalog.templates.path, JSON.stringify(templateData), (err) => {
-    if (err) {
-      console.error("Error saving templates:");
-      event.sender.send("save-failed", "Error saving templates");
-    } else {
-      console.log("Templates saved successfully!");
-      event.sender.send("save-success"); // Send success message
-    }
-  });
-});
+// * PROJECT SELECTION IN DEVELOPMENT *//
+// ipcMain.handle("dialog-file-open", handleOpenDialog);
+// async function handleOpenDialog() {
+//   const { canceled, filePaths } = await dialog.showOpenDialog({
+//     properties: ["openDirectory"],
+//   });
+//   if (!canceled) {
+//     console.log("dialog result", filePaths[0]);
+//     return filePaths[0];
+//   }
+// }
+// function updateCurrentDirectory(filePath) {
+//   currentDirectory = filePath;
+//   const configFile = root + "/config.json";
+//   const data = { USER_PATH: filePath };
+//   console.log("update USER_PATH", data);
+//   fs.writeFile(configFile, JSON.stringify(data), (err) => {
+//     if (err) {
+//       console.error("Error saving config:", err);
+//     } else {
+//       console.log("Config updated.", data);
+//     }
+//   });
+// }
