@@ -17,10 +17,12 @@ if (require("electron-squirrel-startup")) {
   app.quit();
 }
 //* ENV *//
-process.env["ELECTRON_DISABLE_SECURITY_WARNINGS"] = true;
 const root = process.env.INIT_CWD;
 let currentDirectory = root;
+const appIcon = "./data/assets/lore-library-icon-ai-1.png";
+process.env["ELECTRON_DISABLE_SECURITY_WARNINGS"] = true;
 app.setAppUserModelId("Lore");
+
 //* WINDOW *//
 let mainWindow;
 app.on("ready", () => {
@@ -83,9 +85,7 @@ const LORE_LIBRARY_BAK = "/lib." + BACKUP_ID + ".bak.json";
  *                                                         specific sections (e.g., world, creature, item).
  *   @property {string} templates.path - Path to the JSON file containing template data (templates.json).
  */
-let catalog;
-//* SYSTEM COMMANDS *//
-const appIcon = "./data/assets/lore-library-icon-ai-1.png";
+let catalog; // TODO phasing this global out
 function createWindow() {
   mainWindow = new BrowserWindow({
     width: 900,
@@ -137,19 +137,17 @@ function createWindow() {
   mainWindow.loadURL(MAIN_WINDOW_WEBPACK_ENTRY);
   mainWindow.webContents.openDevTools();
 }
-function showSavedNotification() {
-  new Notification({
-    title: "Changes Saved",
-    body: "Your lore data has been successfully saved.",
-    icon: appIcon, // Replace with your app icon path
-  }).show();
-}
-function showNoDataSavedNotification() {
-  new Notification({
-    title: "No Changes Detected",
-    body: "There were no changes to save in your lore data.",
-    icon: appIcon,
-  }).show();
+ipcMain.on("load:lore-data-project-directory", (event, path) => {
+  const sendCatalogSuccess = loreAppLoadProjectDirectory();
+  event.returnValue = sendCatalogSuccess;
+  console.log("Loading catalog data...", sendCatalogSuccess);
+});
+function loreAppLoadProjectDirectory() {
+  console.log("Loading...");
+  const catalogData = initializeProjectDirectories();
+  catalog = catalogData;
+  mainWindow.webContents.send("send:catalog-data", catalogData);
+  return true;
 }
 function saveChanges({ reason }) {
   try {
@@ -169,12 +167,19 @@ function saveChanges({ reason }) {
     }
   }
 }
-function loreAppLoadProjectDirectory() {
-  saveChanges({ reason: "reload" });
-  console.log("Reloading __---__---__--_--_-");
-  catalog = initializeProjectDirectories();
-  mainWindow.webContents.send("send:catalog", catalog);
-  return catalog;
+function showSavedNotification() {
+  new Notification({
+    title: "Changes Saved",
+    body: "Your lore data has been successfully saved.",
+    icon: appIcon, // Replace with your app icon path
+  }).show();
+}
+function showNoDataSavedNotification() {
+  new Notification({
+    title: "No Changes Detected",
+    body: "There were no changes to save in your lore data.",
+    icon: appIcon,
+  }).show();
 }
 function resolveBadShutdown() {
   return new Promise((resolve, reject) => {
@@ -213,28 +218,31 @@ function resolveBadShutdown() {
       });
   });
 }
-async function handleOpenDialog() {
-  const { canceled, filePaths } = await dialog.showOpenDialog({
-    properties: ["openDirectory"],
-  });
-  if (!canceled) {
-    console.log("dialog result", filePaths[0]);
-    return filePaths[0];
-  }
-}
-function updateCurrentDirectory(filePath) {
-  currentDirectory = filePath;
-  const configFile = root + "/config.json";
-  const data = { USER_PATH: filePath };
-  console.log("update USER_PATH", data);
-  fs.writeFile(configFile, JSON.stringify(data), (err) => {
-    if (err) {
-      console.error("Error saving config:", err);
-    } else {
-      console.log("Config updated.", data);
-    }
-  });
-}
+// * PROJECT SELECTION IN DEVELOPMENT *//
+// ipcMain.handle("dialog-file-open", handleOpenDialog);
+// async function handleOpenDialog() {
+//   const { canceled, filePaths } = await dialog.showOpenDialog({
+//     properties: ["openDirectory"],
+//   });
+//   if (!canceled) {
+//     console.log("dialog result", filePaths[0]);
+//     return filePaths[0];
+//   }
+// }
+// function updateCurrentDirectory(filePath) {
+//   currentDirectory = filePath;
+//   const configFile = root + "/config.json";
+//   const data = { USER_PATH: filePath };
+//   console.log("update USER_PATH", data);
+//   fs.writeFile(configFile, JSON.stringify(data), (err) => {
+//     if (err) {
+//       console.error("Error saving config:", err);
+//     } else {
+//       console.log("Config updated.", data);
+//     }
+//   });
+// }
+
 //* LIBRARY BUILD SCRIPTS *//
 function initializeProjectDirectories() {
   console.log("Process started from:", root);
@@ -298,10 +306,10 @@ function tryMakeDirectory(baseDirectory, directoryName) {
   }
   return fullDirectoryPath;
 }
-function readProjectData(__data) {
-  const sprites = readSprites(__data);
-  const templates = readTemplates(__data);
-  const lore = readLore(__data, templates);
+function readProjectData(projectDataDirectory) {
+  const sprites = readSprites(projectDataDirectory);
+  const templates = readTemplates(projectDataDirectory);
+  const lore = readLore(projectDataDirectory, templates);
 
   return { lore, sprites, templates };
 
@@ -320,8 +328,8 @@ function readProjectData(__data) {
     }
   }
 }
-function readSprites(__data) {
-  const spritesLibraryFile = __data + SPRITE_LIBRARY;
+function readSprites(projectDataDirectory) {
+  const spritesLibraryFile = projectDataDirectory + SPRITE_LIBRARY;
   console.log("Reading sprites file...");
   let results;
   try {
@@ -334,7 +342,7 @@ function readSprites(__data) {
   return {
     data: results,
     path: spritesLibraryFile,
-    directory: __data + _ASSETS_DIR + _SPRITES_DIR,
+    directory: projectDataDirectory + _ASSETS_DIR + _SPRITES_DIR,
   };
 }
 function newSprites(spritesLibraryFile) {
@@ -353,8 +361,8 @@ function newSprites(spritesLibraryFile) {
   );
   return emptySpritesObject;
 }
-function readTemplates(__data) {
-  const templatesFile = __data + TEMPLATES_FILE;
+function readTemplates(projectDataDirectory) {
+  const templatesFile = projectDataDirectory + TEMPLATES_FILE;
   console.log("Reading templates file...");
   let results;
   try {
@@ -385,21 +393,21 @@ function fillMissingLoreEntries(loreData, templates) {
   }
   return filledLoreData;
 }
-function readLore(__data, templates) {
+function readLore(projectDataDirectory, templates) {
   console.log("Reading lore file...");
 
   const fileSet = {
     main: {
       data: undefined,
-      path: __data + LORE_LIBRARY,
+      path: projectDataDirectory + LORE_LIBRARY,
     },
     temp: {
       data: undefined,
-      path: __data + LORE_LIBRARY_TEMP,
+      path: projectDataDirectory + LORE_LIBRARY_TEMP,
     },
     backup: {
       data: undefined,
-      path: __data + _BACKUP_DIR + LORE_LIBRARY_BAK,
+      path: projectDataDirectory + _BACKUP_DIR + LORE_LIBRARY_BAK,
     },
   };
   // main
@@ -482,6 +490,7 @@ ipcMain.on("lore-data-save", (event, data) => {
     }
   });
 });
+
 //* IMAGE REQUEST *//
 ipcMain.on("image-request", (event, fileIndex) => {
   if (!catalog.sprites.data[SPRITES_KEY][fileIndex]) {
@@ -564,6 +573,7 @@ ipcMain.on("image-save", (event, filePath) => {
     });
   });
 });
+
 //* TEMPLATE REQUEST *//
 ipcMain.on("templates-request", (event) => {
   // Respond to the synchronous request with the template data
@@ -591,6 +601,7 @@ ipcMain.on("templates-save", (event, data) => {
     }
   });
 });
+
 //* ROOT REQUEST *//
 ipcMain.on("root-request", (event) => {
   event.returnValue = root;
@@ -599,29 +610,3 @@ ipcMain.on("root-request", (event) => {
 ipcMain.on("current-directory-request", (event) => {
   event.returnValue = currentDirectory;
 });
-//* RELOAD REQUEST *//
-ipcMain.on("reload-request", (event, path) => {
-  // updateCurrentDirectory(path);
-  const result = loreAppLoadProjectDirectory();
-
-  if (result && catalog.lore.temp.data) {
-    resolveBadShutdown()
-      .then((tempFileHandledSuccessfully) => {
-        if (tempFileHandledSuccessfully) {
-          createWindow();
-          console.log("Temp file handled successfully.");
-        } else {
-          console.warn("Quitting, user chose to exit for manual inspection.");
-          app.quit();
-        }
-      })
-      .catch((error) => {
-        console.error("Unexpected error handling temporary file:", error);
-        app.quit();
-      });
-  }
-  event.returnValue = result
-  console.log("Loading...", result);
-});
-//* CHANGE DIRECTORY *//
-ipcMain.handle("dialog-file-open", handleOpenDialog);

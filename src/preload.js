@@ -3,7 +3,7 @@ const { contextBridge, ipcRenderer } = require("electron");
 const electronAPI = {
   //* ONE WAY FROM MAIN *//
   onOpenProject: (callback) =>
-    ipcRenderer.on("send:catalog", (_event, value) => callback(value)),
+    ipcRenderer.on("send:catalog-data", (_event, value) => callback(value)),
   //* ONE WAY TO MAIN *//
   saveLore: (data) => ipcRenderer.send("lore-data-save", data),
   saveImage: (data) => ipcRenderer.send("image-save", data),
@@ -33,8 +33,8 @@ const electronAPI = {
     const response = ipcRenderer.sendSync("templates-request");
     return response;
   },
-  init(path) {
-    const response = ipcRenderer.sendSync("reload-request", path);
+  fetchLoreData(path) {
+    const response = ipcRenderer.sendSync("load:lore-data-project-directory", path);
     return response;
   },
 
