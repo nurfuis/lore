@@ -19,8 +19,8 @@ const electronAPI = {
     const response = ipcRenderer.invoke("dialog-file-open");
     return response;
   },
-  saveImage(filename) {
-    const response = ipcRenderer.invoke("save:lore-image", filename);
+  saveImage(filePath) {
+    const response = ipcRenderer.invoke("save:lore-image", filePath);
     return response;
   },
   fetchLoreData(path) {

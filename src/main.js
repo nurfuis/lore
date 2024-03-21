@@ -103,9 +103,14 @@ ipcMain.on("lore-data-save", (event, data) => {
     }
   });
 });
-ipcMain.on("save:lore-image", (event, filePath) => {
+
+ipcMain.handle("save:lore-image", saveImageData(filePath));
+
+function saveImageData(filePath) {
+  console.log('Save image data...', filePath)
   const filename = path.basename(filePath);
-  const newImageFile = `${filename}`;
+  const newImageFile = `${catalog.sprites.directory}/${filename}`;
+  
   fs.readFile(filePath, (err, imageData) => {
     if (err) {
       console.error("Error reading image file:", err);
@@ -129,12 +134,11 @@ ipcMain.on("save:lore-image", (event, filePath) => {
               if (err) {
                 console.error("Error saving updated sprites data:", err);
               } else {
-                event.returnValue(fileIndex); // Send failure message to renderer
-
                 console.log(
                   "Sprites data updated with full-size image reference:",
                   fileIndex
                 );
+                return fileIndex;
               }
             }
           );
@@ -144,7 +148,7 @@ ipcMain.on("save:lore-image", (event, filePath) => {
       }
     });
   });
-});
+}
 
 ipcMain.on("templates-save", (event, data) => {
   // Ensure data contains only the templates section
@@ -518,27 +522,27 @@ function readLore(projectDataDirectory, templates) {
   );
   return fileSet;
 }
-// * PROJECT SELECTION IN DEVELOPMENT *//
-// ipcMain.handle("dialog-file-open", handleOpenDialog);
-// async function handleOpenDialog() {
-//   const { canceled, filePaths } = await dialog.showOpenDialog({
-//     properties: ["openDirectory"],
-//   });
-//   if (!canceled) {
-//     console.log("dialog result", filePaths[0]);
-//     return filePaths[0];
-//   }
-// }
-// function updateCurrentDirectory(filePath) {
-//   currentDirectory = filePath;
-//   const configFile = root + "/config.json";
-//   const data = { USER_PATH: filePath };
-//   console.log("update USER_PATH", data);
-//   fs.writeFile(configFile, JSON.stringify(data), (err) => {
-//     if (err) {
-//       console.error("Error saving config:", err);
-//     } else {
-//       console.log("Config updated.", data);
-//     }
-//   });
-// }
+ipcMain.handle("dialog-file-open", handleOpenDialog);
+
+async function handleOpenDialog() {
+  const { canceled, filePaths } = await dialog.showOpenDialog({
+    properties: ["openDirectory"],
+  });
+  if (!canceled) {
+    console.log("dialog result", filePaths[0]);
+    return filePaths[0];
+  }
+}
+function updateCurrentDirectory(filePath) {
+  currentDirectory = filePath;
+  const configFile = root + "/config.json";
+  const data = { USER_PATH: filePath };
+  console.log("update USER_PATH", data);
+  fs.writeFile(configFile, JSON.stringify(data), (err) => {
+    if (err) {
+      console.error("Error saving config:", err);
+    } else {
+      console.log("Config updated.", data);
+    }
+  });
+}
