@@ -368,8 +368,8 @@ button:hover {
   padding: 1rem;
 }
 .lore-summary__entry-image-preview-wrapper {
-  width: 100%;
-  height: 100%;
+  /* width: 100%;
+  height: 100%; */
   grid-area: entry-image-wrapper;
 }
 .lore-summary__entry-image-preview {

@@ -1,4 +1,5 @@
 import { UIElements } from "../UIElements";
+import { removeExtension } from "../utils/removeExtension";
 
 export class EntryForm {
   constructor() {
@@ -70,14 +71,13 @@ export class EntryForm {
     this.ui.imageInput.value = "";
     this.spriteName = undefined;
   }
-  setPreview(filename) {
-    console.log("fetchImageSrc from lib data", filename);
-
+  setPreview(fileKey) {
     this.ui.imagePreview.src =
-      "../data/assets/sprites/" + this.sprites.data.sprite[filename].preview;
+      "../data/assets/sprites/" + this.sprites.data.sprite[fileKey].preview;
     this.ui.imagePreview.style.display = "block";
-    this.spriteName = filename;
+    this.spriteName = fileKey;
   }
+
   async updateImagePreview(event) {
     const file = event.target.files[0];
     if (!file) {
@@ -87,15 +87,13 @@ export class EntryForm {
       console.error("Please select an image file!");
       return;
     }
-    console.log("image file path to save", file.path);
-    const src = electronAPI.saveImage(file.path);
-    this.ui.imagePreview.src = `${src}`;
-
+    console.log("image to save", file.name);
+    const pathToSource = electronAPI.saveImage(file.path);
+    this.ui.imagePreview.src = `${pathToSource}`;
     this.ui.imagePreview.style.display = "block";
-
-    // setTimeout(() => {
-    //   this.setPreview(removeExtension(file.name));
-    // }, 200);
+    
+    this.spriteName = removeExtension(file.name)
+    
   }
   updateForm() {
     console.log("Updating the form...");

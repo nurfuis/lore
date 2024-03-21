@@ -8,6 +8,7 @@ const {
 } = require("electron");
 const fs = require("fs");
 const path = require("path");
+
 const { DEFAULT_TEMPLATES } = require("./app/constants");
 const { removeExtension } = require("./app/utils/removeExtension");
 const { cycleBackgrounds } = require("./main/cycleBackgrounds");
@@ -16,12 +17,47 @@ const { toggleTheme } = require("./main/toggleTheme");
 if (require("electron-squirrel-startup")) {
   app.quit();
 }
+const { DEV, DIST } = { DEV: "devMode", DIST: "distMode" };
+/* To work around keeping files in the root for development I have added
+   this branch in a couple key locations. Most noteably, the root directory is 
+   different. 
+
+   I am in the midst of creating an API for images to prefix with the correct
+   directory by requesting the data from main process.
+
+   I spent considerable time learning the ins and outs of where files are being
+   stored.
+
+   The dev server is being run from .webpack/ and files included in the dist can access
+   relative filepaths so long as those files are present in the project
+   during the make process.
+
+   During dev, adding new files will force a reload. I have not been able to work around this.
+
+   In the dist, files are behaving now, as long as I use the app.getPath() to return the
+   appropriate location. For files in the renderer, I will allow them the new API to
+   access the correct path. Adding a new image during runtime with a relative path it tries
+   to access it from the deeply nested and unavaileble arsar package that is built.
+   */
+
+
+
+const userMode = DIST;
+
 //* ENV *//
-// const root = process.env.INIT_CWD;
-const root = `${app.getPath("userData")}`;
-const appIcon = path.join(root, "/data/assets/lore-library-icon-ai-1.png");
 process.env["ELECTRON_DISABLE_SECURITY_WARNINGS"] = true;
+
+let root;
+
+if (userMode === DEV) {
+  root = process.env.INIT_CWD;
+} else if (userMode === DIST) {
+  root = `${app.getPath("userData")}`;
+}
+
+const appIcon = path.join(root, "/data/assets/lore-library-icon-ai-1.png");
 app.setAppUserModelId("Lore");
+
 //* WINDOW *//
 let mainWindow;
 app.on("ready", () => {
@@ -42,6 +78,36 @@ app.on("activate", () => {
     createWindow();
   }
 });
+function createWindow() {
+  mainWindow = new BrowserWindow({
+    width: 900,
+    height: 600,
+    icon: appIcon,
+    webPreferences: {
+      preload: MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY,
+    },
+  });
+  const menu = Menu.buildFromTemplate([
+    {
+      label: "Cycle Backgrounds",
+      click: () => {
+        cycleBackgrounds(mainWindow, root);
+      },
+    },
+    {
+      label: "Toggle Theme",
+      click: () => {
+        toggleTheme(mainWindow);
+      },
+    },
+  ]);
+
+  Menu.setApplicationMenu(menu);
+  mainWindow.setMenuBarVisibility(true);
+  mainWindow.loadURL(MAIN_WINDOW_WEBPACK_ENTRY);
+  mainWindow.webContents.openDevTools();
+}
+
 //* DIRECTORY SETUP *//
 const _DIR = "/data";
 const _BACKUP_DIR = "/backup";
@@ -56,6 +122,7 @@ const TEMPLATES_FILE = "/templates.json";
 const LORE_LIBRARY = "/lib.json";
 const LORE_LIBRARY_TEMP = "/lib.temp.json";
 const LORE_LIBRARY_BAK = "/lib." + BACKUP_ID + ".bak.json";
+
 //* LORE LIBRARY CARD CATALOG *//
 let catalog; // TODO phasing this global out
 /**
@@ -85,14 +152,18 @@ let catalog; // TODO phasing this global out
  *                                                         specific sections (e.g., world, creature, item).
  *   @property {string} templates.path - Path to the JSON file containing template data (templates.json).
  */
+
 ipcMain.on("load:lore-data-project-directory", (event) => {
   const sendCatalogSuccess = loreAppLoadProjectDirectory();
   event.returnValue = sendCatalogSuccess;
   console.log("Loading catalog data...", sendCatalogSuccess);
 });
+
 ipcMain.on("lore-data-save", (event, data) => {
   const filename = catalog.lore.temp.path;
+
   console.log("Writing changes to temp:", filename);
+
   fs.writeFile(filename, JSON.stringify(data), (err) => {
     if (err) {
       console.error("Error saving lore:", err);
@@ -104,37 +175,45 @@ ipcMain.on("lore-data-save", (event, data) => {
     }
   });
 });
+
 ipcMain.on("save:lore-image", (event, filePath) => {
   saveImageData(event, filePath);
 });
-async function saveImageData(event, filePath) {
+
+async function saveImageData(event, sourceFilePath) {
   console.log("Saving image data...");
 
-  // Check if source file exists (separate function)
-  if (!(await isFileAccessible(filePath))) {
-    console.error("Source file not found:", filePath);
+  if (!(await isFileAccessible(sourceFilePath))) {
+    console.error("Source file not found:", sourceFilePath);
     return;
   }
 
-  const filename = path.basename(filePath);
-  const newImageFile = path.join(catalog.sprites.directory, filename);
+  const filename = path.basename(sourceFilePath);
+  const newImageFilePath = path.join(catalog.sprites.directory, filename);
 
-  const imageData = fs.readFileSync(filePath);
+  const imageData = fs.readFileSync(sourceFilePath);
 
-  if (!(await writeImageData(newImageFile, imageData))) {
-    return;
+  if (userMode === DIST) {
+    if (!(await writeImageData(newImageFilePath, imageData))) {
+      return;
+    }
   }
 
   if (!(await updateSpriteReferences(removeExtension(filename), filename))) {
     return;
   }
 
-  console.log("Image saved successfully!", newImageFile);
+  console.log("Image saved successfully!", newImageFilePath);
   console.log(
     "Sprites data updated with full-size image reference:",
     removeExtension(filename)
   );
-  event.returnValue = path.join("../data/assets/sprites", filename); // Return the image data
+
+  if (userMode === DEV) {
+    event.returnValue = path.join("../data/assets/sprites", filename);
+  } else if (userMode === DIST) {
+    event.returnValue = path.join(root, "/data/assets/sprites", filename);
+  }
 }
 async function updateSpriteReferences(fileIndex, filename) {
   catalog.sprites.data[SPRITES_KEY][fileIndex] = {};
@@ -168,6 +247,7 @@ async function isFileAccessible(filePath) {
     return false;
   }
 }
+
 ipcMain.on("templates-save", (event, data) => {
   // Ensure data contains only the templates section
   if (!data) {
@@ -187,58 +267,9 @@ ipcMain.on("templates-save", (event, data) => {
     }
   });
 });
+
 //* SYSTEM COMMANDS *//
-function createWindow() {
-  mainWindow = new BrowserWindow({
-    width: 900,
-    height: 600,
-    icon: appIcon,
-    webPreferences: {
-      preload: MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY,
-    },
-  });
-  const menu = Menu.buildFromTemplate([
-    // {
-    //   label: "File",
-    //   submenu: [
-    //     {
-    //       click: () => {
-    //         loreAppLoadProjectDirectory();
-    //       },
-    //       label: "Quick Start...",
-    //     },
-    //     {
-    //       click: () => {
-    //         handleOpenDialog();
-    //       },
-    //       label: "Open Project...",
-    //     },
-    //     {
-    //       click: () => {
-    //         saveChanges({ reason: "save" });
-    //       },
-    //       label: "Save Changes...",
-    //     },
-    //   ],
-    // },
-    {
-      label: "Cycle Backgrounds",
-      click: () => {
-        cycleBackgrounds(mainWindow, root);
-      },
-    },
-    {
-      label: "Toggle Theme",
-      click: () => {
-        toggleTheme(mainWindow);
-      },
-    },
-  ]);
-  Menu.setApplicationMenu(menu);
-  mainWindow.setMenuBarVisibility(true);
-  mainWindow.loadURL(MAIN_WINDOW_WEBPACK_ENTRY);
-  mainWindow.webContents.openDevTools();
-}
+
 function loreAppLoadProjectDirectory() {
   console.log("Loading...");
   const catalogData = initializeProjectDirectories();
@@ -316,6 +347,7 @@ function resolveBadShutdown() {
       });
   });
 }
+
 //* LIBRARY BUILD SCRIPTS *//
 function initializeProjectDirectories() {
   console.log("Process started from:", root);
