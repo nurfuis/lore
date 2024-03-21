@@ -82,15 +82,15 @@ export class EntryForm {
     if (!file) {
       return;
     }
-    if (!file.type.startsWith("image/")) {
-      console.error("Please select an image file!");
-      return;
-    }
-    electronAPI.saveImage(file.path);
-
-    setTimeout(() => {
-      this.setPreview(file.name);
-    }, 200);
+    // if (!file.type.startsWith("image/")) {
+    //   console.error("Please select an image file!");
+    //   return;
+    // }
+    const result = electronAPI.saveImage(file.path);
+    console.log(result);
+    // setTimeout(() => {
+    //   this.setPreview(file.name);
+    // }, 200);
   }
   updateForm() {
     console.log("Updating the form...");

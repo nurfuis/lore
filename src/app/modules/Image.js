@@ -9,6 +9,6 @@ export class Image {
   }
 
   save(file) {
-    electronAPI.saveImage(file.path);
+    // electronAPI.saveImage(file.path);
   }
 }

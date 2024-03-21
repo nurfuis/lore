@@ -103,28 +103,24 @@ ipcMain.on("lore-data-save", (event, data) => {
     }
   });
 });
-ipcMain.on("image-save", (event, filePath) => {
+ipcMain.on("save:lore-image", (event, filePath) => {
   const filename = path.basename(filePath);
   const newImageFile = `${filename}`;
-
-  // Proceed with image saving without resizing
+  console.log(newImageFile)
   fs.readFile(filePath, (err, imageData) => {
     if (err) {
       console.error("Error reading image file:", err);
-      event.sender.send("save-failed"); // Send failure message to renderer
-      return; // Exit on failure
+      event.sender.send("save-failed");
+      return;
     }
 
-    // Save the original image file directly
     fs.writeFile(newImageFile, imageData, (err) => {
       if (err) {
         console.error("Error saving image:", err);
-        event.sender.send("save-failed"); // Send failure message to renderer
+        event.sender.send("save-failed");
       } else {
         console.log("Image saved successfully!", newImageFile);
-        event.sender.send("save-success"); // Send success message to renderer
-
-        // Update catalog with the full-size image path
+        event.sender.send("save-success");
         try {
           const fileIndex = removeExtension(filename);
           catalog.sprites.data[SPRITES_KEY][fileIndex] = {};

@@ -12,7 +12,7 @@ const electronAPI = {
 
   //* ONE WAY TO MAIN *//
   saveLore: (data) => ipcRenderer.send("lore-data-save", data),
-  saveImage: (data) => ipcRenderer.send("image-save", data),
+  // saveImage: (data) => ipcRenderer.send("image-save", data),
   saveTemplates: (data) => ipcRenderer.send("templates-save", data),
 
   //* CALL AND RESPONSE *//
@@ -20,8 +20,8 @@ const electronAPI = {
     const response = ipcRenderer.invoke("dialog-file-open");
     return response;
   },
-  getImage(filename) {
-    const response = ipcRenderer.sendSync("image-request", filename);
+  saveImage(filename) {
+    const response = ipcRenderer.sendSync("save:lore-image", filename);
     return response;
   },
   fetchLoreData(path) {
