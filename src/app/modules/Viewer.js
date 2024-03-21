@@ -134,8 +134,8 @@ export class Viewer {
     }
 
     const itemPreview = document.createElement("p");
-    itemPreview.classList.add("lore-summary__entry-text"); // Add a class for styling
-    itemPreview.textContent = previewText.trim(); // Trim trailing newline
+    itemPreview.classList.add("lore-summary__entry-text"); 
+    itemPreview.textContent = previewText.trim();
     listContentElement.appendChild(itemPreview);
 
     if (item.sprite) {

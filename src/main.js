@@ -366,18 +366,22 @@ function readProjectData(projectDataDirectory) {
   const templates = readTemplates(projectDataDirectory);
   const lore = readLore(projectDataDirectory, templates);
 
+  loadSpriteData(sprites);
   return { lore, sprites, templates };
 
   function loadSpriteData(sprites) {
     for (const spriteName in sprites.data[SPRITES_KEY]) {
       const imagePath =
-        sprites.directory + sprites.data[SPRITES_KEY][spriteName][PREVIEWS_KEY];
+        sprites.directory + "/" + sprites.data[SPRITES_KEY][spriteName][PREVIEWS_KEY];
       fs.readFile(imagePath, (err, imageData) => {
         if (err) {
           console.error("Error reading image:", err);
         } else {
-          sprites.data[SPRITES_KEY][spriteName].previewData = {};
-          console.log("Loading image data:", spriteName);
+          const userData = app.getPath("userData") + "/images";
+          // check if filename exists in the userData dir
+          // write it to the userData dir if not exist
+
+          console.log("Loading image:", userData, spriteName);
         }
       });
     }
