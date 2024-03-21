@@ -69,8 +69,8 @@ function initializeWelcomeButtonStart() {
     ".welcome__button--start"
   );
   welcomeButtonStart[0].addEventListener("click", () => {
-    const catalog = electronAPI.fetchLoreData();
-    console.log("Project directory is loaded", catalog);
+    const isLoaded = electronAPI.fetchLoreData();
+    console.log("Project directory is loaded", isLoaded);
   });
 }
 

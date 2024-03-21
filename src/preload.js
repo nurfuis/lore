@@ -12,7 +12,6 @@ const electronAPI = {
 
   //* ONE WAY TO MAIN *//
   saveLore: (data) => ipcRenderer.send("lore-data-save", data),
-  // saveImage: (data) => ipcRenderer.send("image-save", data),
   saveTemplates: (data) => ipcRenderer.send("templates-save", data),
 
   //* CALL AND RESPONSE *//
@@ -21,7 +20,7 @@ const electronAPI = {
     return response;
   },
   saveImage(filename) {
-    const response = ipcRenderer.sendSync("save:lore-image", filename);
+    const response = ipcRenderer.invoke("save:lore-image", filename);
     return response;
   },
   fetchLoreData(path) {

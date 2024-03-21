@@ -77,17 +77,19 @@ export class EntryForm {
     this.ui.imagePreview.style.display = "block";
     this.spriteName = filename;
   }
-  updateImagePreview(event) {
+  async updateImagePreview(event) {
     const file = event.target.files[0];
     if (!file) {
       return;
     }
-    // if (!file.type.startsWith("image/")) {
-    //   console.error("Please select an image file!");
-    //   return;
-    // }
-    const result = electronAPI.saveImage(file.path);
+    if (!file.type.startsWith("image/")) {
+      console.error("Please select an image file!");
+      return;
+    }
+
+    const result = await electronAPI.saveImage(file.path);
     console.log(result);
+
     // setTimeout(() => {
     //   this.setPreview(file.name);
     // }, 200);

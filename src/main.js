@@ -106,21 +106,16 @@ ipcMain.on("lore-data-save", (event, data) => {
 ipcMain.on("save:lore-image", (event, filePath) => {
   const filename = path.basename(filePath);
   const newImageFile = `${filename}`;
-  console.log(newImageFile)
   fs.readFile(filePath, (err, imageData) => {
     if (err) {
       console.error("Error reading image file:", err);
-      event.sender.send("save-failed");
       return;
     }
-
     fs.writeFile(newImageFile, imageData, (err) => {
       if (err) {
         console.error("Error saving image:", err);
-        event.sender.send("save-failed");
       } else {
         console.log("Image saved successfully!", newImageFile);
-        event.sender.send("save-success");
         try {
           const fileIndex = removeExtension(filename);
           catalog.sprites.data[SPRITES_KEY][fileIndex] = {};
@@ -133,8 +128,9 @@ ipcMain.on("save:lore-image", (event, filePath) => {
             (err) => {
               if (err) {
                 console.error("Error saving updated sprites data:", err);
-                event.sender.send("save-failed"); // Send failure message to renderer
               } else {
+                event.returnValue(fileIndex); // Send failure message to renderer
+
                 console.log(
                   "Sprites data updated with full-size image reference:",
                   fileIndex
@@ -144,7 +140,6 @@ ipcMain.on("save:lore-image", (event, filePath) => {
           );
         } catch (err) {
           console.error("Error updating sprites data:", err);
-          event.sender.send("save-failed"); // Send failure message to renderer
         }
       }
     });
