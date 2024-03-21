@@ -1,4 +1,5 @@
 import { UIElements } from "../UIElements";
+
 export class EntryForm {
   constructor() {
     this.ui = new UIElements();
@@ -86,13 +87,13 @@ export class EntryForm {
       console.error("Please select an image file!");
       return;
     }
-
-    const result = await electronAPI.saveImage(file.path);
+    console.log("image file path to save", file.path);
+    const result = electronAPI.saveImage(file.path);
     console.log(result);
 
-    // setTimeout(() => {
-    //   this.setPreview(file.name);
-    // }, 200);
+    setTimeout(() => {
+      this.setPreview(removeExtension(file.name));
+    }, 200);
   }
   updateForm() {
     console.log("Updating the form...");

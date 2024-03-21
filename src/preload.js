@@ -20,7 +20,7 @@ const electronAPI = {
     return response;
   },
   saveImage(filePath) {
-    const response = ipcRenderer.invoke("save:lore-image", filePath);
+    const response = ipcRenderer.sendSync("save:lore-image", filePath);
     return response;
   },
   fetchLoreData(path) {

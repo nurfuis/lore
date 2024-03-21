@@ -103,52 +103,52 @@ ipcMain.on("lore-data-save", (event, data) => {
     }
   });
 });
+ipcMain.on("save:lore-image", (event, filePath) => {
+  saveImageData(filePath);
+  function saveImageData(filePath) {
+    console.log("Save image data...");
+    const filename = path.basename(filePath);
+    const newImageFile = `${catalog.sprites.directory}/${filename}`;
 
-ipcMain.handle("save:lore-image", saveImageData(filePath));
-
-function saveImageData(filePath) {
-  console.log('Save image data...', filePath)
-  const filename = path.basename(filePath);
-  const newImageFile = `${catalog.sprites.directory}/${filename}`;
-  
-  fs.readFile(filePath, (err, imageData) => {
-    if (err) {
-      console.error("Error reading image file:", err);
-      return;
-    }
-    fs.writeFile(newImageFile, imageData, (err) => {
+    fs.readFile(filePath, (err, imageData) => {
       if (err) {
-        console.error("Error saving image:", err);
-      } else {
-        console.log("Image saved successfully!", newImageFile);
-        try {
-          const fileIndex = removeExtension(filename);
-          catalog.sprites.data[SPRITES_KEY][fileIndex] = {};
-          catalog.sprites.data[SPRITES_KEY][fileIndex][PREVIEWS_KEY] =
-            newImageFile; // Set full path as preview
-
-          fs.writeFile(
-            catalog.sprites.path,
-            JSON.stringify(catalog.sprites.data),
-            (err) => {
-              if (err) {
-                console.error("Error saving updated sprites data:", err);
-              } else {
-                console.log(
-                  "Sprites data updated with full-size image reference:",
-                  fileIndex
-                );
-                return fileIndex;
-              }
-            }
-          );
-        } catch (err) {
-          console.error("Error updating sprites data:", err);
-        }
+        console.error("Error reading image file:", err);
+        return;
       }
+      fs.writeFile(newImageFile, imageData, (err) => {
+        if (err) {
+          console.error("Error saving image:", err);
+        } else {
+          console.log("Image saved successfully!", newImageFile);
+          try {
+            const fileIndex = removeExtension(filename);
+            catalog.sprites.data[SPRITES_KEY][fileIndex] = {};
+            catalog.sprites.data[SPRITES_KEY][fileIndex][PREVIEWS_KEY] =
+              fileIndex;
+
+            fs.writeFile(
+              catalog.sprites.path,
+              JSON.stringify(catalog.sprites.data),
+              (err) => {
+                if (err) {
+                  console.error("Error saving updated sprites data:", err);
+                } else {
+                  console.log(
+                    "Sprites data updated with full-size image reference:",
+                    fileIndex
+                  );
+                  event.returnValue = fileIndex;
+                }
+              }
+            );
+          } catch (err) {
+            console.error("Error updating sprites data:", err);
+          }
+        }
+      });
     });
-  });
-}
+  }
+});
 
 ipcMain.on("templates-save", (event, data) => {
   // Ensure data contains only the templates section
