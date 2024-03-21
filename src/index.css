@@ -251,7 +251,6 @@ button:hover {
   background-color: rgba(0, 0, 0, 0.4); /* Black w/ opacity */
   /* Light background for better contrast */
   border-bottom: 1px solid var(--secondary-color); /* Bright purple border */
-  padding: 1rem;
   width: 100%;
 }
 #game-data-viewer button {
@@ -357,30 +356,42 @@ button:hover {
   margin-bottom: 2rem;
   background-color: var(--button-color); /* Bright purple from theme */
 }
-.item-preview {
+.lore-summary__content {
+  padding: 1rem;
+}
+.lore-summary__entry-image-preview-wrapper {
+  width: 100%;
+  height: 100%;
+  grid-area: entry-image-wrapper;
+}
+.lore-summary__entry-image-preview {
   display: flex;
+  align-content: center;
   width: 64px;
   height: 64px;
+  grid-area: entry-image-preview;
 }
-.item-preview-text {
+.lore-summary__entry-text {
   font-family: monospace; /* Optional: Use a monospace font for better alignment */
   font-size: large;
   line-height: 1.2rem;
   white-space: pre-wrap; /* Wrap text without breaking words */
   margin-bottom: 0.5rem; /* Remove default margin for cleaner spacing */
-  grid-area: item-preview-text;
+  grid-area: entry-text;
 }
 
 .lore-summary__details-button {
-  grid-area: lore-summary-details-button;
+  grid-area: details-button;
 }
 .lore-summary__delete-entry-button {
-  grid-area: lore-summary-delete-entry-button;
+  grid-area: delete-entry-button;
 }
 /* block__element--modifier */
 .lore-summary {
   display: grid;
-  grid-template-areas: "";
+  grid-template-areas:
+    "entry-text entry-text entry-text"
+    "details-button  delete-entry-button entry-image-wrapper";
 }
 
 .prompt {

@@ -28,7 +28,8 @@ function updateDetailsModal(item, sprites) {
     uiElements.spriteContainer.innerHTML = ""; // Clear any existing sprite
 
     const spriteImage = document.createElement("img");
-    spriteImage.src = '../data/assets/sprites/' + sprites.data.sprite[item.sprite].preview;
+    spriteImage.src =
+      "../data/assets/sprites/" + sprites.data.sprite[item.sprite].preview;
     spriteImage.alt = "Item Sprite";
     uiElements.spriteContainer.appendChild(spriteImage);
   }
@@ -76,7 +77,7 @@ export class Viewer {
         this.deleteConfirmed(itemToDelete, type); // Call function to delete after confirmation
         confirmationModal.style.display = "none"; // Hide the modal
       });
-      
+
       const cancelDeleteButton = document.getElementById("cancel-delete");
       cancelDeleteButton.addEventListener("click", () => {
         confirmationModal.style.display = "none"; // Hide the modal on cancel
@@ -104,10 +105,12 @@ export class Viewer {
   }
   // WE ARE HERE
   createItem(item, sprites) {
-    const itemElement = document.createElement("li");
-    itemElement.classList.add("lore-summary");
+    const listParentElement = document.createElement("li");
+    listParentElement.classList.add("lore-summary");
 
-    // <grid-area-name></grid-area-name>
+    const listContentElement = document.createElement("div");
+    listContentElement.classList.add("lore-summary__content");
+    listParentElement.appendChild(listContentElement);
 
     let previewText = ""; // Empty string for text accumulation
     // Get the name and version keys (assuming they exist)
@@ -131,26 +134,32 @@ export class Viewer {
     }
 
     const itemPreview = document.createElement("p");
-    itemPreview.classList.add("item-preview-text"); // Add a class for styling
+    itemPreview.classList.add("lore-summary__entry-text"); // Add a class for styling
     itemPreview.textContent = previewText.trim(); // Trim trailing newline
-    itemElement.appendChild(itemPreview);
+    listContentElement.appendChild(itemPreview);
 
     if (item.sprite) {
       const previewElement = document.createElement("img");
+      previewElement.src =
+        "../data/assets/sprites/" +
+        this.sprites.data.sprite[item.sprite].preview;
+      previewElement.classList.add("lore-summary__entry-image-preview");
 
-
-      previewElement.src = '../data/assets/sprites/' + this.sprites.data.sprite[item.sprite].preview;
-      previewElement.classList.add("item-preview");
-      itemElement.appendChild(previewElement);
+      const entryImagePreviewWrapper = document.createElement("div");
+      entryImagePreviewWrapper.classList.add(
+        "lore-summary__entry-image-preview-wrapper"
+      );
+      entryImagePreviewWrapper.appendChild(previewElement);
+      listContentElement.appendChild(entryImagePreviewWrapper);
     }
 
     const detailsButton = createDetailsButton(item, sprites);
-    itemElement.appendChild(detailsButton);
+    listContentElement.appendChild(detailsButton);
 
     const deleteButton = this.createDeleteButton(item);
-    itemElement.appendChild(deleteButton);
+    listContentElement.appendChild(deleteButton);
 
-    return itemElement;
+    return listParentElement;
   }
   createCard(type) {
     const card = document.createElement("div");
@@ -167,7 +176,10 @@ export class Viewer {
 
     // Create cards for items in alphabetical order
     sortedKeys.forEach((key) => {
-      const itemElement = this.createItem(this.entryForm.loreLib[type][key], this.sprites);
+      const itemElement = this.createItem(
+        this.entryForm.loreLib[type][key],
+        this.sprites
+      );
       itemsContainer.appendChild(itemElement);
     });
 
