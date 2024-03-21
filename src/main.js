@@ -19,8 +19,7 @@ if (require("electron-squirrel-startup")) {
 //* ENV *//
 // const root = process.env.INIT_CWD;
 const root = `${app.getPath("userData")}`;
-let currentDirectory = root;
-const appIcon = root + "/data/assets/lore-library-icon-ai-1.png";
+const appIcon = path.join(root, "/data/assets/lore-library-icon-ai-1.png");
 process.env["ELECTRON_DISABLE_SECURITY_WARNINGS"] = true;
 app.setAppUserModelId("Lore");
 //* WINDOW *//
@@ -107,51 +106,6 @@ ipcMain.on("lore-data-save", (event, data) => {
 });
 ipcMain.on("save:lore-image", (event, filePath) => {
   saveImageData(event, filePath);
-  // function saveImageData(filePath) {
-  //   console.log("Save image data...");
-  //   // create the path for the new image
-  //   const filename = path.basename(filePath);
-  //   const newImageFile = path.join(catalog.sprites.directory, filename);
-
-  //   fs.readFile(filePath, (err, imageData) => {
-  //     if (err) {
-  //       console.error("Error reading image file:", err);
-  //       return;
-  //     }
-  //     // --- source file exists, write to new path
-  //     fs.writeFile(newImageFile, imageData, (err) => {
-  //       if (err) {
-  //         console.error("Error saving image:", err);
-  //       } else {
-  //         console.log("Image saved successfully!", newImageFile);
-  //         try {
-  //           const fileIndex = removeExtension(filename);
-  //           catalog.sprites.data[SPRITES_KEY][fileIndex] = {};
-  //           catalog.sprites.data[SPRITES_KEY][fileIndex][PREVIEWS_KEY] =
-  //             filename;
-  //           // --- image copied, update the sprites reference manifest
-  //           fs.writeFile(
-  //             catalog.sprites.path,
-  //             JSON.stringify(catalog.sprites.data),
-  //             (err) => {
-  //               if (err) {
-  //                 console.error("Error saving updated sprites data:", err);
-  //               } else {
-  //                 console.log(
-  //                   "Sprites data updated with full-size image reference:",
-  //                   fileIndex
-  //                 );
-  //                 event.returnValue = imageData;
-  //               }
-  //             }
-  //           );
-  //         } catch (err) {
-  //           console.error("Error updating sprites data:", err);
-  //         }
-  //       }
-  //     });
-  //   });
-  // }
 });
 async function saveImageData(event, filePath) {
   console.log("Saving image data...");
@@ -165,15 +119,12 @@ async function saveImageData(event, filePath) {
   const filename = path.basename(filePath);
   const newImageFile = path.join(catalog.sprites.directory, filename);
 
-  // Read the image data synchronously (might need adjustment)
   const imageData = fs.readFileSync(filePath);
 
-  // Write the image to the new path (separate function)
-  // if (!(await writeImageData(newImageFile, imageData))) {
-  //   return;
-  // }
+  if (!(await writeImageData(newImageFile, imageData))) {
+    return;
+  }
 
-  // Update references in catalog and manifest (separate function)
   if (!(await updateSpriteReferences(removeExtension(filename), filename))) {
     return;
   }
@@ -293,7 +244,7 @@ function loreAppLoadProjectDirectory() {
   const catalogData = initializeProjectDirectories();
   catalog = catalogData;
   mainWindow.webContents.send("send:catalog-data", catalogData);
-  mainWindow.webContents.send("send:current-directory", currentDirectory);
+  mainWindow.webContents.send("send:current-directory", root);
   return true;
 }
 function saveChanges({ reason }) {
