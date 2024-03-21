@@ -5,6 +5,7 @@ import { Prompts } from "./app/modules/Prompts";
 import { TemplateMaker } from "./app/modules/TemplateMaker";
 import { Viewer } from "./app/modules/Viewer";
 import { Menu } from "./app/modules/Menu";
+
 //* MAIN FEATURE *//
 const uiElements = new UIElements();
 const entryForm = new EntryForm();
@@ -12,17 +13,35 @@ const prompts = new Prompts();
 const templateMaker = new TemplateMaker();
 const viewer = new Viewer();
 const menu = new Menu();
-// Couple the entry form with prompts
+
 entryForm.prompts = prompts;
 prompts.entryForm = entryForm;
-// Couple the entry form with templates
+
 templateMaker.entryForm = entryForm;
 entryForm.templateMaker = templateMaker;
-// Inject the viewer with entryForm
+
 viewer.entryForm = entryForm;
-// Inject the menu with viewer
+
 menu.viewer = viewer;
+
 // * OPEN THE CATALOG *//
+initializeWelcomeButtonStart();
+
+electronAPI.onOpenProject((catalog) => {
+  start(catalog);
+});
+electronAPI.onSetProjectDirectory((currentDirectory) => {
+  setDetailsProjectDirectory(currentDirectory);
+  function setDetailsProjectDirectory(currentDirectory) {
+    const detailsProjectDirectory = document.querySelectorAll(
+      ".details__project-directory"
+    );
+    detailsProjectDirectory[0].innerText = "";
+    detailsProjectDirectory[0].innerText = "Project Path " + currentDirectory;
+    return true;
+  }
+});
+
 function start(catalog) {
   entryForm.loreLib = catalog.lore.main.data;
   entryForm.templates = catalog.templates.data;
@@ -50,19 +69,14 @@ function start(catalog) {
   templateMaker.updateOptions();
   entryForm.updateForm();
 }
-// Listen for start command and its data pack
-electronAPI.onOpenProject((catalog) => {
-  start(catalog);
-});
-// make an event to listen for the update
-electronAPI.onSetProjectDirectory((currentDirectory) => {
-  setDetailsProjectDirectory(currentDirectory);
-  function setDetailsProjectDirectory(currentDirectory) {
-    const detailsProjectDirectory = document.querySelectorAll(
-      ".details__project-directory"
-    );
-    detailsProjectDirectory[0].innerText = "";
-    detailsProjectDirectory[0].innerText = "Project Path " + currentDirectory;
-    return true;
-  }
-});
+function initializeWelcomeButtonStart() {
+  const welcomeButtonStart = document.querySelectorAll(
+    ".welcome__button--start"
+  );
+  welcomeButtonStart[0].addEventListener("click", () => {
+    const isLoaded = electronAPI.loadLoreData();
+    console.log("Project directory is loaded", isLoaded);
+  });
+}
+
+

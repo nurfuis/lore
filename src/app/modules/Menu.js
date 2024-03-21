@@ -6,10 +6,7 @@ function toggleSettingsModal() {
 }
 
 export class Menu {
-  constructor() {
-
-    initializeWelcomeButtonStart();
-    
+  constructor() {   
     uiElements.createButton.addEventListener("click", () =>
       this.toggleView(true)
     );
@@ -63,14 +60,5 @@ export class Menu {
       : "none";
     uiElements.gameDataViewer.style.display = showCreateForm ? "none" : "block";
   }
-}
-function initializeWelcomeButtonStart() {
-  const welcomeButtonStart = document.querySelectorAll(
-    ".welcome__button--start"
-  );
-  welcomeButtonStart[0].addEventListener("click", () => {
-    const isLoaded = electronAPI.fetchLoreData();
-    console.log("Project directory is loaded", isLoaded);
-  });
 }
 

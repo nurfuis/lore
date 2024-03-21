@@ -15,15 +15,12 @@ const electronAPI = {
   saveTemplates: (data) => ipcRenderer.send("templates-save", data),
 
   //* CALL AND RESPONSE *//
-  openFileDialog() {
-    const response = ipcRenderer.invoke("dialog-file-open");
-    return response;
-  },
+
   saveImage(filePath) {
     const response = ipcRenderer.sendSync("save:lore-image", filePath);
     return response;
   },
-  fetchLoreData(path) {
+  loadLoreData(path) {
     const response = ipcRenderer.sendSync(
       "load:lore-data-project-directory",
       path
