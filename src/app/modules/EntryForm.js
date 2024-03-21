@@ -88,12 +88,14 @@ export class EntryForm {
       return;
     }
     console.log("image file path to save", file.path);
-    const result = electronAPI.saveImage(file.path);
-    console.log(result);
+    const src = electronAPI.saveImage(file.path);
+    this.ui.imagePreview.src = `${src}`;
 
-    setTimeout(() => {
-      this.setPreview(removeExtension(file.name));
-    }, 200);
+    this.ui.imagePreview.style.display = "block";
+
+    // setTimeout(() => {
+    //   this.setPreview(removeExtension(file.name));
+    // }, 200);
   }
   updateForm() {
     console.log("Updating the form...");

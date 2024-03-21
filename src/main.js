@@ -12,6 +12,7 @@ const { DEFAULT_TEMPLATES } = require("./app/constants");
 const { removeExtension } = require("./app/utils/removeExtension");
 const { cycleBackgrounds } = require("./main/cycleBackgrounds");
 const { toggleTheme } = require("./main/toggleTheme");
+
 if (require("electron-squirrel-startup")) {
   app.quit();
 }
@@ -104,52 +105,117 @@ ipcMain.on("lore-data-save", (event, data) => {
   });
 });
 ipcMain.on("save:lore-image", (event, filePath) => {
-  saveImageData(filePath);
-  function saveImageData(filePath) {
-    console.log("Save image data...");
-    const filename = path.basename(filePath);
-    const newImageFile = `${catalog.sprites.directory}/${filename}`;
+  saveImageData(event, filePath);
+  // function saveImageData(filePath) {
+  //   console.log("Save image data...");
+  //   // create the path for the new image
+  //   const filename = path.basename(filePath);
+  //   const newImageFile = path.join(catalog.sprites.directory, filename);
 
-    fs.readFile(filePath, (err, imageData) => {
-      if (err) {
-        console.error("Error reading image file:", err);
-        return;
-      }
-      fs.writeFile(newImageFile, imageData, (err) => {
-        if (err) {
-          console.error("Error saving image:", err);
-        } else {
-          console.log("Image saved successfully!", newImageFile);
-          try {
-            const fileIndex = removeExtension(filename);
-            catalog.sprites.data[SPRITES_KEY][fileIndex] = {};
-            catalog.sprites.data[SPRITES_KEY][fileIndex][PREVIEWS_KEY] =
-              fileIndex;
-
-            fs.writeFile(
-              catalog.sprites.path,
-              JSON.stringify(catalog.sprites.data),
-              (err) => {
-                if (err) {
-                  console.error("Error saving updated sprites data:", err);
-                } else {
-                  console.log(
-                    "Sprites data updated with full-size image reference:",
-                    fileIndex
-                  );
-                  event.returnValue = fileIndex;
-                }
-              }
-            );
-          } catch (err) {
-            console.error("Error updating sprites data:", err);
-          }
-        }
-      });
-    });
-  }
+  //   fs.readFile(filePath, (err, imageData) => {
+  //     if (err) {
+  //       console.error("Error reading image file:", err);
+  //       return;
+  //     }
+  //     // --- source file exists, write to new path
+  //     fs.writeFile(newImageFile, imageData, (err) => {
+  //       if (err) {
+  //         console.error("Error saving image:", err);
+  //       } else {
+  //         console.log("Image saved successfully!", newImageFile);
+  //         try {
+  //           const fileIndex = removeExtension(filename);
+  //           catalog.sprites.data[SPRITES_KEY][fileIndex] = {};
+  //           catalog.sprites.data[SPRITES_KEY][fileIndex][PREVIEWS_KEY] =
+  //             filename;
+  //           // --- image copied, update the sprites reference manifest
+  //           fs.writeFile(
+  //             catalog.sprites.path,
+  //             JSON.stringify(catalog.sprites.data),
+  //             (err) => {
+  //               if (err) {
+  //                 console.error("Error saving updated sprites data:", err);
+  //               } else {
+  //                 console.log(
+  //                   "Sprites data updated with full-size image reference:",
+  //                   fileIndex
+  //                 );
+  //                 event.returnValue = imageData;
+  //               }
+  //             }
+  //           );
+  //         } catch (err) {
+  //           console.error("Error updating sprites data:", err);
+  //         }
+  //       }
+  //     });
+  //   });
+  // }
 });
+async function saveImageData(event, filePath) {
+  console.log("Saving image data...");
 
+  // Check if source file exists (separate function)
+  if (!(await isFileAccessible(filePath))) {
+    console.error("Source file not found:", filePath);
+    return;
+  }
+
+  const filename = path.basename(filePath);
+  const newImageFile = path.join(catalog.sprites.directory, filename);
+
+  // Read the image data synchronously (might need adjustment)
+  const imageData = fs.readFileSync(filePath);
+
+  // Write the image to the new path (separate function)
+  // if (!(await writeImageData(newImageFile, imageData))) {
+  //   return;
+  // }
+
+  // Update references in catalog and manifest (separate function)
+  if (!(await updateSpriteReferences(removeExtension(filename), filename))) {
+    return;
+  }
+
+  console.log("Image saved successfully!", newImageFile);
+  console.log(
+    "Sprites data updated with full-size image reference:",
+    removeExtension(filename)
+  );
+  event.returnValue = path.join("../data/assets/sprites", filename); // Return the image data
+}
+async function updateSpriteReferences(fileIndex, filename) {
+  catalog.sprites.data[SPRITES_KEY][fileIndex] = {};
+  catalog.sprites.data[SPRITES_KEY][fileIndex][PREVIEWS_KEY] = filename;
+
+  try {
+    await fs.promises.writeFile(
+      catalog.sprites.path,
+      JSON.stringify(catalog.sprites.data)
+    );
+    return true;
+  } catch (err) {
+    console.error("Error saving updated sprites data:", err);
+    return false;
+  }
+}
+async function writeImageData(filePath, imageData) {
+  try {
+    await fs.promises.writeFile(filePath, imageData);
+    return true;
+  } catch (err) {
+    console.error("Error writing image data:", err);
+    return false;
+  }
+}
+async function isFileAccessible(filePath) {
+  try {
+    await fs.promises.access(filePath, fs.constants.F_OK);
+    return true;
+  } catch (err) {
+    return false;
+  }
+}
 ipcMain.on("templates-save", (event, data) => {
   // Ensure data contains only the templates section
   if (!data) {
@@ -372,7 +438,9 @@ function readProjectData(projectDataDirectory) {
   function loadSpriteData(sprites) {
     for (const spriteName in sprites.data[SPRITES_KEY]) {
       const imagePath =
-        sprites.directory + "/" + sprites.data[SPRITES_KEY][spriteName][PREVIEWS_KEY];
+        sprites.directory +
+        "/" +
+        sprites.data[SPRITES_KEY][spriteName][PREVIEWS_KEY];
       fs.readFile(imagePath, (err, imageData) => {
         if (err) {
           console.error("Error reading image:", err);
@@ -526,27 +594,27 @@ function readLore(projectDataDirectory, templates) {
   );
   return fileSet;
 }
-ipcMain.handle("dialog-file-open", handleOpenDialog);
+// ipcMain.handle("dialog-file-open", handleOpenDialog);
 
-async function handleOpenDialog() {
-  const { canceled, filePaths } = await dialog.showOpenDialog({
-    properties: ["openDirectory"],
-  });
-  if (!canceled) {
-    console.log("dialog result", filePaths[0]);
-    return filePaths[0];
-  }
-}
-function updateCurrentDirectory(filePath) {
-  currentDirectory = filePath;
-  const configFile = root + "/config.json";
-  const data = { USER_PATH: filePath };
-  console.log("update USER_PATH", data);
-  fs.writeFile(configFile, JSON.stringify(data), (err) => {
-    if (err) {
-      console.error("Error saving config:", err);
-    } else {
-      console.log("Config updated.", data);
-    }
-  });
-}
+// async function handleOpenDialog() {
+//   const { canceled, filePaths } = await dialog.showOpenDialog({
+//     properties: ["openDirectory"],
+//   });
+//   if (!canceled) {
+//     console.log("dialog result", filePaths[0]);
+//     return filePaths[0];
+//   }
+// }
+// function updateCurrentDirectory(filePath) {
+//   currentDirectory = filePath;
+//   const configFile = root + "/config.json";
+//   const data = { USER_PATH: filePath };
+//   console.log("update USER_PATH", data);
+//   fs.writeFile(configFile, JSON.stringify(data), (err) => {
+//     if (err) {
+//       console.error("Error saving config:", err);
+//     } else {
+//       console.log("Config updated.", data);
+//     }
+//   });
+// }

@@ -113,16 +113,14 @@ export class Viewer {
     listParentElement.appendChild(listContentElement);
 
     let previewText = ""; // Empty string for text accumulation
-    // Get the name and version keys (assuming they exist)
-    const nameKey = "name"; // Adjust if the name key has a different name
-    const versionKey = "version"; // Adjust if the version key has a different name
+    const nameKey = "name"; 
+    const versionKey = "version";
     const descriptionKey = "description";
 
     const nameValue = item[nameKey];
     const versionValue = item[versionKey];
     const descriptionValue = item[descriptionKey];
 
-    // Add name and version (if they exist) with newline
     if (nameValue) {
       previewText += `Name: ${nameValue}\n`;
     }
