@@ -88,9 +88,12 @@ export class EntryForm {
       }
 
       if (selectedEntry) {
-        this.ui.generatePromptButton.style.display = "flex";
+        const entryFormGeneratePromptButton = document.querySelectorAll(
+          ".entry-form__commands-button--generate-prompt"
+        );
+        entryFormGeneratePromptButton[0].style.display = "flex";
       } else {
-        this.ui.generatePromptButton.style.display = "none";
+        entryFormGeneratePromptButton[0].style.display = "none";
       }
     }
   }
