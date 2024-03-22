@@ -109,7 +109,7 @@ export class EntryForm {
       ".entry-form__image--input"
     );
     entryFormImageInput[0].value = "";
-    
+
     this.spriteName = undefined;
   }
 
@@ -118,9 +118,11 @@ export class EntryForm {
 
     const imageSource = window.electronAPI.getPathSpritesPreview(fileKey);
 
-    this.ui.imagePreview.src = imageSource;
+    const entryFormImagePreview = document.querySelectorAll(".entry-form__image--preview");
 
-    this.ui.imagePreview.style.display = "block";
+    entryFormImagePreview[0].src = imageSource;
+
+    entryFormImagePreview[0].style.display = "block";
   }
 
   async updateImagePreview(event) {
@@ -133,14 +135,17 @@ export class EntryForm {
       console.error("Please select an image file!");
       return;
     }
-    console.log("save:lore-image", file.name);
 
     this.spriteName = removeExtension(file.name);
 
     const pathToSource = electronAPI.saveImage(file.path);
 
-    this.ui.imagePreview.src = `${pathToSource}`;
-    this.ui.imagePreview.style.display = "block";
+    const entryFormImagePreview = document.querySelectorAll(".entry-form__image--preview");
+
+    entryFormImagePreview[0].src = `${pathToSource}`;
+    entryFormImagePreview[0].display = "block";
+
+    console.log("save:lore-image", file.name);
   }
   updateForm() {
     this.clearImagePreview();
@@ -166,7 +171,7 @@ export class EntryForm {
 
         const promptSpan = document.createElement("span");
         promptSpan.classList.add("prompt");
-        // TODO add an extra fallback from the prompts
+
         promptSpan.textContent =
           fieldData.prompt ||
           this.prompts.templates[fieldName] ||
