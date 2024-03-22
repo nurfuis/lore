@@ -65,8 +65,6 @@ export class EntryForm {
       );
 
       entryFormTemplateSelect[0].selectedIndex = 0;
-      this.updateForm();
-      
       entryFormPrototypeSelect[0].selectedIndex = 0;
       this.updateForm();
     });
