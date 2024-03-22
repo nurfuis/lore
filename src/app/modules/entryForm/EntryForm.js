@@ -13,45 +13,18 @@ export class EntryForm {
     );
     entryFormTemplateSelect[0].addEventListener("change", () => {
       const activeTemplate = entryFormTemplateSelect[0].value;
-      if (!activeTemplate) {
-        this.selectedTemplate = entryFormTemplateSelect;
-        this.updateForm();
-        this.updatePrototypeDropdown();
-      } else if (this.selectedTemplate != entryFormTemplateSelect) {
-        this.selectedTemplate = activeTemplate;
-        this.updateForm();
-        this.updatePrototypeDropdown();
-      }
+      
+      this.selectedTemplate = activeTemplate; // TODO phase out this property
+
+      this.updateForm();
+      this.updatePrototypeDropdown();
     });
 
     const entryFormPrototypeSelect = document.querySelectorAll(
       ".entry-form__prototype-select"
     );
     entryFormPrototypeSelect[0].addEventListener("change", (event) => {
-      this.selectedEntry = event.target.value;
-      if (this.selectedEntry) {
-        this.ui.generatePromptButton.style.display = "flex";
-      } else {
-        this.ui.generatePromptButton.style.display = "none";
-      }
-
-      for (const field in this.loreLib[this.selectedTemplate][
-        this.selectedEntry
-      ]) {
-        if (field == "sprite") {
-          this.setPreview(
-            this.loreLib[this.selectedTemplate][this.selectedEntry][field]
-          );
-          this.spriteName =
-            this.loreLib[this.selectedTemplate][this.selectedEntry][field];
-        } else if (field !== "valid" && field !== "version") {
-          const element = document.querySelector(`[name=${field}]`);
-          element.value =
-            this.loreLib[this.selectedTemplate][this.selectedEntry][field];
-
-          this.clearImagePreview();
-        }
-      }
+      this.handlePrototypeSelect(event);
     });
 
     const entryFormCommandButtonClear = document.querySelectorAll(
@@ -84,12 +57,40 @@ export class EntryForm {
       this.clearImagePreview();
     });
 
-    const entryFormSaveAll = document.querySelectorAll(".entry-form__save-button")
+    const entryFormSaveAll = document.querySelectorAll(
+      ".entry-form__save-button"
+    );
     entryFormSaveAll[0].addEventListener("click", () => {
       this.saveEntry();
       this.updatePrototypeDropdown();
     });
   }
+  handlePrototypeSelect(event) {
+    this.selectedEntry = event.target.value;
+    if (this.selectedEntry) {
+      this.ui.generatePromptButton.style.display = "flex";
+    } else {
+      this.ui.generatePromptButton.style.display = "none";
+    }
+
+    for (const field in this.loreLib[this.selectedTemplate][this.selectedEntry]) {
+      console.log(this.selectedTemplate, this.selectedEntry);
+      if (field == "sprite") {
+        this.setPreview(
+          this.loreLib[this.selectedTemplate][this.selectedEntry][field]
+        );
+        this.spriteName =
+          this.loreLib[this.selectedTemplate][this.selectedEntry][field];
+      } else if (field !== "valid" && field !== "version") {
+        const element = document.querySelector(`[name=${field}]`);
+        element.value =
+          this.loreLib[this.selectedTemplate][this.selectedEntry][field];
+
+        this.clearImagePreview();
+      }
+    }
+  }
+
   clearImagePreview() {
     this.ui.imagePreview.src = "";
     this.ui.imagePreview.style.display = "none";
