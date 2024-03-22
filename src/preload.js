@@ -11,7 +11,7 @@ const electronAPI = {
     ),
 
   //* ONE WAY TO MAIN *//
-  saveLore: (data) => ipcRenderer.send("lore-data-save", data),
+  saveLore: (data) => ipcRenderer.send("save:lore-information", data),
   saveTemplates: (data) => ipcRenderer.send("templates-save", data),
 
   //* CALL AND RESPONSE *//

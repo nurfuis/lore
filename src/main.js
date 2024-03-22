@@ -432,7 +432,7 @@ class Catalog {
       }
     });
 
-    ipcMain.on("lore-data-save", (event, data) => {
+    ipcMain.on("save:lore-information", (event, data) => {
       const filename = this.information.lore.temp.path;
 
       console.log("Writing changes to temp:", filename);
