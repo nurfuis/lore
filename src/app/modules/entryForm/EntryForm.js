@@ -24,7 +24,6 @@ export class EntryForm {
       }
     });
 
-
     const entryFormPrototypeSelect = document.querySelectorAll(
       ".entry-form__prototype-select"
     );
@@ -55,7 +54,9 @@ export class EntryForm {
       }
     });
 
-    const entryFormCommandButtonClear = document.querySelectorAll(".entry-form__commands-button--clear")
+    const entryFormCommandButtonClear = document.querySelectorAll(
+      ".entry-form__commands-button--clear"
+    );
     entryFormCommandButtonClear[0].addEventListener("click", () => {
       const entryFormTemplateSelect = document.querySelectorAll(
         ".entry-form__template-select"
@@ -69,7 +70,10 @@ export class EntryForm {
       this.updateForm();
     });
 
-    this.ui.imageInput.addEventListener("change", (event) => {
+    const entryFormImageInput = document.querySelectorAll(
+      ".entry-form__image-input"
+    );
+    entryFormImageInput[0].addEventListener("change", (event) => {
       this.updateImagePreview(event);
     });
 
@@ -81,10 +85,6 @@ export class EntryForm {
       this.saveEntry();
       this.updatePrototypeDropdown();
     });
-
-
-
-
   }
   clearImagePreview() {
     this.ui.imagePreview.src = "";
