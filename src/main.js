@@ -188,6 +188,7 @@ class Library {
 
     return loreFiles;
   }
+
   readProjectData(projectDataDirectory) {
     const sprites = this.readSprites(projectDataDirectory);
     const templates = this.readTemplates(projectDataDirectory);
@@ -195,6 +196,7 @@ class Library {
 
     return { lore, sprites, templates };
   }
+
   readSprites(projectDataDirectory) {
     const spritesLibraryFile = path.join(projectDataDirectory, SPRITE_LIBRARY);
     console.log("Reading sprites file...");
@@ -212,6 +214,7 @@ class Library {
       directory: path.join(projectDataDirectory, _ASSETS_DIR, _SPRITES_DIR),
     };
   }
+
   newSpritesManifest(spritesLibraryFile) {
     let emptySpritesObject = {};
     emptySpritesObject[SPRITES_KEY] = {};
@@ -228,6 +231,7 @@ class Library {
     );
     return emptySpritesObject;
   }
+
   readTemplates(projectDataDirectory) {
     const templatesFile = path.join(projectDataDirectory, TEMPLATES_FILE);
     console.log("Reading templates file...");
@@ -250,6 +254,7 @@ class Library {
     }
     return { data: results, path: templatesFile };
   }
+
   readLore(projectDataDirectory, templates) {
     console.log("Reading lore file...");
 
@@ -325,6 +330,7 @@ class Library {
     );
     return fileSet;
   }
+
   fillMissingLoreEntries(loreData, templates) {
     const filledLoreData = Object.assign({}, loreData);
 
@@ -336,6 +342,7 @@ class Library {
     }
     return filledLoreData;
   }
+
   resolveBadShutdown() {
     return new Promise((resolve, reject) => {
       dialog
@@ -375,6 +382,7 @@ class Library {
         });
     });
   }
+
   tryMakeDirectory(baseDirectory, directoryName) {
     const fullDirectoryPath = path.join(baseDirectory, directoryName);
     if (!fs.existsSync(fullDirectoryPath)) {
@@ -570,6 +578,7 @@ function createWindow(mainWindow) {
     },
   ]);
   Menu.setApplicationMenu(menu);
+  
   mainWindow.setMenuBarVisibility(true);
   mainWindow.loadURL(MAIN_WINDOW_WEBPACK_ENTRY);
   mainWindow.webContents.openDevTools();
