@@ -1,27 +1,3 @@
-/**
- * catalog: Represents the loaded project data structure.
- *
- * @typedef {Object} catalog
- * @property {Object} lore - Lore data for the project.
- *   @property {Object} lore.main - Main lore library.
- *     @property {Object} lore.main.data - The actual lore data loaded from the main library file.
- *     @property {string} lore.main.path - Path to the main lore library file (lib.json).
- *   @property {Object} lore.temp - Temporary lore data (might contain unsaved changes).
- *     @property {Object} [lore.temp.data] - Data loaded from the temporary library file, can be undefined if no temporary data exists.
- *     @property {string} lore.temp.path - Path to the temporary lore library file (lib.temp.json).
- *   @property {Object} lore.backup - Backup of the main lore data.
- *     @property {Object} lore.backup.data - The backed-up lore data loaded from the backup file.
- *     @property {string} lore.backup.path - Path to the backup lore library file (e.g., lib.1710806009709.bak.json).
- * @property {Object} sprites - Data related to the project's sprites.
- *   @property {Object} sprites.data - Object containing references to sprite image files.
- *     @property {Object} sprites.data.sprite - An object containing key-value pairs where keys are references to sprites and values are their details.
- *   @property {string} sprites.path - Path to the JSON file containing sprite data (sprites.json).
- *   @property {string} sprites.directory - Path to the directory containing the actual sprite image files.
- * @property {Object} templates - Project's lore entry templates.
- *   @property {Object} templates.data - The actual template data.
- *     @property {Object[]} templates.data.[sectionName] - Array containing template definitions for specific sections (e.g., world, creature, item).
- *   @property {string} templates.path - Path to the JSON file containing template data (templates.json).
- */
 const {
   app,
   BrowserWindow,
@@ -50,7 +26,7 @@ const {
   LORE_LIBRARY_TEMP,
   LORE_LIBRARY_BAK,
 } = require("./main/settings/directoryConfiguration");
-const { DEFAULT_TEMPLATES } = require("./main/settings/templatesConfiguration");
+const { defaultTemplates } = require("./main/settings/templatesConfiguration");
 const { removeExtension } = require("./main/utils/removeExtension");
 const { cycleBackgrounds } = require("./main/menu/cycleBackgrounds");
 const { toggleTheme } = require("./main/menu/toggleTheme");
@@ -86,7 +62,6 @@ const DEFAULT_WINDOW_OPTIONS = {
     preload: MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY,
   },
 };
-
 app.on("ready", () => {
   const mainWindow = new BrowserWindow(DEFAULT_WINDOW_OPTIONS);
 
@@ -109,6 +84,9 @@ app.on("ready", () => {
 
     mainWindow.webContents.send("send:catalog-data", catalog);
     mainWindow.webContents.send("send:current-directory", root);
+    if (userMode === DEV) {
+      console.log("Catalog information:", catalog.information);
+    }
     return true;
   }
 });
@@ -251,7 +229,7 @@ class Library {
       console.log("Success");
     } catch (err) {
       console.error("Error loading template data:", err);
-      const preset = DEFAULT_TEMPLATES;
+      const preset = defaultTemplates;
       results = preset;
       console.log("Creating new templates file.");
       fs.writeFile(templatesFile, JSON.stringify(results), (err) => {
@@ -406,7 +384,7 @@ class Catalog {
   constructor(userMode, root, catalogData) {
     this.information = catalogData;
 
-    this.#userMode = userMode
+    this.#userMode = userMode;
     this.#root = root;
 
     ipcMain.on("path:sprites-preview", (event, fileKey) => {
@@ -511,7 +489,11 @@ class Catalog {
         if (this.#userMode === DEV) {
           event.returnValue = path.join("../data/assets/sprites", filename);
         } else if (this.#userMode === DIST) {
-          event.returnValue = path.join(this.#root, "/data/assets/sprites", filename);
+          event.returnValue = path.join(
+            this.#root,
+            "/data/assets/sprites",
+            filename
+          );
         }
       }
       async function updateSpriteReferences(fileIndex, filename) {
