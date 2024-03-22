@@ -55,7 +55,7 @@ export class EntryForm {
       }
     });
 
-    const entryFormCommandButtonClear = document.querySelectorAll("entry-form__commands-button--clear")
+    const entryFormCommandButtonClear = document.querySelectorAll(".entry-form__commands-button--clear")
     entryFormCommandButtonClear[0].addEventListener("click", () => {
       const entryFormTemplateSelect = document.querySelectorAll(
         ".entry-form__template-select"
