@@ -84,7 +84,8 @@ export class EntryForm {
       this.clearImagePreview();
     });
 
-    this.ui.saveEntryButton.addEventListener("click", () => {
+    const entryFormSaveAll = document.querySelectorAll(".entry-form__save-button")
+    entryFormSaveAll[0].addEventListener("click", () => {
       this.saveEntry();
       this.updatePrototypeDropdown();
     });
