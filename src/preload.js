@@ -37,6 +37,11 @@ const electronAPI = {
     return response;
   },
 
+  saveInformationLoreEntry(newEntry) {
+    const response = ipcRenderer.sendSync("save:lore-entry", newEntry);
+    return response;
+  },
+
   //* ONE WAY FROM MAIN *//
 
   onOpenProject: (callback) =>

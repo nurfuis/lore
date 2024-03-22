@@ -285,37 +285,38 @@ export class EntryForm {
     entryFormTemplateSelect[0].value;
     const templateKey = entryFormTemplateSelect[0].value;
 
-    const entryKey = newEntry.name;
+    const entryKey = newEntry?.name;
 
-    // write an api call to check if the entry exists
-    const result = window.electronAPI.getInformationLoreEntry({
+    const loreEntry = window.electronAPI.getInformationLoreEntry({
       templateKey,
       entryKey,
     });
 
-    if (result?.valid) {
-      console.log("An entry with that name already exists...");
-      if (result["version"]) {
-        const version = result["version"] + 1;
-        newEntry["version"] = version;
-        // console.log("Incriment entry version by +1");
-      }
-    } else {
-      newEntry["version"] = 1;
-      console.log("New entry, setting version to", newEntry["version"]);
-    }
+    if (entryKey && !loreEntry) {
+      // this.loreLib[templateKey][entryKey] = newEntry;
 
-    if (entryKey) {
-      // Add the new entry to the gameData object under the corresponding key
-      this.loreLib[templateKey][entryKey] = newEntry;
+      if (loreEntry?.valid) {
+        if (loreEntry["version"]) {
+          const version = loreEntry["version"] + 1;
+          newEntry["version"] = version;
+        }
+      } else {
+        newEntry["version"] = 1;
+        console.log("New entry:", newEntry["version"]);
+      }
 
       // electronAPI.saveLore(this.loreLib);
+      window.electronAPI.saveInformationLoreEntry(newEntry);
 
-      // Update the UI or perform any other actions after saving (optional)
       this.ui.information.innerText = `Entry "${newEntry.name}" type: ${templateKey} saved successfully!`;
       // this.updateForm();
-    } else {
-      console.log("NO NAME IS SET!");
+      console.log(
+        "No entry exists under this name, saving data without issues"
+      );
+    } else if (!loreEntry && !entryKey) {
+      console.log("No entry exists, but the new entry lacks a name");
+    } else if (loreEntry && entryKey) {
+      console.log("An entry already exists under this name.");
     }
   }
 

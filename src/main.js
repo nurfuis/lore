@@ -307,7 +307,7 @@ class Library {
         fs.readFileSync(fileSet.temp.path, "utf-8")
       );
       console.log("Unsuccesful shutdown detected.");
-      this.resolveBadShutdown();
+      this.resolveBadShutdown(projectDataDirectory);
     } catch (err) {
       if (err.code === "ENOENT") {
         console.log("Checking last shutdown...");
@@ -343,7 +343,7 @@ class Library {
     return filledLoreData;
   }
 
-  resolveBadShutdown() {
+  resolveBadShutdown(projectDataDirectory) {
     return new Promise((resolve, reject) => {
       dialog
         .showMessageBox({
@@ -362,14 +362,14 @@ class Library {
           try {
             if (choice.response === 0) {
               fs.copyFileSync(
-                catalog.information.lore.temp.path,
-                catalog.information.lore.main.path
+                path.join(projectDataDirectory, LORE_LIBRARY_TEMP),
+                path.join(projectDataDirectory, LORE_LIBRARY)
               );
-              fs.unlinkSync(catalog.information.lore.temp.path);
+              fs.unlinkSync(path.join(projectDataDirectory, LORE_LIBRARY_TEMP));
               console.log("Temp data overwritten to main file.");
               resolve(true);
             } else if (choice.response === 1) {
-              fs.unlinkSync(catalog.information.lore.temp.path);
+              fs.unlinkSync(path.join(projectDataDirectory, LORE_LIBRARY_TEMP));
               console.log("Temporary file removed.");
 
               resolve(true);
@@ -422,12 +422,17 @@ class Catalog {
     ipcMain.on("information:template-fields", (event, templateKey) => {
       this.getTemplateFieldsInformation(templateKey, event);
     });
+
     ipcMain.on(
       "information:lore-data-entry",
       (event, { templateKey, entryKey }) => {
         this.getLoreEntryInformation(entryKey, templateKey, event);
       }
     );
+
+    ipcMain.on("save:lore-entry", (event, newEntry) => {
+      this.saveLoreEntry(newEntry, event);
+    });
   }
 
   saveLoreImage(event, filePath, information, userMode) {
@@ -580,8 +585,9 @@ class Catalog {
   }
 
   getLoreEntryInformation(entryKey, templateKey, event) {
-    const result = this.information?.lore?.main?.data?.[templateKey]?.[entryKey] ?? null;
-    
+    const result =
+      this.information?.lore?.main?.data?.[templateKey]?.[entryKey] ?? null;
+
     if (result?.valid) {
       event.returnValue = result;
       // console.log("Replying to information:lore-data-entry ...", result);
@@ -589,7 +595,21 @@ class Catalog {
       event.returnValue = result;
     }
   }
-  
+  saveLoreEntry(newEntry, event) {
+    const filename = this.information.lore.temp.path;
+
+    console.log("Writing changes to temp:", newEntry);
+    event.returnValue = true;
+
+    // fs.writeFile(filename, JSON.stringify(data), (err) => {
+    //   if (err) {
+    //     console.error("Error saving lore:", err);
+    //   } else {
+    //     this.information.lore.temp.data = data;
+    //     console.log("Lore saved to temp file successfully.");
+    //   }
+    // });
+  }
 }
 
 function createWindow(mainWindow) {
