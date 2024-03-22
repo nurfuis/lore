@@ -39,7 +39,6 @@ export class EntryForm {
 
     this.ui.prototypeSelect.addEventListener("change", (event) => {
       this.selectedEntry = event.target.value;
-      //   console.log(this.selectedEntry);
       if (this.selectedEntry) {
         this.ui.generatePromptButton.style.display = "flex";
       } else {
@@ -72,10 +71,13 @@ export class EntryForm {
     this.spriteName = undefined;
   }
   setPreview(fileKey) {
-    this.ui.imagePreview.src =
-      "../data/assets/sprites/" + this.sprites.data.sprite[fileKey].preview;
-    this.ui.imagePreview.style.display = "block";
     this.spriteName = fileKey;
+
+    const imageSource = window.electronAPI.getPathSpritesPreview(fileKey);
+
+    this.ui.imagePreview.src = imageSource;
+
+    this.ui.imagePreview.style.display = "block";
   }
 
   async updateImagePreview(event) {
@@ -83,24 +85,24 @@ export class EntryForm {
     if (!file) {
       return;
     }
+
     if (!file.type.startsWith("image/")) {
       console.error("Please select an image file!");
       return;
     }
-    console.log("image to save", file.name);
+    console.log("save:lore-image", file.name);
+
+    this.spriteName = removeExtension(file.name);
+
     const pathToSource = electronAPI.saveImage(file.path);
+
     this.ui.imagePreview.src = `${pathToSource}`;
     this.ui.imagePreview.style.display = "block";
-    
-    this.spriteName = removeExtension(file.name)
-    
   }
   updateForm() {
-    console.log("Updating the form...");
     // Clear existing form elements
     this.clearImagePreview();
     this.ui.entryForm.innerHTML = "";
-    console.log("Cleared the form...");
     // Add elements to show/hide
     const elementsToShow = [
       this.ui.entryForm,
@@ -108,20 +110,13 @@ export class EntryForm {
       this.ui.imageUpload,
       this.ui.clearForm,
     ];
-    console.log("Showing elements:", elementsToShow);
     const elementsToHide = [];
-    console.log("available templates:", this.templates);
-    console.log("selected template:", this.selectedTemplate);
     if (this.selectedTemplate) {
       const templateFields =
         this.templateMaker.templates[this.selectedTemplate];
 
-      // Build form elements based on template data
       for (const fieldName in templateFields) {
-        // console.log("entry form key", fieldName);
-
         const fieldData = templateFields[fieldName];
-        // console.log("entry form data", fieldData);
 
         const label = document.createElement("label");
         label.textContent = fieldData.label;

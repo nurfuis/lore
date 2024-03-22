@@ -15,7 +15,10 @@ const electronAPI = {
   saveTemplates: (data) => ipcRenderer.send("templates-save", data),
 
   //* CALL AND RESPONSE *//
-
+  getPathSpritesPreview(fileKey) {
+    const response = ipcRenderer.sendSync("path:sprites-preview", fileKey);
+    return response;
+  },
   saveImage(filePath) {
     const response = ipcRenderer.sendSync("save:lore-image", filePath);
     return response;

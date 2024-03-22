@@ -45,30 +45,35 @@ electronAPI.onSetProjectDirectory((currentDirectory) => {
 function start(catalog) {
   entryForm.loreLib = catalog.lore.main.data;
   entryForm.templates = catalog.templates.data;
-  // TODO start move over to new catalog property?
+
+
   entryForm.sprites = catalog.sprites;
   viewer.sprites = catalog.sprites;
-  console.log(
-    "renderer templates injection to entry form",
-    catalog.templates.data
-  );
   // entry form is coupled to the templates now
   // it can read templates from thetemplates module now
   // and the references need to be updated in entryForm
   // before unlinking templates from the entry form here
+
+
   templateMaker.templates = catalog.templates.data;
   // The block below configures the workspace elements
   // it can probably be part of the menu and use a method to run it
   uiElements.welcomeDiv.innerText = "Select an option to begin...";
+
+
   uiElements.createButton.style.display = "";
   uiElements.viewButton.style.display = "";
   uiElements.createTemplateButton.style.display = "";
   // The next part tells the modules that their data is loaded
   // and to hurry up and set their initial states
+
+
   viewer.renderGameData();
   templateMaker.updateOptions();
   entryForm.updateForm();
 }
+
+
 function initializeWelcomeButtonStart() {
   const welcomeButtonStart = document.querySelectorAll(
     ".welcome__button--start"

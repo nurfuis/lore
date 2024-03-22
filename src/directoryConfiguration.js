@@ -1,0 +1,26 @@
+//* DIRECTORY SETUP *//
+const _DIR = "/data";
+exports._DIR = _DIR;
+const _BACKUP_DIR = "/backup";
+exports._BACKUP_DIR = _BACKUP_DIR;
+const BACKUP_ID = "o.o";
+const _ASSETS_DIR = "/assets";
+exports._ASSETS_DIR = _ASSETS_DIR;
+const _SPRITES_DIR = "/sprites";
+exports._SPRITES_DIR = _SPRITES_DIR;
+const _PREVIEWS_DIR = "/previews";
+exports._PREVIEWS_DIR = _PREVIEWS_DIR;
+const SPRITES_KEY = "sprite";
+exports.SPRITES_KEY = SPRITES_KEY;
+const PREVIEWS_KEY = "preview";
+exports.PREVIEWS_KEY = PREVIEWS_KEY;
+const SPRITE_LIBRARY = "/sprites.json";
+exports.SPRITE_LIBRARY = SPRITE_LIBRARY;
+const TEMPLATES_FILE = "/templates.json";
+exports.TEMPLATES_FILE = TEMPLATES_FILE;
+const LORE_LIBRARY = "/lib.json";
+exports.LORE_LIBRARY = LORE_LIBRARY;
+const LORE_LIBRARY_TEMP = "/lib.temp.json";
+exports.LORE_LIBRARY_TEMP = LORE_LIBRARY_TEMP;
+const LORE_LIBRARY_BAK = "/lib." + BACKUP_ID + ".bak.json";
+exports.LORE_LIBRARY_BAK = LORE_LIBRARY_BAK;

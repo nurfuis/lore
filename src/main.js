@@ -13,56 +13,55 @@ const { DEFAULT_TEMPLATES } = require("./app/constants");
 const { removeExtension } = require("./app/utils/removeExtension");
 const { cycleBackgrounds } = require("./main/cycleBackgrounds");
 const { toggleTheme } = require("./main/toggleTheme");
-
+const {
+  SPRITES_KEY,
+  PREVIEWS_KEY,
+  _DIR,
+  _BACKUP_DIR,
+  _ASSETS_DIR,
+  _SPRITES_DIR,
+  _PREVIEWS_DIR,
+  SPRITE_LIBRARY,
+  TEMPLATES_FILE,
+  LORE_LIBRARY,
+  LORE_LIBRARY_TEMP,
+  LORE_LIBRARY_BAK,
+} = require("./directoryConfiguration");
+const { APP_ICON } = require("./appConfiguration");
 if (require("electron-squirrel-startup")) {
   app.quit();
 }
-const { DEV, DIST } = { DEV: "devMode", DIST: "distMode" };
-/* To work around keeping files in the root for development I have added
-   this branch in a couple key locations. Most noteably, the root directory is 
-   different. 
 
-   I am in the midst of creating an API for images to prefix with the correct
-   directory by requesting the data from main process.
-
-   I spent considerable time learning the ins and outs of where files are being
-   stored.
-
-   The dev server is being run from .webpack/ and files included in the dist can access
-   relative filepaths so long as those files are present in the project
-   during the make process.
-
-   During dev, adding new files will force a reload. I have not been able to work around this.
-
-   In the dist, files are behaving now, as long as I use the app.getPath() to return the
-   appropriate location. For files in the renderer, I will allow them the new API to
-   access the correct path. Adding a new image during runtime with a relative path it tries
-   to access it from the deeply nested and unavaileble arsar package that is built.
-   */
-
-
-
-const userMode = DIST;
-
-//* ENV *//
 process.env["ELECTRON_DISABLE_SECURITY_WARNINGS"] = true;
 
-let root;
+const { DEV, DIST } = {
+  DEV: `${process.env.INIT_CWD}`,
+  DIST: `${app.getPath("userData")}`,
+};
+const userMode = DEV;
 
-if (userMode === DEV) {
-  root = process.env.INIT_CWD;
+console.log("User mode:", userMode);
+
+let root;
+if (userMode === DEV && DEV != undefined) {
+  root = DEV;
 } else if (userMode === DIST) {
-  root = `${app.getPath("userData")}`;
+  root = DIST;
+} else {
+  console.error("User mode not set correctly:", userMode, "Root:", root);
+  app.quit();
 }
 
-const appIcon = path.join(root, "/data/assets/lore-library-icon-ai-1.png");
+const appIcon = path.join(root, APP_ICON);
 app.setAppUserModelId("Lore");
 
 //* WINDOW *//
 let mainWindow;
+
 app.on("ready", () => {
   createWindow();
 });
+
 app.on("window-all-closed", () => {
   try {
     saveChanges({ reason: "exit" });
@@ -73,11 +72,13 @@ app.on("window-all-closed", () => {
     app.quit();
   }
 });
+
 app.on("activate", () => {
   if (BrowserWindow.getAllWindows().length === 0) {
     createWindow();
   }
 });
+
 function createWindow() {
   mainWindow = new BrowserWindow({
     width: 900,
@@ -108,23 +109,8 @@ function createWindow() {
   mainWindow.webContents.openDevTools();
 }
 
-//* DIRECTORY SETUP *//
-const _DIR = "/data";
-const _BACKUP_DIR = "/backup";
-const BACKUP_ID = "o.o";
-const _ASSETS_DIR = "/assets";
-const _SPRITES_DIR = "/sprites";
-const _PREVIEWS_DIR = "/previews";
-const SPRITES_KEY = "sprite";
-const PREVIEWS_KEY = "preview";
-const SPRITE_LIBRARY = "/sprites.json";
-const TEMPLATES_FILE = "/templates.json";
-const LORE_LIBRARY = "/lib.json";
-const LORE_LIBRARY_TEMP = "/lib.temp.json";
-const LORE_LIBRARY_BAK = "/lib." + BACKUP_ID + ".bak.json";
-
 //* LORE LIBRARY CARD CATALOG *//
-let catalog; // TODO phasing this global out
+let catalog;
 /**
  * Card Catalog: Represents the loaded project data structure.
  *
@@ -154,9 +140,35 @@ let catalog; // TODO phasing this global out
  */
 
 ipcMain.on("load:lore-data-project-directory", (event) => {
-  const sendCatalogSuccess = loreAppLoadProjectDirectory();
+  const sendCatalogSuccess = loadLoreCatalog();
   event.returnValue = sendCatalogSuccess;
   console.log("Loading catalog data...", sendCatalogSuccess);
+});
+
+
+ipcMain.on("path:sprites-preview", (event, fileKey) => {
+  if (userMode === DEV) {
+    const relativeFilePath = path.join(
+      "../data/assets/sprites",
+      catalog.sprites.data.sprite[fileKey].preview
+    );
+
+    event.returnValue = relativeFilePath;
+    console.log("Sending data...", relativeFilePath);
+
+
+  } else if (userMode === DIST) {
+    const filePath = path.join(
+      root,
+      _DIR,
+      _ASSETS_DIR,
+      _SPRITES_DIR,
+      catalog.sprites.data.sprite[fileKey].preview
+    );
+
+    event.returnValue = filePath;
+    console.log("Sending data...", filePath);
+  }
 });
 
 ipcMain.on("lore-data-save", (event, data) => {
@@ -172,6 +184,26 @@ ipcMain.on("lore-data-save", (event, data) => {
       event.sender.send("save-success", filename);
       catalog.lore.temp.data = data;
       console.log("Lore saved to temp file successfully.");
+    }
+  });
+});
+
+ipcMain.on("templates-save", (event, data) => {
+  // Ensure data contains only the templates section
+  if (!data) {
+    console.error("Invalid data format: Missing templates section");
+    event.sender.send("save-failed", "Invalid data format"); // Send error message
+    return;
+  }
+  const templateData = (catalog.templates.data.template = data);
+  // Write data to the templates file
+  fs.writeFile(catalog.templates.path, JSON.stringify(templateData), (err) => {
+    if (err) {
+      console.error("Error saving templates:");
+      event.sender.send("save-failed", "Error saving templates");
+    } else {
+      console.log("Templates saved successfully!");
+      event.sender.send("save-success"); // Send success message
     }
   });
 });
@@ -248,29 +280,9 @@ async function isFileAccessible(filePath) {
   }
 }
 
-ipcMain.on("templates-save", (event, data) => {
-  // Ensure data contains only the templates section
-  if (!data) {
-    console.error("Invalid data format: Missing templates section");
-    event.sender.send("save-failed", "Invalid data format"); // Send error message
-    return;
-  }
-  const templateData = (catalog.templates.data.template = data);
-  // Write data to the templates file
-  fs.writeFile(catalog.templates.path, JSON.stringify(templateData), (err) => {
-    if (err) {
-      console.error("Error saving templates:");
-      event.sender.send("save-failed", "Error saving templates");
-    } else {
-      console.log("Templates saved successfully!");
-      event.sender.send("save-success"); // Send success message
-    }
-  });
-});
-
 //* SYSTEM COMMANDS *//
 
-function loreAppLoadProjectDirectory() {
+function loadLoreCatalog() {
   console.log("Loading...");
   const catalogData = initializeProjectDirectories();
   catalog = catalogData;
