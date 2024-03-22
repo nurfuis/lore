@@ -48,7 +48,7 @@ const root = getRoot(userMode);
 function getRoot(userMode) {
   console.log("User mode:", userMode);
 
-  if (DEV && userMode === DEV ) {
+  if (DEV && userMode === DEV) {
     return `${process.env.INIT_CWD}`;
   } else if (DIST && userMode === DIST) {
     return `${app.getPath("userData")}`;
@@ -444,7 +444,9 @@ class Catalog {
         }
       }
 
-      if (!(await updateSpriteReferences(removeExtension(filename), filename))) {
+      if (
+        !(await updateSpriteReferences(removeExtension(filename), filename))
+      ) {
         return;
       }
 

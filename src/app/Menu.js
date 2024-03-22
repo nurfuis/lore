@@ -6,10 +6,14 @@ function toggleSettingsModal() {
 }
 
 export class Menu {
-  constructor() {   
-    uiElements.createButton.addEventListener("click", () =>
+  constructor() {  
+     
+    const navButtonEditEntry = document.querySelectorAll(".navigation__button")
+    navButtonEditEntry[0].addEventListener("click", () =>
       this.toggleView(true)
     );
+
+
     uiElements.viewButton.addEventListener("click", () =>
       this.toggleView(false)
     );
