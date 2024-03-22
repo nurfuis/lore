@@ -35,12 +35,7 @@ const path = require("path");
 if (require("electron-squirrel-startup")) {
   app.quit();
 }
-const {
-  APP_ICON,
-  DEV,
-  DIST,
-  DEFAULT_WINDOW_OPTIONS,
-} = require("./main/settings/appConfiguration");
+const { APP_ICON, DEV, DIST } = require("./main/settings/appConfiguration");
 const {
   SPRITES_KEY,
   PREVIEWS_KEY,
@@ -82,6 +77,15 @@ function getRoot(userMode) {
 }
 
 const appIcon = path.join(root, APP_ICON);
+
+const DEFAULT_WINDOW_OPTIONS = {
+  width: 900,
+  height: 600,
+  icon: appIcon,
+  webPreferences: {
+    preload: MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY,
+  },
+};
 
 app.on("ready", () => {
   const mainWindow = new BrowserWindow(DEFAULT_WINDOW_OPTIONS);
@@ -560,5 +564,5 @@ function createWindow(mainWindow) {
   Menu.setApplicationMenu(menu);
   mainWindow.setMenuBarVisibility(true);
   mainWindow.loadURL(MAIN_WINDOW_WEBPACK_ENTRY);
-  mainWindow.webContents.openDevTools();
+  // mainWindow.webContents.openDevTools();
 }
