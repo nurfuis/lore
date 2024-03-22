@@ -55,8 +55,8 @@ export class EntryForm {
       }
     });
 
-    const entryFormCommandClearButton = document.querySelectorAll("entry-form__commands-button--clear")
-    entryFormCommandClearButton[0].addEventListener("click", () => {
+    const entryFormCommandButtonClear = document.querySelectorAll("entry-form__commands-button--clear")
+    entryFormCommandButtonClear[0].addEventListener("click", () => {
       const entryFormTemplateSelect = document.querySelectorAll(
         ".entry-form__template-select"
       );
