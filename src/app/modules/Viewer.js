@@ -28,9 +28,9 @@ function updateDetailsModal(item, sprites) {
     uiElements.spriteContainer.innerHTML = ""; // Clear any existing sprite
 
     const spriteImage = document.createElement("img");
-    spriteImage.src =
-      "../data/assets/sprites/" + sprites.data.sprite[item.sprite].preview;
-    spriteImage.alt = "Item Sprite";
+    const imageSource = window.electronAPI.getPathSpritesPreview(item.sprite);
+
+    spriteImage.src = imageSource;
     uiElements.spriteContainer.appendChild(spriteImage);
   }
   document
@@ -113,7 +113,7 @@ export class Viewer {
     listParentElement.appendChild(listContentElement);
 
     let previewText = ""; // Empty string for text accumulation
-    const nameKey = "name"; 
+    const nameKey = "name";
     const versionKey = "version";
     const descriptionKey = "description";
 
@@ -131,23 +131,24 @@ export class Viewer {
       previewText += `Description: ${descriptionValue}\n`;
     }
 
-    const itemPreview = document.createElement("p");
-    itemPreview.classList.add("lore-summary__entry-text"); 
-    itemPreview.textContent = previewText.trim();
-    listContentElement.appendChild(itemPreview);
+    const entryItemPreview = document.createElement("p");
+    entryItemPreview.classList.add("lore-summary__entry-text");
+    entryItemPreview.textContent = previewText.trim();
+    listContentElement.appendChild(entryItemPreview);
 
     if (item.sprite) {
-      const previewElement = document.createElement("img");
-      previewElement.src =
-        "../data/assets/sprites/" +
-        this.sprites.data.sprite[item.sprite].preview;
-      previewElement.classList.add("lore-summary__entry-image-preview");
+      const entryImagePeviewElement = document.createElement("img");
+      const imageSource = window.electronAPI.getPathSpritesPreview(item.sprite);
+      entryImagePeviewElement.src = imageSource;
+      entryImagePeviewElement.classList.add(
+        "lore-summary__entry-image-preview"
+      );
 
       const entryImagePreviewWrapper = document.createElement("div");
       entryImagePreviewWrapper.classList.add(
         "lore-summary__entry-image-preview-wrapper"
       );
-      entryImagePreviewWrapper.appendChild(previewElement);
+      entryImagePreviewWrapper.appendChild(entryImagePeviewElement);
       listContentElement.appendChild(entryImagePreviewWrapper);
     }
 

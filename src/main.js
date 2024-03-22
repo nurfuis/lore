@@ -38,7 +38,7 @@ const { DEV, DIST } = {
   DEV: `${process.env.INIT_CWD}`,
   DIST: `${app.getPath("userData")}`,
 };
-const userMode = DEV;
+const userMode = DIST;
 
 console.log("User mode:", userMode);
 
@@ -145,7 +145,6 @@ ipcMain.on("load:lore-data-project-directory", (event) => {
   console.log("Loading catalog data...", sendCatalogSuccess);
 });
 
-
 ipcMain.on("path:sprites-preview", (event, fileKey) => {
   if (userMode === DEV) {
     const relativeFilePath = path.join(
@@ -155,8 +154,6 @@ ipcMain.on("path:sprites-preview", (event, fileKey) => {
 
     event.returnValue = relativeFilePath;
     console.log("Sending data...", relativeFilePath);
-
-
   } else if (userMode === DIST) {
     const filePath = path.join(
       root,
@@ -210,75 +207,74 @@ ipcMain.on("templates-save", (event, data) => {
 
 ipcMain.on("save:lore-image", (event, filePath) => {
   saveImageData(event, filePath);
-});
+  async function saveImageData(event, sourceFilePath) {
+    console.log("Saving image data...");
 
-async function saveImageData(event, sourceFilePath) {
-  console.log("Saving image data...");
-
-  if (!(await isFileAccessible(sourceFilePath))) {
-    console.error("Source file not found:", sourceFilePath);
-    return;
-  }
-
-  const filename = path.basename(sourceFilePath);
-  const newImageFilePath = path.join(catalog.sprites.directory, filename);
-
-  const imageData = fs.readFileSync(sourceFilePath);
-
-  if (userMode === DIST) {
-    if (!(await writeImageData(newImageFilePath, imageData))) {
+    if (!(await isFileAccessible(sourceFilePath))) {
+      console.error("Source file not found:", sourceFilePath);
       return;
     }
-  }
 
-  if (!(await updateSpriteReferences(removeExtension(filename), filename))) {
-    return;
-  }
+    const filename = path.basename(sourceFilePath);
+    const newImageFilePath = path.join(catalog.sprites.directory, filename);
 
-  console.log("Image saved successfully!", newImageFilePath);
-  console.log(
-    "Sprites data updated with full-size image reference:",
-    removeExtension(filename)
-  );
+    const imageData = fs.readFileSync(sourceFilePath);
 
-  if (userMode === DEV) {
-    event.returnValue = path.join("../data/assets/sprites", filename);
-  } else if (userMode === DIST) {
-    event.returnValue = path.join(root, "/data/assets/sprites", filename);
-  }
-}
-async function updateSpriteReferences(fileIndex, filename) {
-  catalog.sprites.data[SPRITES_KEY][fileIndex] = {};
-  catalog.sprites.data[SPRITES_KEY][fileIndex][PREVIEWS_KEY] = filename;
+    if (userMode === DIST) {
+      if (!(await writeImageData(newImageFilePath, imageData))) {
+        return;
+      }
+    }
 
-  try {
-    await fs.promises.writeFile(
-      catalog.sprites.path,
-      JSON.stringify(catalog.sprites.data)
+    if (!(await updateSpriteReferences(removeExtension(filename), filename))) {
+      return;
+    }
+
+    console.log("Image saved successfully!", newImageFilePath);
+    console.log(
+      "Sprites data updated with full-size image reference:",
+      removeExtension(filename)
     );
-    return true;
-  } catch (err) {
-    console.error("Error saving updated sprites data:", err);
-    return false;
+
+    if (userMode === DEV) {
+      event.returnValue = path.join("../data/assets/sprites", filename);
+    } else if (userMode === DIST) {
+      event.returnValue = path.join(root, "/data/assets/sprites", filename);
+    }
   }
-}
-async function writeImageData(filePath, imageData) {
-  try {
-    await fs.promises.writeFile(filePath, imageData);
-    return true;
-  } catch (err) {
-    console.error("Error writing image data:", err);
-    return false;
+  async function updateSpriteReferences(fileIndex, filename) {
+    catalog.sprites.data[SPRITES_KEY][fileIndex] = {};
+    catalog.sprites.data[SPRITES_KEY][fileIndex][PREVIEWS_KEY] = filename;
+
+    try {
+      await fs.promises.writeFile(
+        catalog.sprites.path,
+        JSON.stringify(catalog.sprites.data)
+      );
+      return true;
+    } catch (err) {
+      console.error("Error saving updated sprites data:", err);
+      return false;
+    }
   }
-}
-async function isFileAccessible(filePath) {
-  try {
-    await fs.promises.access(filePath, fs.constants.F_OK);
-    return true;
-  } catch (err) {
-    return false;
+  async function writeImageData(filePath, imageData) {
+    try {
+      await fs.promises.writeFile(filePath, imageData);
+      return true;
+    } catch (err) {
+      console.error("Error writing image data:", err);
+      return false;
+    }
   }
-}
+  async function isFileAccessible(filePath) {
+    try {
+      await fs.promises.access(filePath, fs.constants.F_OK);
+      return true;
+    } catch (err) {
+      return false;
+    }
+  }
+});
 
 //* SYSTEM COMMANDS *//
 
