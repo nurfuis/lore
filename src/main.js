@@ -197,18 +197,12 @@ class Library {
     const previewsPath = this.tryMakeDirectory(spritesDirectory, _PREVIEWS_DIR);
     console.log("Initialized previews directory", previewsPath);
 
+    // Directories are ready, load the project data
     const loreFiles = this.readProjectData(projectDataDirectory);
 
     return loreFiles;
   }
-  tryMakeDirectory(baseDirectory, directoryName) {
-    const fullDirectoryPath = path.join(baseDirectory, directoryName);
-    if (!fs.existsSync(fullDirectoryPath)) {
-      console.log("Make directory:", fullDirectoryPath);
-      fs.mkdirSync(fullDirectoryPath);
-    }
-    return fullDirectoryPath;
-  }
+
   readProjectData(projectDataDirectory) {
     const sprites = this.readSprites(projectDataDirectory);
     const templates = this.readTemplates(projectDataDirectory);
@@ -225,7 +219,7 @@ class Library {
       console.log("Success");
     } catch (err) {
       console.error("Error loading sprites data:", err);
-      results = this.newSprites(spritesLibraryFile);
+      results = this.newSpritesManifest(spritesLibraryFile);
     }
     return {
       data: results,
@@ -233,7 +227,7 @@ class Library {
       directory: projectDataDirectory + _ASSETS_DIR + _SPRITES_DIR,
     };
   }
-  newSprites(spritesLibraryFile) {
+  newSpritesManifest(spritesLibraryFile) {
     let emptySpritesObject = {};
     emptySpritesObject[SPRITES_KEY] = {};
     fs.writeFile(
@@ -288,15 +282,15 @@ class Library {
     const fileSet = {
       main: {
         data: undefined,
-        path: projectDataDirectory + LORE_LIBRARY,
+        path: path.join(projectDataDirectory, LORE_LIBRARY),
       },
       temp: {
         data: undefined,
-        path: projectDataDirectory + LORE_LIBRARY_TEMP,
+        path: path.join(projectDataDirectory, LORE_LIBRARY_TEMP),
       },
       backup: {
         data: undefined,
-        path: projectDataDirectory + _BACKUP_DIR + LORE_LIBRARY_BAK,
+        path: path.join(projectDataDirectory, _BACKUP_DIR, LORE_LIBRARY_BAK),
       },
     };
     try {
@@ -395,6 +389,14 @@ class Library {
           }
         });
     });
+  }
+  tryMakeDirectory(baseDirectory, directoryName) {
+    const fullDirectoryPath = path.join(baseDirectory, directoryName);
+    if (!fs.existsSync(fullDirectoryPath)) {
+      console.log("Make directory:", fullDirectoryPath);
+      fs.mkdirSync(fullDirectoryPath);
+    }
+    return fullDirectoryPath;
   }
 }
 
