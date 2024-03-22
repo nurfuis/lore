@@ -1,10 +1,10 @@
 import "./index.css";
 import { UIElements } from "./app/UIElements";
-import { EntryForm } from "./app/modules/EntryForm";
-import { Prompts } from "./app/modules/Prompts";
-import { TemplateMaker } from "./app/modules/TemplateMaker";
-import { Viewer } from "./app/modules/Viewer";
-import { Menu } from "./app/modules/Menu";
+import { EntryForm } from "./app/modules/entryForm/EntryForm";
+import { Prompts } from "./app/modules/entryForm/promptGenerator/Prompts";
+import { TemplateMaker } from "./app/modules/templateMaker/TemplateMaker";
+import { Viewer } from "./app/modules/viewer/Viewer";
+import { Menu } from "./app/Menu";
 
 //* MAIN FEATURE *//
 const uiElements = new UIElements();
@@ -43,19 +43,19 @@ electronAPI.onSetProjectDirectory((currentDirectory) => {
 });
 
 function start(catalog) {
-  entryForm.loreLib = catalog.lore.main.data;
-  entryForm.templates = catalog.templates.data;
+  entryForm.loreLib = catalog.information.lore.main.data;
+  entryForm.templates = catalog.information.templates.data;
 
 
-  entryForm.sprites = catalog.sprites;
-  viewer.sprites = catalog.sprites;
+  entryForm.sprites = catalog.information.sprites;
+  viewer.sprites = catalog.information.sprites;
   // entry form is coupled to the templates now
   // it can read templates from thetemplates module now
   // and the references need to be updated in entryForm
   // before unlinking templates from the entry form here
 
 
-  templateMaker.templates = catalog.templates.data;
+  templateMaker.templates = catalog.information.templates.data;
   // The block below configures the workspace elements
   // it can probably be part of the menu and use a method to run it
   uiElements.welcomeDiv.innerText = "Select an option to begin...";

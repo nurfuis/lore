@@ -1,5 +1,5 @@
-import { UIElements } from "../UIElements";
-import { promptTemplates } from "../promptTemplates";
+import { UIElements } from "../../../UIElements";
+import { promptTemplates } from "./promptTemplates";
 
 // function fillTemplate(template, data) {
 //   let filledTemplate = template;

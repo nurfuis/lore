@@ -1,4 +1,4 @@
-import { themes } from './themes';
+import { themes } from '../settings/themes';
 let currentTheme = 'earth';
 export function toggleTheme(mainWindow) {
   if (currentTheme === 'earth') {

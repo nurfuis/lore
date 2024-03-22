@@ -1,4 +1,4 @@
-import { UIElements } from "../UIElements";
+import { UIElements } from "../../UIElements";
 const uiElements = new UIElements();
 
 function createDetailsButton(item, sprites) {
