@@ -8,34 +8,6 @@ export class EntryForm {
     this.selectedTemplate = undefined;
     this.selectedEntry = undefined;
 
-    this.ui.imageInput.addEventListener("change", (event) => {
-      this.updateImagePreview(event);
-    });
-
-    this.ui.clearImageButton.addEventListener("click", () => {
-      this.clearImagePreview();
-    });
-
-    this.ui.saveEntryButton.addEventListener("click", () => {
-      this.saveEntry();
-      this.updatePrototypeDropdown();
-    });
-
-    this.ui.clearForm.addEventListener("click", () => {
-      const entryFormTemplateSelect = document.querySelectorAll(
-        ".entry-form__template-select"
-      );
-      const entryFormPrototypeSelect = document.querySelectorAll(
-        ".entry-form__prototype-select"
-      );
-
-      entryFormTemplateSelect[0].selectedIndex = 0;
-      this.updateForm();
-      
-      entryFormPrototypeSelect[0].selectedIndex = 0;
-      this.updateForm();
-    });
-
     const entryFormTemplateSelect = document.querySelectorAll(
       ".entry-form__template-select"
     );
@@ -52,10 +24,10 @@ export class EntryForm {
       }
     });
 
+
     const entryFormPrototypeSelect = document.querySelectorAll(
       ".entry-form__prototype-select"
     );
-
     entryFormPrototypeSelect[0].addEventListener("change", (event) => {
       this.selectedEntry = event.target.value;
       if (this.selectedEntry) {
@@ -82,6 +54,39 @@ export class EntryForm {
         }
       }
     });
+
+    
+    this.ui.clearForm.addEventListener("click", () => {
+      const entryFormTemplateSelect = document.querySelectorAll(
+        ".entry-form__template-select"
+      );
+      const entryFormPrototypeSelect = document.querySelectorAll(
+        ".entry-form__prototype-select"
+      );
+
+      entryFormTemplateSelect[0].selectedIndex = 0;
+      this.updateForm();
+      
+      entryFormPrototypeSelect[0].selectedIndex = 0;
+      this.updateForm();
+    });
+
+    this.ui.imageInput.addEventListener("change", (event) => {
+      this.updateImagePreview(event);
+    });
+
+    this.ui.clearImageButton.addEventListener("click", () => {
+      this.clearImagePreview();
+    });
+
+    this.ui.saveEntryButton.addEventListener("click", () => {
+      this.saveEntry();
+      this.updatePrototypeDropdown();
+    });
+
+
+
+
   }
   clearImagePreview() {
     this.ui.imagePreview.src = "";
