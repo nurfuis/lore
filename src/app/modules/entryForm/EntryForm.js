@@ -75,12 +75,10 @@ export class EntryForm {
 
     if (selectedTemplate) {
       for (const field in this.loreLib[selectedTemplate][selectedEntry]) {
-
         if (field == "sprite") {
           this.setPreview(this.loreLib[selectedTemplate][selectedEntry][field]);
           this.spriteName =
             this.loreLib[selectedTemplate][selectedEntry][field];
-
         } else if (field !== "valid" && field !== "version") {
           const element = document.querySelector(`[name=${field}]`);
           element.value = this.loreLib[selectedTemplate][selectedEntry][field];
@@ -101,7 +99,9 @@ export class EntryForm {
   }
 
   clearImagePreview() {
-    const entryFormImagePreview = document.querySelectorAll(".entry-form__image--preview");
+    const entryFormImagePreview = document.querySelectorAll(
+      ".entry-form__image--preview"
+    );
     entryFormImagePreview[0].src = "";
     entryFormImagePreview[0].style.display = "none";
 
@@ -118,7 +118,9 @@ export class EntryForm {
 
     const imageSource = window.electronAPI.getPathSpritesPreview(fileKey);
 
-    const entryFormImagePreview = document.querySelectorAll(".entry-form__image--preview");
+    const entryFormImagePreview = document.querySelectorAll(
+      ".entry-form__image--preview"
+    );
 
     entryFormImagePreview[0].src = imageSource;
 
@@ -140,28 +142,53 @@ export class EntryForm {
 
     const pathToSource = electronAPI.saveImage(file.path);
 
-    const entryFormImagePreview = document.querySelectorAll(".entry-form__image--preview");
+    const entryFormImagePreview = document.querySelectorAll(
+      ".entry-form__image--preview"
+    );
 
     entryFormImagePreview[0].src = `${pathToSource}`;
     entryFormImagePreview[0].display = "block";
 
     console.log("save:lore-image", file.name);
   }
+
   updateForm() {
     this.clearImagePreview();
-    this.ui.entryForm.innerHTML = "";
+
+    const entryFormElement = document.querySelectorAll(
+      ".entry-form__form-element"
+    );
+    entryFormElement[0].innerHTML = "";
+
+    const entryFormSaveAll = document.querySelectorAll(
+      ".entry-form__save-button"
+    );
+
+    const entryFormImageInput = document.querySelectorAll(".entry-form__image");
+
+    const entryFormCommandButtonClear = document.querySelectorAll(
+      ".entry-form__commands-button--clear"
+    );
 
     // Add elements to show/hide
     const elementsToShow = [
-      this.ui.entryForm,
-      this.ui.saveEntryButton,
-      this.ui.imageUpload,
-      this.ui.clearForm,
+      entryFormElement[0],
+      entryFormSaveAll[0],
+      entryFormImageInput[0],
+      entryFormCommandButtonClear[0],
     ];
+
     const elementsToHide = [];
-    if (this.selectedTemplate) {
+
+    const entryFormTemplateSelect = document.querySelectorAll(
+      ".entry-form__template-select"
+    );
+    const selectedTemplate = entryFormTemplateSelect[0].value;
+    // write an api to get the templates from the main process
+    
+    if (selectedTemplate) {
       const templateFields =
-        this.templateMaker.templates[this.selectedTemplate];
+        this.templateMaker.templates[selectedTemplate];
 
       for (const fieldName in templateFields) {
         const fieldData = templateFields[fieldName];
