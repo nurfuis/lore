@@ -59,14 +59,6 @@ body {
 }
 body {
   background-color: var(--background-color);
-  background-image: url("../data/assets/images/backgrounds/lore-library-tile-9.png");
-  background-image: url("../data/assets/images/backgrounds/lore-library-tile-8.png");
-  background-image: url("../data/assets/images/backgrounds/lore-library-tile-7.png");
-  background-image: url("../data/assets/images/backgrounds/lore-library-tile-6.png");
-  background-image: url("../data/assets/images/backgrounds/lore-library-tile-5.png");
-  background-image: url("../data/assets/images/backgrounds/lore-library-tile-4.png");
-  background-image: url("../data/assets/images/backgrounds/lore-library-tile-3.png");
-  background-image: url("../data/assets/images/backgrounds/lore-library-tile-2.png");
   background-image: url("../data/assets/images/backgrounds/lore-library-tile-1.png");
   background-repeat: repeat;
   background-position: center;

@@ -40,13 +40,14 @@ const { DEV, DIST } = {
 };
 const userMode = DIST;
 
-console.log("User mode:", userMode);
-
 let root;
+
 if (userMode === DEV && DEV != undefined) {
   root = DEV;
+
 } else if (userMode === DIST) {
   root = DIST;
+
 } else {
   console.error("User mode not set correctly:", userMode, "Root:", root);
   app.quit();
@@ -59,7 +60,28 @@ app.setAppUserModelId("Lore");
 let mainWindow;
 
 app.on("ready", () => {
+  
   createWindow();
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 });
 
 app.on("window-all-closed", () => {
