@@ -7,22 +7,19 @@
  *     @property {Object} lore.main.data - The actual lore data loaded from the main library file.
  *     @property {string} lore.main.path - Path to the main lore library file (lib.json).
  *   @property {Object} lore.temp - Temporary lore data (might contain unsaved changes).
- *     @property {Object} [lore.temp.data] - Data loaded from the temporary library file,
- *                                          can be undefined if no temporary data exists.
+ *     @property {Object} [lore.temp.data] - Data loaded from the temporary library file, can be undefined if no temporary data exists.
  *     @property {string} lore.temp.path - Path to the temporary lore library file (lib.temp.json).
  *   @property {Object} lore.backup - Backup of the main lore data.
  *     @property {Object} lore.backup.data - The backed-up lore data loaded from the backup file.
  *     @property {string} lore.backup.path - Path to the backup lore library file (e.g., lib.1710806009709.bak.json).
  * @property {Object} sprites - Data related to the project's sprites.
  *   @property {Object} sprites.data - Object containing references to sprite image files.
- *     @property {Object} sprites.data.sprite - An object containing key-value pairs where keys are
- *                                             likely references to sprites and values are their details.
+ *     @property {Object} sprites.data.sprite - An object containing key-value pairs where keys are references to sprites and values are their details.
  *   @property {string} sprites.path - Path to the JSON file containing sprite data (sprites.json).
  *   @property {string} sprites.directory - Path to the directory containing the actual sprite image files.
  * @property {Object} templates - Project's lore entry templates.
  *   @property {Object} templates.data - The actual template data.
- *     @property {Object[]} templates.data.[sectionName] - Array containing template definitions for
- *                                                         specific sections (e.g., world, creature, item).
+ *     @property {Object[]} templates.data.[sectionName] - Array containing template definitions for specific sections (e.g., world, creature, item).
  *   @property {string} templates.path - Path to the JSON file containing template data (templates.json).
  */
 const {
@@ -35,11 +32,15 @@ const {
 } = require("electron");
 const fs = require("fs");
 const path = require("path");
-
-const { removeExtension } = require("./main/utils/removeExtension");
-const { cycleBackgrounds } = require("./main/menu/cycleBackgrounds");
-const { toggleTheme } = require("./main/menu/toggleTheme");
-import { DEFAULT_TEMPLATES } from "./main/settings/templatesConfiguration";
+if (require("electron-squirrel-startup")) {
+  app.quit();
+}
+const {
+  APP_ICON,
+  DEV,
+  DIST,
+  DEFAULT_WINDOW_OPTIONS,
+} = require("./main/settings/appConfiguration");
 const {
   SPRITES_KEY,
   PREVIEWS_KEY,
@@ -54,10 +55,10 @@ const {
   LORE_LIBRARY_TEMP,
   LORE_LIBRARY_BAK,
 } = require("./main/settings/directoryConfiguration");
-const { APP_ICON, DEV, DIST } = require("./main/settings/appConfiguration");
-if (require("electron-squirrel-startup")) {
-  app.quit();
-}
+const { DEFAULT_TEMPLATES } = require("./main/settings/templatesConfiguration");
+const { removeExtension } = require("./main/utils/removeExtension");
+const { cycleBackgrounds } = require("./main/menu/cycleBackgrounds");
+const { toggleTheme } = require("./main/menu/toggleTheme");
 
 process.env["ELECTRON_DISABLE_SECURITY_WARNINGS"] = true;
 
@@ -68,13 +69,14 @@ const userMode = DEV;
 const root = getRoot(userMode);
 
 function getRoot(userMode) {
-  console.log(userMode);
+  console.log("User mode:", userMode);
+
   if (userMode === DEV && DEV != undefined) {
     return `${process.env.INIT_CWD}`;
   } else if (userMode === DIST) {
     return `${app.getPath("userData")}`;
   } else {
-    console.error("User mode not set correctly:", userMode);
+    console.error("Undetected user mode, quitting app...:", userMode);
     app.quit();
   }
 }
@@ -82,43 +84,17 @@ function getRoot(userMode) {
 const appIcon = path.join(root, APP_ICON);
 
 app.on("ready", () => {
-  const mainWindow = new BrowserWindow({
-    width: 900,
-    height: 600,
-    icon: appIcon,
-    webPreferences: {
-      preload: MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY,
-    },
-  });
+  const mainWindow = new BrowserWindow(DEFAULT_WINDOW_OPTIONS);
 
-  createWindow();
+  createWindow(mainWindow);
 
   ipcMain.on("load:lore-data-project-directory", (event) => {
     const isLoaded = loadLoreCatalog();
+
     event.returnValue = isLoaded;
+
     console.log("Loading catalog data...", isLoaded);
   });
-
-  function createWindow() {
-    const menu = Menu.buildFromTemplate([
-      {
-        label: "Cycle Backgrounds",
-        click: () => {
-          cycleBackgrounds(mainWindow, root);
-        },
-      },
-      {
-        label: "Toggle Theme",
-        click: () => {
-          toggleTheme(mainWindow);
-        },
-      },
-    ]);
-    Menu.setApplicationMenu(menu);
-    mainWindow.setMenuBarVisibility(true);
-    mainWindow.loadURL(MAIN_WINDOW_WEBPACK_ENTRY);
-    mainWindow.webContents.openDevTools();
-  }
 
   function loadLoreCatalog() {
     console.log("Loading...");
@@ -136,6 +112,39 @@ app.on("ready", () => {
 app.on("window-all-closed", () => {
   try {
     saveChanges({ reason: "exit" });
+    function saveChanges({ reason }) {
+      const mainFile = path.join(root, _DIR, LORE_LIBRARY);
+      const tempFile = path.join(root, _DIR, LORE_LIBRARY_TEMP);
+
+      try {
+        fs.copyFileSync(tempFile, mainFile);
+        console.log("Saved data to main file...", mainFile);
+
+        fs.unlinkSync(tempFile);
+        console.log("Temporary file removed...", tempFile);
+
+        showSavedNotification();
+        function showSavedNotification() {
+          new Notification({
+            title: "Changes Saved",
+            body: "Your lore data has been successfully saved.",
+            icon: appIcon,
+          }).show();
+        }
+      } catch (error) {
+        console.error("No changes to save.");
+        if (reason == "save") {
+          showNoDataSavedNotification();
+          function showNoDataSavedNotification() {
+            new Notification({
+              title: "No Changes Detected",
+              body: "There were no changes to save in your lore data.",
+              icon: appIcon,
+            }).show();
+          }
+        }
+      }
+    }
   } catch (error) {
     console.error("No data to write. Goodbye.");
   }
@@ -146,7 +155,8 @@ app.on("window-all-closed", () => {
 
 app.on("activate", () => {
   if (BrowserWindow.getAllWindows().length === 0) {
-    createWindow();
+    const mainWindow = new BrowserWindow(DEFAULT_WINDOW_OPTIONS);
+    createWindow(mainWindow);
   }
 });
 
@@ -200,28 +210,7 @@ class Library {
     const templates = this.readTemplates(projectDataDirectory);
     const lore = this.readLore(projectDataDirectory, templates);
 
-    // loadSpriteData(sprites);
     return { lore, sprites, templates };
-
-    function loadSpriteData(sprites) {
-      for (const spriteName in sprites.data[SPRITES_KEY]) {
-        const imagePath =
-          sprites.directory +
-          "/" +
-          sprites.data[SPRITES_KEY][spriteName][PREVIEWS_KEY];
-        fs.readFile(imagePath, (err, imageData) => {
-          if (err) {
-            console.error("Error reading image:", err);
-          } else {
-            const userData = app.getPath("userData") + "/images";
-            // check if filename exists in the userData dir
-            // write it to the userData dir if not exist
-
-            console.log("Loading image:", userData, spriteName);
-          }
-        });
-      }
-    }
   }
   readSprites(projectDataDirectory) {
     const spritesLibraryFile = projectDataDirectory + SPRITE_LIBRARY;
@@ -282,7 +271,6 @@ class Library {
     const filledLoreData = Object.assign({}, loreData);
 
     for (const key in templates) {
-
       if (!filledLoreData.hasOwnProperty(key)) {
         filledLoreData[key] = {};
         console.log("Key added to lore library:", key);
@@ -307,7 +295,6 @@ class Library {
         path: projectDataDirectory + _BACKUP_DIR + LORE_LIBRARY_BAK,
       },
     };
-    // main
     try {
       fileSet.main.data = JSON.parse(
         fs.readFileSync(fileSet.main.path, "utf-8")
@@ -328,17 +315,16 @@ class Library {
           (err) => {
             if (err) {
               console.error("Error saving library:", err);
-              return; // Exit on error
+              return;
             }
             console.log("Lore library created successfully.");
           }
         );
       } else {
         console.error("Error loading lore data.");
-        return; // Exit on error
+        return;
       }
     }
-    // temp
     try {
       fileSet.temp.data = JSON.parse(
         fs.readFileSync(fileSet.temp.path, "utf-8")
@@ -352,7 +338,6 @@ class Library {
         console.error("Error reading temp file.");
       }
     }
-    // backup
     console.log("Backing up loreData...");
     fs.writeFile(
       fileSet.backup.path,
@@ -386,7 +371,6 @@ class Library {
         .then((choice) => {
           try {
             if (choice.response === 0) {
-              // Overwrite main with temp
               fs.copyFileSync(
                 catalog.information.lore.temp.path,
                 catalog.information.lore.main.path
@@ -395,9 +379,9 @@ class Library {
               console.log("Temp data overwritten to main file.");
               resolve(true);
             } else if (choice.response === 1) {
-              // Remove temp
               fs.unlinkSync(catalog.information.lore.temp.path);
               console.log("Temporary file removed.");
+
               resolve(true);
             } else {
               resolve(false);
@@ -417,7 +401,6 @@ class Catalog {
     this.information = catalogData;
 
     ipcMain.on("path:sprites-preview", (event, fileKey) => {
-
       if (this.userMode === DEV) {
         const relativeFilePath = path.join(
           "../data/assets/sprites",
@@ -426,7 +409,6 @@ class Catalog {
 
         event.returnValue = relativeFilePath;
         console.log("Sending data...", relativeFilePath);
-
       } else if (this.userMode === DIST) {
         const filePath = path.join(
           root,
@@ -450,7 +432,6 @@ class Catalog {
         if (err) {
           console.error("Error saving lore:", err);
           event.sender.send("save-failed");
-
         } else {
           event.sender.send("save-success", filename);
           this.information.lore.temp.data = data;
@@ -462,7 +443,7 @@ class Catalog {
     ipcMain.on("templates-save", (event, data) => {
       if (!data) {
         console.error("Invalid data format: Missing templates section");
-        event.sender.send("save-failed", "Invalid data format"); 
+        event.sender.send("save-failed", "Invalid data format");
         return;
       }
 
@@ -474,10 +455,9 @@ class Catalog {
           if (err) {
             console.error("Error saving templates:");
             event.sender.send("save-failed", "Error saving templates");
-
           } else {
             console.log("Templates saved successfully!");
-            event.sender.send("save-success"); // Send success message
+            event.sender.send("save-success");
           }
         }
       );
@@ -562,38 +542,23 @@ class Catalog {
   }
 }
 
-function saveChanges({ reason }) {
-  const mainFile = path.join(root, _DIR, LORE_LIBRARY);
-  const tempFile = path.join(root, _DIR, LORE_LIBRARY_TEMP);
-
-  try {
-    // Copy the temporary data to the main file
-    fs.copyFileSync(tempFile, mainFile);
-    console.log("Saved data to main file...", mainFile);
-
-    // Files were saved and backed up, remove temporary file
-    fs.unlinkSync(tempFile);
-    console.log("Temporary file removed...", tempFile);
-
-    showSavedNotification();
-  } catch (error) {
-    console.error("No changes to save.");
-    if (reason == "save") {
-      showNoDataSavedNotification();
-    }
-  }
-}
-function showSavedNotification() {
-  new Notification({
-    title: "Changes Saved",
-    body: "Your lore data has been successfully saved.",
-    icon: appIcon, // Replace with your app icon path
-  }).show();
-}
-function showNoDataSavedNotification() {
-  new Notification({
-    title: "No Changes Detected",
-    body: "There were no changes to save in your lore data.",
-    icon: appIcon,
-  }).show();
+function createWindow(mainWindow) {
+  const menu = Menu.buildFromTemplate([
+    {
+      label: "Cycle Backgrounds",
+      click: () => {
+        cycleBackgrounds(mainWindow, root);
+      },
+    },
+    {
+      label: "Toggle Theme",
+      click: () => {
+        toggleTheme(mainWindow);
+      },
+    },
+  ]);
+  Menu.setApplicationMenu(menu);
+  mainWindow.setMenuBarVisibility(true);
+  mainWindow.loadURL(MAIN_WINDOW_WEBPACK_ENTRY);
+  mainWindow.webContents.openDevTools();
 }
