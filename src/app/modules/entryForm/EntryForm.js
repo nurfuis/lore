@@ -147,7 +147,7 @@ export class EntryForm {
     );
 
     entryFormImagePreview[0].src = `${pathToSource}`;
-    entryFormImagePreview[0].display = "block";
+    entryFormImagePreview[0].style.display = "block";
 
     console.log("save:lore-image", file.name);
   }
@@ -189,7 +189,10 @@ export class EntryForm {
       const templateFieldsResult =
         window.electronAPI.getInformationTemplateFields(selectedTemplate);
 
-      console.log("Requested information:template-fields...", templateFieldsResult);
+      // console.log(
+      //   "Requested information:template-fields...",
+      //   templateFieldsResult
+      // );
 
       const templateFields = this.templateMaker.templates[selectedTemplate];
 
@@ -236,10 +239,10 @@ export class EntryForm {
 
         // assemble the elements
         const br = document.createElement("br");
-        this.ui.entryForm.appendChild(label);
-        this.ui.entryForm.appendChild(promptSpan);
-        this.ui.entryForm.appendChild(inputElement);
-        this.ui.entryForm.appendChild(br);
+        entryFormElement[0].appendChild(label);
+        entryFormElement[0].appendChild(promptSpan);
+        entryFormElement[0].appendChild(inputElement);
+        entryFormElement[0].appendChild(br);
       }
       elementsToShow.forEach((element) => (element.style.display = "block")); // Show elements
       elementsToHide.forEach((element) => (element.style.display = "none")); // Show elements
@@ -254,44 +257,65 @@ export class EntryForm {
     const newEntry = {};
     newEntry["valid"] = true;
 
-    const formData = new FormData(this.ui.entryForm);
+    const entryFormElement = document.querySelectorAll(
+      ".entry-form__form-element"
+    );
+
+    const formData = new FormData(entryFormElement[0]);
     for (const [key, value] of formData.entries()) {
       newEntry[key] = value;
     }
 
-    // spriteName is set above when an image is added or cleared from the form
-    if (this.spriteName) {
-      newEntry["sprite"] = this.spriteName;
+    const entryFormImageInput = document.querySelectorAll(
+      ".entry-form__image--input"
+    );
+
+    if (!!entryFormImageInput[0].value) {
+      const filePath = removeExtension(entryFormImageInput[0].value);
+      const parts = filePath.split(/[\\/]/);
+
+      newEntry["sprite"] = parts[parts.length - 1];
+      // console.log(parts[parts.length - 1]);
     }
 
     // Get the appropriate key based on the template
-    const entryType = this.ui.templateSelect.value; // Assuming the value matches the template type
+    const entryFormTemplateSelect = document.querySelectorAll(
+      ".entry-form__template-select"
+    );
+    entryFormTemplateSelect[0].value;
+    const templateKey = entryFormTemplateSelect[0].value;
 
-    // define the new entry index
     const entryKey = newEntry.name;
 
-    if (this.loreLib[entryType][entryKey]) {
-      if (!this.loreLib[entryType][entryKey]["version"]) {
-        newEntry["version"] = 1;
-      } else if (this.loreLib[entryType][entryKey]["version"]) {
-        const version = this.loreLib[entryType][entryKey]["version"] + 1;
+    // write an api call to check if the entry exists
+    const result = window.electronAPI.getInformationLoreEntry({
+      templateKey,
+      entryKey,
+    });
+
+    if (result?.valid) {
+      console.log("An entry with that name already exists...");
+      if (result["version"]) {
+        const version = result["version"] + 1;
         newEntry["version"] = version;
+        // console.log("Incriment entry version by +1");
       }
     } else {
       newEntry["version"] = 1;
+      console.log("New entry, setting version to", newEntry["version"]);
     }
 
     if (entryKey) {
       // Add the new entry to the gameData object under the corresponding key
-      this.loreLib[entryType][entryKey] = newEntry;
+      this.loreLib[templateKey][entryKey] = newEntry;
 
-      electronAPI.saveLore(this.loreLib);
+      // electronAPI.saveLore(this.loreLib);
 
       // Update the UI or perform any other actions after saving (optional)
-      this.ui.information.innerText = `Entry "${newEntry.name}" type: ${entryType} saved successfully!`;
-      this.updateForm();
+      this.ui.information.innerText = `Entry "${newEntry.name}" type: ${templateKey} saved successfully!`;
+      // this.updateForm();
     } else {
-      console.log(newEntry, entryKey);
+      console.log("NO NAME IS SET!");
     }
   }
 

@@ -13,7 +13,7 @@ const path = require("path");
 if (require("electron-squirrel-startup")) {
   app.quit();
 }
-const { APP_ICON, DEV, DIST} = require("./main/settings/appConfiguration");
+const { APP_ICON, DEV, DIST } = require("./main/settings/appConfiguration");
 
 const {
   SPRITES_KEY,
@@ -422,6 +422,12 @@ class Catalog {
     ipcMain.on("information:template-fields", (event, templateKey) => {
       this.getTemplateFieldsInformation(templateKey, event);
     });
+    ipcMain.on(
+      "information:lore-data-entry",
+      (event, { templateKey, entryKey }) => {
+        this.getLoreEntryInformation(entryKey, templateKey, event);
+      }
+    );
   }
 
   saveLoreImage(event, filePath, information, userMode) {
@@ -550,7 +556,6 @@ class Catalog {
         this.information.sprites.data.sprite[fileKey].preview
       );
       event.returnValue = relativeFilePath;
-
     } else if (userMode === DIST) {
       const filePath = path.join(
         this.#root,
@@ -560,19 +565,31 @@ class Catalog {
         this.information.sprites.data.sprite[fileKey].preview
       );
       event.returnValue = filePath;
-    } 
+    }
   }
 
   getTemplateFieldsInformation(templateKey, event) {
     const result = this.information.templates.data[templateKey];
     if (result) {
       event.returnValue = result;
-      console.log("Replying to information:template-fields ...", result);
-    } else if (userMode) {
+      // console.log("Replying to information:template-fields ...", result);
+    } else {
       event.returnValue = result;
-      console.log("Requested recieved for undefined template...", templateKey);
+      // console.log("Requested recieved for undefined template...", templateKey);
     }
   }
+
+  getLoreEntryInformation(entryKey, templateKey, event) {
+    const result = this.information?.lore?.main?.data?.[templateKey]?.[entryKey] ?? null;
+    
+    if (result?.valid) {
+      event.returnValue = result;
+      // console.log("Replying to information:lore-data-entry ...", result);
+    } else {
+      event.returnValue = result;
+    }
+  }
+  
 }
 
 function createWindow(mainWindow) {

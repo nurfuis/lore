@@ -2,7 +2,7 @@ const { contextBridge, ipcRenderer } = require("electron");
 
 const electronAPI = {
   //* CALL AND RESPONSE *//
-  
+
   loadLoreData(path) {
     const response = ipcRenderer.sendSync(
       "load:lore-data-project-directory",
@@ -20,12 +20,22 @@ const electronAPI = {
     const response = ipcRenderer.sendSync("save:lore-image", filePath);
     return response;
   },
-  
+
   getInformationTemplateFields(templateKey) {
-    const response = ipcRenderer.sendSync("information:template-fields", templateKey);
+    const response = ipcRenderer.sendSync(
+      "information:template-fields",
+      templateKey
+    );
     return response;
   },
 
+  getInformationLoreEntry({ templateKey, entryKey }) {
+    const response = ipcRenderer.sendSync("information:lore-data-entry", {
+      templateKey,
+      entryKey,
+    });
+    return response;
+  },
 
   //* ONE WAY FROM MAIN *//
 
@@ -40,6 +50,5 @@ const electronAPI = {
   //* ONE WAY TO MAIN *//
   saveLore: (data) => ipcRenderer.send("save:lore-information", data),
   saveTemplates: (data) => ipcRenderer.send("save:templates-information", data),
-
 };
 contextBridge.exposeInMainWorld("electronAPI", electronAPI);
