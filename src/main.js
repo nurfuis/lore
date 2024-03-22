@@ -6,12 +6,15 @@ const {
   Menu,
   Notification,
 } = require("electron");
+
 const fs = require("fs");
 const path = require("path");
+
 if (require("electron-squirrel-startup")) {
   app.quit();
 }
 const { APP_ICON, DEV, DIST } = require("./main/settings/appConfiguration");
+
 const {
   SPRITES_KEY,
   PREVIEWS_KEY,
@@ -26,8 +29,11 @@ const {
   LORE_LIBRARY_TEMP,
   LORE_LIBRARY_BAK,
 } = require("./main/settings/directoryConfiguration");
+
 const { defaultTemplates } = require("./main/settings/templatesConfiguration");
+
 const { removeExtension } = require("./main/utils/removeExtension");
+
 const { cycleBackgrounds } = require("./main/menu/cycleBackgrounds");
 const { toggleTheme } = require("./main/menu/toggleTheme");
 
@@ -62,6 +68,7 @@ const DEFAULT_WINDOW_OPTIONS = {
     preload: MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY,
   },
 };
+
 app.on("ready", () => {
   const mainWindow = new BrowserWindow(DEFAULT_WINDOW_OPTIONS);
 
@@ -78,15 +85,17 @@ app.on("ready", () => {
   function loadLoreCatalog() {
     console.log("Loading...");
 
-    const catalogData = new Library().initializeProjectDirectories(root);
+    const information = new Library().initializeProjectDirectories(root);
 
-    const catalog = new Catalog(userMode, root, catalogData);
+    const catalog = new Catalog(userMode, root, information);
 
     mainWindow.webContents.send("send:catalog-data", catalog);
     mainWindow.webContents.send("send:current-directory", root);
+
     if (userMode === DEV) {
       console.log("Catalog information:", catalog.information);
     }
+
     return true;
   }
 });
@@ -145,7 +154,6 @@ app.on("activate", () => {
 class Library {
   constructor() {}
   initializeProjectDirectories(root) {
-    console.log("Process started from:", root);
     console.log("Initializing project directories...");
 
     const userAppDataPath = root;
@@ -188,7 +196,7 @@ class Library {
     return { lore, sprites, templates };
   }
   readSprites(projectDataDirectory) {
-    const spritesLibraryFile = projectDataDirectory + SPRITE_LIBRARY;
+    const spritesLibraryFile = path.join(projectDataDirectory, SPRITE_LIBRARY);
     console.log("Reading sprites file...");
     let results;
     try {
@@ -201,7 +209,7 @@ class Library {
     return {
       data: results,
       path: spritesLibraryFile,
-      directory: projectDataDirectory + _ASSETS_DIR + _SPRITES_DIR,
+      directory: path.join(projectDataDirectory, _ASSETS_DIR, _SPRITES_DIR),
     };
   }
   newSpritesManifest(spritesLibraryFile) {
@@ -221,7 +229,7 @@ class Library {
     return emptySpritesObject;
   }
   readTemplates(projectDataDirectory) {
-    const templatesFile = projectDataDirectory + TEMPLATES_FILE;
+    const templatesFile = path.join(projectDataDirectory, TEMPLATES_FILE);
     console.log("Reading templates file...");
     let results;
     try {
