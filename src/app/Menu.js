@@ -7,8 +7,8 @@ function toggleSettingsModal() {
 
 export class Menu {
   constructor() {  
-     
-    const navButtonEditEntry = document.querySelectorAll(".navigation__button")
+
+    const navButtonEditEntry = document.querySelectorAll(".navigation__button--edit")
     navButtonEditEntry[0].addEventListener("click", () =>
       this.toggleView(true)
     );
