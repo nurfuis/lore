@@ -12,7 +12,7 @@ const electronAPI = {
 
   //* ONE WAY TO MAIN *//
   saveLore: (data) => ipcRenderer.send("save:lore-information", data),
-  saveTemplates: (data) => ipcRenderer.send("templates-save", data),
+  saveTemplates: (data) => ipcRenderer.send("save:templates-information", data),
 
   //* CALL AND RESPONSE *//
   getPathSpritesPreview(fileKey) {

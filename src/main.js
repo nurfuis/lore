@@ -449,7 +449,7 @@ class Catalog {
       });
     });
 
-    ipcMain.on("templates-save", (event, data) => {
+    ipcMain.on("save:templates-information", (event, data) => {
       if (!data) {
         console.error("Invalid data format: Missing templates section");
         event.sender.send("save-failed", "Invalid data format");
