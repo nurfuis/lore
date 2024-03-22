@@ -13,7 +13,7 @@ export class EntryForm {
     );
     entryFormTemplateSelect[0].addEventListener("change", () => {
       const activeTemplate = entryFormTemplateSelect[0].value;
-      
+
       this.selectedTemplate = activeTemplate; // TODO phase out this property
 
       this.updateForm();
@@ -73,29 +73,26 @@ export class EntryForm {
     );
     const selectedTemplate = entryFormTemplateSelect[0].value;
 
-    for (const field in this.loreLib[selectedTemplate][selectedEntry]) {
-      console.log(selectedTemplate, selectedEntry);
-      if (field == "sprite") {
-        this.setPreview(
-          this.loreLib[selectedTemplate][selectedEntry][field]
-        );
-        this.spriteName =
-          this.loreLib[selectedTemplate][selectedEntry][field];
-      } else if (field !== "valid" && field !== "version") {
-        const element = document.querySelector(`[name=${field}]`);
-        element.value =
-          this.loreLib[selectedTemplate][selectedEntry][field];
+    if (selectedTemplate) {
+      for (const field in this.loreLib[selectedTemplate][selectedEntry]) {
+        if (field == "sprite") {
+          this.setPreview(this.loreLib[selectedTemplate][selectedEntry][field]);
+          this.spriteName =
+            this.loreLib[selectedTemplate][selectedEntry][field];
+        } else if (field !== "valid" && field !== "version") {
+          const element = document.querySelector(`[name=${field}]`);
+          element.value = this.loreLib[selectedTemplate][selectedEntry][field];
 
-        this.clearImagePreview();
+          this.clearImagePreview();
+        }
+      }
+
+      if (selectedEntry) {
+        this.ui.generatePromptButton.style.display = "flex";
+      } else {
+        this.ui.generatePromptButton.style.display = "none";
       }
     }
-
-    if (selectedEntry) {
-      this.ui.generatePromptButton.style.display = "flex";
-    } else {
-      this.ui.generatePromptButton.style.display = "none";
-    }
-
   }
 
   clearImagePreview() {
@@ -134,7 +131,6 @@ export class EntryForm {
     this.ui.imagePreview.style.display = "block";
   }
   updateForm() {
-    // Clear existing form elements
     this.clearImagePreview();
     this.ui.entryForm.innerHTML = "";
 
