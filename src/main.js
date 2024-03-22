@@ -48,9 +48,9 @@ const root = getRoot(userMode);
 function getRoot(userMode) {
   console.log("User mode:", userMode);
 
-  if (userMode === DEV && DEV != undefined) {
+  if (DEV && userMode === DEV ) {
     return `${process.env.INIT_CWD}`;
-  } else if (userMode === DIST) {
+  } else if (DIST && userMode === DIST) {
     return `${app.getPath("userData")}`;
   } else {
     console.error("Undetected user mode, quitting app...:", userMode);
@@ -79,7 +79,7 @@ app.on("ready", () => {
 
     event.returnValue = isLoaded;
 
-    console.log("Loading catalog data...", isLoaded);
+    console.log("Catalog is loaded...", isLoaded);
   });
 
   function loadLoreCatalog() {
@@ -578,7 +578,7 @@ function createWindow(mainWindow) {
     },
   ]);
   Menu.setApplicationMenu(menu);
-  
+
   mainWindow.setMenuBarVisibility(true);
   mainWindow.loadURL(MAIN_WINDOW_WEBPACK_ENTRY);
   mainWindow.webContents.openDevTools();
