@@ -59,7 +59,7 @@ process.env["ELECTRON_DISABLE_SECURITY_WARNINGS"] = true;
 
 app.setAppUserModelId("Lore");
 
-const userMode = DIST;
+const userMode = DEV;
 
 const root = getRoot(userMode);
 
@@ -564,5 +564,5 @@ function createWindow(mainWindow) {
   Menu.setApplicationMenu(menu);
   mainWindow.setMenuBarVisibility(true);
   mainWindow.loadURL(MAIN_WINDOW_WEBPACK_ENTRY);
-  // mainWindow.webContents.openDevTools();
+  mainWindow.webContents.openDevTools();
 }

@@ -16,13 +16,19 @@ export class EntryForm {
       this.clearImagePreview();
     });
 
-    this.ui.templateSelect.addEventListener("change", () => {
-      if (!this.selectedTemplate) {
-        this.selectedTemplate = this.ui.templateSelect.value;
+    
+    const entryFormTemplateSelect = document.querySelectorAll(
+      ".entry-form__template-select"
+    );
+    entryFormTemplateSelect[0].addEventListener("change", () => {
+      const activeTemplate = entryFormTemplateSelect[0].value;
+      if (!activeTemplate) {
+        this.selectedTemplate = entryFormTemplateSelect;
         this.updateForm();
         this.updatePrototypeDropdown();
-      } else if (this.selectedTemplate != this.ui.templateSelect.value) {
-        this.selectedTemplate = this.ui.templateSelect.value;
+
+      } else if (this.selectedTemplate != entryFormTemplateSelect) {
+        this.selectedTemplate = activeTemplate;
         this.updateForm();
         this.updatePrototypeDropdown();
       }
