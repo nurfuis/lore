@@ -396,52 +396,106 @@ class Catalog {
     this.#root = root;
 
     ipcMain.on("path:sprites-preview", (event, fileKey) => {
-      if (this.#userMode === DEV) {
-        const relativeFilePath = path.join(
-          "../data/assets/sprites",
-          this.information.sprites.data.sprite[fileKey].preview
-        );
-
-        event.returnValue = relativeFilePath;
-        console.log("Sending data...", relativeFilePath);
-      } else if (this.#userMode === DIST) {
-        const filePath = path.join(
-          this.#root,
-          _DIR,
-          _ASSETS_DIR,
-          _SPRITES_DIR,
-          this.information.sprites.data.sprite[fileKey].preview
-        );
-
-        event.returnValue = filePath;
-        console.log("Sending data...", filePath);
-      }
+      this.getSpritePreview(fileKey, event);
     });
 
     ipcMain.on("save:lore-information", (event, data) => {
-      const filename = this.information.lore.temp.path;
-
-      console.log("Writing changes to temp:", filename);
-
-      fs.writeFile(filename, JSON.stringify(data), (err) => {
-        if (err) {
-          console.error("Error saving lore:", err);
-          event.sender.send("save-failed");
-        } else {
-          event.sender.send("save-success", filename);
-          this.information.lore.temp.data = data;
-          console.log("Lore saved to temp file successfully.");
-        }
-      });
+      this.saveLoreInformation(data, event);
     });
 
     ipcMain.on("save:templates-information", (event, data) => {
-      if (!data) {
-        console.error("Invalid data format: Missing templates section");
-        event.sender.send("save-failed", "Invalid data format");
+      this.saveTemplatesInformation(data, event);
+    });
+
+    ipcMain.on("save:lore-image", (event, filePath) => {
+      this.saveLoreImage(event, filePath);
+    });
+  }
+
+  saveLoreImage(event, filePath) {
+    saveImageData(event, filePath);
+    async function saveImageData(event, sourceFilePath) {
+      console.log("Saving image data...");
+
+      if (!(await isFileAccessible(sourceFilePath))) {
+        console.error("Source file not found:", sourceFilePath);
         return;
       }
 
+      const filename = path.basename(sourceFilePath);
+      const newImageFilePath = path.join(
+        this.information.sprites.directory,
+        filename
+      );
+
+      const imageData = fs.readFileSync(sourceFilePath);
+
+      if (this.#userMode === DIST) {
+        if (!(await writeImageData(newImageFilePath, imageData))) {
+          return;
+        }
+      }
+
+      if (!(await updateSpriteReferences(removeExtension(filename), filename))) {
+        return;
+      }
+
+      console.log("Image saved successfully!", newImageFilePath);
+      console.log(
+        "Sprites data updated with full-size image reference:",
+        removeExtension(filename)
+      );
+
+      if (this.#userMode === DEV) {
+        event.returnValue = path.join("../data/assets/sprites", filename);
+      } else if (this.#userMode === DIST) {
+        event.returnValue = path.join(
+          this.#root,
+          "/data/assets/sprites",
+          filename
+        );
+      }
+    }
+    async function updateSpriteReferences(fileIndex, filename) {
+      this.information.sprites.data[SPRITES_KEY][fileIndex] = {};
+      this.information.sprites.data[SPRITES_KEY][fileIndex][PREVIEWS_KEY] =
+        filename;
+
+      try {
+        await fs.promises.writeFile(
+          this.information.sprites.path,
+          JSON.stringify(this.information.sprites.data)
+        );
+        return true;
+      } catch (err) {
+        console.error("Error saving updated sprites data:", err);
+        return false;
+      }
+    }
+    async function writeImageData(filePath, imageData) {
+      try {
+        await fs.promises.writeFile(filePath, imageData);
+        return true;
+      } catch (err) {
+        console.error("Error writing image data:", err);
+        return false;
+      }
+    }
+    async function isFileAccessible(filePath) {
+      try {
+        await fs.promises.access(filePath, fs.constants.F_OK);
+        return true;
+      } catch (err) {
+        return false;
+      }
+    }
+  }
+
+  saveTemplatesInformation(data, event) {
+    if (!data) {
+      console.error("Invalid data format: Missing templates section");
+      event.sender.send("save-failed", "Invalid data format");
+    } else {
       const templateData = (this.information.templates.data.template = data);
       fs.writeFile(
         this.information.templates.path,
@@ -456,88 +510,47 @@ class Catalog {
           }
         }
       );
-    });
+    }
+  }
 
-    ipcMain.on("save:lore-image", (event, filePath) => {
-      saveImageData(event, filePath);
-      async function saveImageData(event, sourceFilePath) {
-        console.log("Saving image data...");
+  saveLoreInformation(data, event) {
+    const filename = this.information.lore.temp.path;
 
-        if (!(await isFileAccessible(sourceFilePath))) {
-          console.error("Source file not found:", sourceFilePath);
-          return;
-        }
+    console.log("Writing changes to temp:", filename);
 
-        const filename = path.basename(sourceFilePath);
-        const newImageFilePath = path.join(
-          this.information.sprites.directory,
-          filename
-        );
-
-        const imageData = fs.readFileSync(sourceFilePath);
-
-        if (this.#userMode === DIST) {
-          if (!(await writeImageData(newImageFilePath, imageData))) {
-            return;
-          }
-        }
-
-        if (
-          !(await updateSpriteReferences(removeExtension(filename), filename))
-        ) {
-          return;
-        }
-
-        console.log("Image saved successfully!", newImageFilePath);
-        console.log(
-          "Sprites data updated with full-size image reference:",
-          removeExtension(filename)
-        );
-
-        if (this.#userMode === DEV) {
-          event.returnValue = path.join("../data/assets/sprites", filename);
-        } else if (this.#userMode === DIST) {
-          event.returnValue = path.join(
-            this.#root,
-            "/data/assets/sprites",
-            filename
-          );
-        }
-      }
-      async function updateSpriteReferences(fileIndex, filename) {
-        this.information.sprites.data[SPRITES_KEY][fileIndex] = {};
-        this.information.sprites.data[SPRITES_KEY][fileIndex][PREVIEWS_KEY] =
-          filename;
-
-        try {
-          await fs.promises.writeFile(
-            this.information.sprites.path,
-            JSON.stringify(this.information.sprites.data)
-          );
-          return true;
-        } catch (err) {
-          console.error("Error saving updated sprites data:", err);
-          return false;
-        }
-      }
-      async function writeImageData(filePath, imageData) {
-        try {
-          await fs.promises.writeFile(filePath, imageData);
-          return true;
-        } catch (err) {
-          console.error("Error writing image data:", err);
-          return false;
-        }
-      }
-      async function isFileAccessible(filePath) {
-        try {
-          await fs.promises.access(filePath, fs.constants.F_OK);
-          return true;
-        } catch (err) {
-          return false;
-        }
+    fs.writeFile(filename, JSON.stringify(data), (err) => {
+      if (err) {
+        console.error("Error saving lore:", err);
+        event.sender.send("save-failed");
+      } else {
+        event.sender.send("save-success", filename);
+        this.information.lore.temp.data = data;
+        console.log("Lore saved to temp file successfully.");
       }
     });
+  }
+
+  getSpritePreview(fileKey, event) {
+    if (this.#userMode === DEV) {
+      const relativeFilePath = path.join(
+        "../data/assets/sprites",
+        this.information.sprites.data.sprite[fileKey].preview
+      );
+
+      event.returnValue = relativeFilePath;
+      console.log("Sending data...", relativeFilePath);
+    } else if (this.#userMode === DIST) {
+      const filePath = path.join(
+        this.#root,
+        _DIR,
+        _ASSETS_DIR,
+        _SPRITES_DIR,
+        this.information.sprites.data.sprite[fileKey].preview
+      );
+
+      event.returnValue = filePath;
+      console.log("Sending data...", filePath);
+    }
   }
 }
 
