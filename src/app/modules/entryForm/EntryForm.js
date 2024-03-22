@@ -75,10 +75,12 @@ export class EntryForm {
 
     if (selectedTemplate) {
       for (const field in this.loreLib[selectedTemplate][selectedEntry]) {
+
         if (field == "sprite") {
           this.setPreview(this.loreLib[selectedTemplate][selectedEntry][field]);
           this.spriteName =
             this.loreLib[selectedTemplate][selectedEntry][field];
+
         } else if (field !== "valid" && field !== "version") {
           const element = document.querySelector(`[name=${field}]`);
           element.value = this.loreLib[selectedTemplate][selectedEntry][field];
@@ -99,11 +101,18 @@ export class EntryForm {
   }
 
   clearImagePreview() {
-    this.ui.imagePreview.src = "";
-    this.ui.imagePreview.style.display = "none";
-    this.ui.imageInput.value = "";
+    const entryFormImagePreview = document.querySelectorAll(".entry-form__image--preview");
+    entryFormImagePreview[0].src = "";
+    entryFormImagePreview[0].style.display = "none";
+
+    const entryFormImageInput = document.querySelectorAll(
+      ".entry-form__image--input"
+    );
+    entryFormImageInput[0].value = "";
+    
     this.spriteName = undefined;
   }
+
   setPreview(fileKey) {
     this.spriteName = fileKey;
 
