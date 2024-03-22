@@ -202,7 +202,6 @@ class Library {
 
     return loreFiles;
   }
-
   readProjectData(projectDataDirectory) {
     const sprites = this.readSprites(projectDataDirectory);
     const templates = this.readTemplates(projectDataDirectory);
@@ -264,17 +263,6 @@ class Library {
       });
     }
     return { data: results, path: templatesFile };
-  }
-  fillMissingLoreEntries(loreData, templates) {
-    const filledLoreData = Object.assign({}, loreData);
-
-    for (const key in templates) {
-      if (!filledLoreData.hasOwnProperty(key)) {
-        filledLoreData[key] = {};
-        console.log("Key added to lore library:", key);
-      }
-    }
-    return filledLoreData;
   }
   readLore(projectDataDirectory, templates) {
     console.log("Reading lore file...");
@@ -351,6 +339,17 @@ class Library {
     );
     return fileSet;
   }
+  fillMissingLoreEntries(loreData, templates) {
+    const filledLoreData = Object.assign({}, loreData);
+
+    for (const key in templates) {
+      if (!filledLoreData.hasOwnProperty(key)) {
+        filledLoreData[key] = {};
+        console.log("Key added to lore library:", key);
+      }
+    }
+    return filledLoreData;
+  }
   resolveBadShutdown() {
     return new Promise((resolve, reject) => {
       dialog
@@ -401,13 +400,17 @@ class Library {
 }
 
 class Catalog {
+  #userMode = userMode;
+  #root = root;
+
   constructor(userMode, root, catalogData) {
-    this.userMode = userMode;
-    this.root = root;
     this.information = catalogData;
 
+    this.#userMode = userMode
+    this.#root = root;
+
     ipcMain.on("path:sprites-preview", (event, fileKey) => {
-      if (this.userMode === DEV) {
+      if (this.#userMode === DEV) {
         const relativeFilePath = path.join(
           "../data/assets/sprites",
           this.information.sprites.data.sprite[fileKey].preview
@@ -415,9 +418,9 @@ class Catalog {
 
         event.returnValue = relativeFilePath;
         console.log("Sending data...", relativeFilePath);
-      } else if (this.userMode === DIST) {
+      } else if (this.#userMode === DIST) {
         const filePath = path.join(
-          root,
+          this.#root,
           _DIR,
           _ASSETS_DIR,
           _SPRITES_DIR,
@@ -487,7 +490,7 @@ class Catalog {
 
         const imageData = fs.readFileSync(sourceFilePath);
 
-        if (this.userMode === DIST) {
+        if (this.#userMode === DIST) {
           if (!(await writeImageData(newImageFilePath, imageData))) {
             return;
           }
@@ -505,10 +508,10 @@ class Catalog {
           removeExtension(filename)
         );
 
-        if (this.userMode === DEV) {
+        if (this.#userMode === DEV) {
           event.returnValue = path.join("../data/assets/sprites", filename);
-        } else if (this.userMode === DIST) {
-          event.returnValue = path.join(root, "/data/assets/sprites", filename);
+        } else if (this.#userMode === DIST) {
+          event.returnValue = path.join(this.#root, "/data/assets/sprites", filename);
         }
       }
       async function updateSpriteReferences(fileIndex, filename) {
