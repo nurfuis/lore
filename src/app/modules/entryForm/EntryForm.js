@@ -184,11 +184,14 @@ export class EntryForm {
       ".entry-form__template-select"
     );
     const selectedTemplate = entryFormTemplateSelect[0].value;
-    // write an api to get the templates from the main process
-    
-    if (selectedTemplate) {
-      const templateFields =
-        this.templateMaker.templates[selectedTemplate];
+
+    if (!!selectedTemplate) {
+      const templateFieldsResult =
+        window.electronAPI.getInformationTemplateFields(selectedTemplate);
+
+      console.log("Requested information:template-fields...", templateFieldsResult);
+
+      const templateFields = this.templateMaker.templates[selectedTemplate];
 
       for (const fieldName in templateFields) {
         const fieldData = templateFields[fieldName];
@@ -245,6 +248,7 @@ export class EntryForm {
       elementsToHide.forEach((element) => (element.style.display = "block")); // Hide elements
     }
   }
+
   saveEntry() {
     // Create a new entry object from form values
     const newEntry = {};
@@ -290,6 +294,7 @@ export class EntryForm {
       console.log(newEntry, entryKey);
     }
   }
+
   enablePrototypeDropdown() {
     try {
       // Check if options are available within the dropdown
@@ -306,6 +311,7 @@ export class EntryForm {
       this.ui.prototypeSelect.disabled = true; // Keep the dropdown disabled on error
     }
   }
+
   updatePrototypeDropdown() {
     this.ui.prototypeSelect.innerHTML = ""; // Clear existing options
     // this.selectedEntry = undefined; // TODO Reason where this should happen

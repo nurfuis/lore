@@ -13,7 +13,7 @@ const path = require("path");
 if (require("electron-squirrel-startup")) {
   app.quit();
 }
-const { APP_ICON, DEV, DIST } = require("./main/settings/appConfiguration");
+const { APP_ICON, DEV, DIST} = require("./main/settings/appConfiguration");
 
 const {
   SPRITES_KEY,
@@ -404,7 +404,7 @@ class Catalog {
     this.#root = root;
 
     ipcMain.on("path:sprites-preview", (event, fileKey) => {
-      this.getSpritePreview(fileKey, event);
+      this.getSpritePreviewPath(fileKey, event);
     });
 
     ipcMain.on("save:lore-information", (event, data) => {
@@ -417,6 +417,10 @@ class Catalog {
 
     ipcMain.on("save:lore-image", (event, filePath) => {
       this.saveLoreImage(event, filePath, this.information, this.#userMode);
+    });
+
+    ipcMain.on("information:template-fields", (event, templateKey) => {
+      this.getTemplateFieldsInformation(templateKey, event);
     });
   }
 
@@ -468,8 +472,7 @@ class Catalog {
     }
     async function updateSpriteReferences(fileIndex, filename) {
       information.sprites.data[SPRITES_KEY][fileIndex] = {};
-      information.sprites.data[SPRITES_KEY][fileIndex][PREVIEWS_KEY] =
-        filename;
+      information.sprites.data[SPRITES_KEY][fileIndex][PREVIEWS_KEY] = filename;
 
       try {
         await fs.promises.writeFile(
@@ -540,15 +543,14 @@ class Catalog {
     });
   }
 
-  getSpritePreview(fileKey, event) {
+  getSpritePreviewPath(fileKey, event) {
     if (userMode === DEV) {
       const relativeFilePath = path.join(
         "../data/assets/sprites",
         this.information.sprites.data.sprite[fileKey].preview
       );
-
       event.returnValue = relativeFilePath;
-      console.log("Sending data...", relativeFilePath);
+
     } else if (userMode === DIST) {
       const filePath = path.join(
         this.#root,
@@ -557,9 +559,18 @@ class Catalog {
         _SPRITES_DIR,
         this.information.sprites.data.sprite[fileKey].preview
       );
-
       event.returnValue = filePath;
-      console.log("Sending data...", filePath);
+    } 
+  }
+
+  getTemplateFieldsInformation(templateKey, event) {
+    const result = this.information.templates.data[templateKey];
+    if (result) {
+      event.returnValue = result;
+      console.log("Replying to information:template-fields ...", result);
+    } else if (userMode) {
+      event.returnValue = result;
+      console.log("Requested recieved for undefined template...", templateKey);
     }
   }
 }

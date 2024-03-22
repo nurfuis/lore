@@ -20,6 +20,12 @@ const electronAPI = {
     const response = ipcRenderer.sendSync("save:lore-image", filePath);
     return response;
   },
+  
+  getInformationTemplateFields(templateKey) {
+    const response = ipcRenderer.sendSync("information:template-fields", templateKey);
+    return response;
+  },
+
 
   //* ONE WAY FROM MAIN *//
 
