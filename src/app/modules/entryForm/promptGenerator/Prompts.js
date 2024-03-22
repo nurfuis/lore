@@ -53,20 +53,33 @@ export class Prompts {
     });
   }
   generatePrompt() {
-    const promptText = document.getElementById("promptText");
-    const selectedTemplate = this.entryForm.selectedTemplate;
-    const selectedEntry = this.entryForm.selectedEntry;
+    const entryTemplateSelect = document.querySelectorAll(
+      ".entry-form__template-select"
+    );
+    const selectedTemplateValue = entryTemplateSelect[0].value;
+    console.log("Selected template:", selectedTemplateValue);
+
+    const entryPrototypeSelect = document.querySelectorAll(
+      ".entry-form__prototype-select"
+    );
+    const selectedPrototypeValue = entryPrototypeSelect[0].value;
+    console.log("Selected entry:", selectedPrototypeValue);
+
     const loreLib = this.entryForm.loreLib;
 
     let promptString = "";
-    if (selectedEntry != undefined) {
-      promptString += `Please fill in the missing details for a lore library entry in the ${selectedTemplate} category. You can expand or adjust details to create a more convincing lore while preserving the main details provided.; `;
+
+    if (selectedPrototypeValue != undefined) {
+      promptString += `Please fill in the missing details for a lore library entry in the ${selectedTemplateValue} category. You can expand or adjust details to create a more convincing lore while preserving the main details provided.; `;
 
       // iterate over the entry fields
-      for (const key in loreLib[selectedTemplate][selectedEntry]) {
+      for (const key in loreLib[selectedTemplateValue][
+        selectedPrototypeValue
+      ]) {
         if (key !== "valid" && key !== "version" && key != "sprite") {
           // get field name
-          const fieldValue = loreLib[selectedTemplate][selectedEntry][key];
+          const fieldValue =
+            loreLib[selectedTemplateValue][selectedPrototypeValue][key];
           // console.log("prompt key", key);
           // console.log(
           //   "prompt data",
@@ -75,7 +88,7 @@ export class Prompts {
 
           // Check for user provided prompt
           const providedPrompt =
-            this.entryForm.templates[selectedTemplate][key].prompt;
+            this.entryForm.templates[selectedTemplateValue][key].prompt;
           const hasUserProvidedPrompt = !!providedPrompt;
 
           // get detailed prompt from presets
@@ -99,7 +112,7 @@ export class Prompts {
     } else {
       promptString = "Please select a lore entry to generate a prompt for.";
     }
-
+    const promptText = document.getElementById("promptText");
     promptText.textContent = promptString;
     promptModal.style.display = "block"; // Open the modal after updating prompt
   }
