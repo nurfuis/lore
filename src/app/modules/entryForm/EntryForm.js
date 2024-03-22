@@ -66,29 +66,36 @@ export class EntryForm {
     });
   }
   handlePrototypeSelect(event) {
-    this.selectedEntry = event.target.value;
-    if (this.selectedEntry) {
+    const selectedEntry = event.target.value;
+
+    const entryFormTemplateSelect = document.querySelectorAll(
+      ".entry-form__template-select"
+    );
+    const selectedTemplate = entryFormTemplateSelect[0].value;
+
+    for (const field in this.loreLib[selectedTemplate][selectedEntry]) {
+      console.log(selectedTemplate, selectedEntry);
+      if (field == "sprite") {
+        this.setPreview(
+          this.loreLib[selectedTemplate][selectedEntry][field]
+        );
+        this.spriteName =
+          this.loreLib[selectedTemplate][selectedEntry][field];
+      } else if (field !== "valid" && field !== "version") {
+        const element = document.querySelector(`[name=${field}]`);
+        element.value =
+          this.loreLib[selectedTemplate][selectedEntry][field];
+
+        this.clearImagePreview();
+      }
+    }
+
+    if (selectedEntry) {
       this.ui.generatePromptButton.style.display = "flex";
     } else {
       this.ui.generatePromptButton.style.display = "none";
     }
 
-    for (const field in this.loreLib[this.selectedTemplate][this.selectedEntry]) {
-      console.log(this.selectedTemplate, this.selectedEntry);
-      if (field == "sprite") {
-        this.setPreview(
-          this.loreLib[this.selectedTemplate][this.selectedEntry][field]
-        );
-        this.spriteName =
-          this.loreLib[this.selectedTemplate][this.selectedEntry][field];
-      } else if (field !== "valid" && field !== "version") {
-        const element = document.querySelector(`[name=${field}]`);
-        element.value =
-          this.loreLib[this.selectedTemplate][this.selectedEntry][field];
-
-        this.clearImagePreview();
-      }
-    }
   }
 
   clearImagePreview() {
