@@ -16,7 +16,26 @@ export class EntryForm {
       this.clearImagePreview();
     });
 
-    
+    this.ui.saveEntryButton.addEventListener("click", () => {
+      this.saveEntry();
+      this.updatePrototypeDropdown();
+    });
+
+    this.ui.clearForm.addEventListener("click", () => {
+      const entryFormTemplateSelect = document.querySelectorAll(
+        ".entry-form__template-select"
+      );
+      const entryFormPrototypeSelect = document.querySelectorAll(
+        ".entry-form__prototype-select"
+      );
+
+      entryFormTemplateSelect[0].selectedIndex = 0;
+      this.updateForm();
+      
+      entryFormPrototypeSelect[0].selectedIndex = 0;
+      this.updateForm();
+    });
+
     const entryFormTemplateSelect = document.querySelectorAll(
       ".entry-form__template-select"
     );
@@ -26,7 +45,6 @@ export class EntryForm {
         this.selectedTemplate = entryFormTemplateSelect;
         this.updateForm();
         this.updatePrototypeDropdown();
-
       } else if (this.selectedTemplate != entryFormTemplateSelect) {
         this.selectedTemplate = activeTemplate;
         this.updateForm();
@@ -34,16 +52,11 @@ export class EntryForm {
       }
     });
 
-    this.ui.saveEntryButton.addEventListener("click", () => {
-      this.saveEntry();
-      this.updatePrototypeDropdown();
-    });
+    const entryFormPrototypeSelect = document.querySelectorAll(
+      ".entry-form__prototype-select"
+    );
 
-    this.ui.clearForm.addEventListener("click", () => {
-      this.updateForm();
-    });
-
-    this.ui.prototypeSelect.addEventListener("change", (event) => {
+    entryFormPrototypeSelect[0].addEventListener("change", (event) => {
       this.selectedEntry = event.target.value;
       if (this.selectedEntry) {
         this.ui.generatePromptButton.style.display = "flex";
@@ -109,6 +122,7 @@ export class EntryForm {
     // Clear existing form elements
     this.clearImagePreview();
     this.ui.entryForm.innerHTML = "";
+
     // Add elements to show/hide
     const elementsToShow = [
       this.ui.entryForm,
