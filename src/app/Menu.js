@@ -58,8 +58,9 @@ export class Menu {
       // console.log('Display the viewer.');
       this.viewer.renderGameData();
     }
-
-    uiElements.createFormContainer.style.display = showCreateForm
+    
+    const editEntryFormWrapper = document.querySelectorAll(".edit-entry__form-wrapper")
+    editEntryFormWrapper[0].style.display = showCreateForm
       ? "block"
       : "none";
     uiElements.gameDataViewer.style.display = showCreateForm ? "none" : "block";

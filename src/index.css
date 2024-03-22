@@ -87,7 +87,7 @@ nav .button {
 nav .button:hover {
   background-color: var(--button-hover-color);
 }
-.form-container,
+.edit-entry__form-wrapper,
 .viewer-container {
   display: none;
   padding: 20px;
