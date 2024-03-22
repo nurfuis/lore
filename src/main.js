@@ -416,13 +416,13 @@ class Catalog {
     });
 
     ipcMain.on("save:lore-image", (event, filePath) => {
-      this.saveLoreImage(event, filePath);
+      this.saveLoreImage(event, filePath, this.information, this.#userMode);
     });
   }
 
-  saveLoreImage(event, filePath) {
-    saveImageData(event, filePath);
-    async function saveImageData(event, sourceFilePath) {
+  saveLoreImage(event, filePath, information, userMode) {
+    saveImageData(event, filePath, information, userMode);
+    async function saveImageData(event, sourceFilePath, information) {
       console.log("Saving image data...");
 
       if (!(await isFileAccessible(sourceFilePath))) {
@@ -432,13 +432,13 @@ class Catalog {
 
       const filename = path.basename(sourceFilePath);
       const newImageFilePath = path.join(
-        this.information.sprites.directory,
+        information.sprites.directory,
         filename
       );
 
       const imageData = fs.readFileSync(sourceFilePath);
 
-      if (this.#userMode === DIST) {
+      if (userMode === DIST) {
         if (!(await writeImageData(newImageFilePath, imageData))) {
           return;
         }
@@ -456,9 +456,9 @@ class Catalog {
         removeExtension(filename)
       );
 
-      if (this.#userMode === DEV) {
+      if (userMode === DEV) {
         event.returnValue = path.join("../data/assets/sprites", filename);
-      } else if (this.#userMode === DIST) {
+      } else if (userMode === DIST) {
         event.returnValue = path.join(
           this.#root,
           "/data/assets/sprites",
@@ -467,14 +467,14 @@ class Catalog {
       }
     }
     async function updateSpriteReferences(fileIndex, filename) {
-      this.information.sprites.data[SPRITES_KEY][fileIndex] = {};
-      this.information.sprites.data[SPRITES_KEY][fileIndex][PREVIEWS_KEY] =
+      information.sprites.data[SPRITES_KEY][fileIndex] = {};
+      information.sprites.data[SPRITES_KEY][fileIndex][PREVIEWS_KEY] =
         filename;
 
       try {
         await fs.promises.writeFile(
-          this.information.sprites.path,
-          JSON.stringify(this.information.sprites.data)
+          information.sprites.path,
+          JSON.stringify(information.sprites.data)
         );
         return true;
       } catch (err) {
@@ -541,7 +541,7 @@ class Catalog {
   }
 
   getSpritePreview(fileKey, event) {
-    if (this.#userMode === DEV) {
+    if (userMode === DEV) {
       const relativeFilePath = path.join(
         "../data/assets/sprites",
         this.information.sprites.data.sprite[fileKey].preview
@@ -549,7 +549,7 @@ class Catalog {
 
       event.returnValue = relativeFilePath;
       console.log("Sending data...", relativeFilePath);
-    } else if (this.#userMode === DIST) {
+    } else if (userMode === DIST) {
       const filePath = path.join(
         this.#root,
         _DIR,

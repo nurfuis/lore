@@ -71,13 +71,16 @@ export class EntryForm {
     });
 
     const entryFormImageInput = document.querySelectorAll(
-      ".entry-form__image-input"
+      ".entry-form__image--input"
     );
     entryFormImageInput[0].addEventListener("change", (event) => {
       this.updateImagePreview(event);
     });
 
-    this.ui.clearImageButton.addEventListener("click", () => {
+    const entryFormImageClear = document.querySelectorAll(
+      ".entry-form__image-button--clear"
+    );
+    entryFormImageClear[0].addEventListener("click", () => {
       this.clearImagePreview();
     });
 
