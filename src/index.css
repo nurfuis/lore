@@ -301,7 +301,7 @@ button:hover {
   border-radius: 10px; /* Adjust roundness */
   border: none;
 }
-.welcome {
+.lore-welcome__wrapper {
   text-align: center;
   padding: 20px;
   color: var(--text-color); /* White for readability */

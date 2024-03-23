@@ -45,21 +45,15 @@ electronAPI.onSetProjectDirectory((currentDirectory) => {
 function start(catalog) {
   entryForm.loreLib = catalog.information.lore.main.data;
   entryForm.templates = catalog.information.templates.data;
-
-
   entryForm.sprites = catalog.information.sprites;
   viewer.sprites = catalog.information.sprites;
-  // entry form is coupled to the templates now
-  // it can read templates from thetemplates module now
-  // and the references need to be updated in entryForm
-  // before unlinking templates from the entry form here
-
-
   templateMaker.templates = catalog.information.templates.data;
-  // The block below configures the workspace elements
-  // it can probably be part of the menu and use a method to run it
-  uiElements.welcomeDiv.innerText = "Select an option to begin...";
 
+  const welcomeBlock = document.querySelectorAll(".lore-welcome__wrapper");
+  welcomeBlock[0].style.display = "none";
+
+  const informationToast = document.querySelectorAll(".lore-app__information");
+  informationToast[0].innerText = "Select an option to begin...";
 
   uiElements.createButton.style.display = "";
   uiElements.viewButton.style.display = "";
@@ -67,12 +61,10 @@ function start(catalog) {
   // The next part tells the modules that their data is loaded
   // and to hurry up and set their initial states
 
-
   viewer.renderGameData();
   templateMaker.updateOptions();
   entryForm.updateForm();
 }
-
 
 function initializeWelcomeButtonStart() {
   const welcomeButtonStart = document.querySelectorAll(
@@ -83,5 +75,3 @@ function initializeWelcomeButtonStart() {
     console.log("Project directory is loaded", isLoaded);
   });
 }
-
-
