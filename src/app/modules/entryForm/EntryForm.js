@@ -7,8 +7,6 @@ export class EntryForm {
       ".entry-form__template-select"
     );
     entryFormTemplateSelect[0].addEventListener("change", () => {
-      const activeTemplate = entryFormTemplateSelect[0].value;
-
       this.updateForm();
       this.updatePrototypeDropdown();
     });
@@ -37,7 +35,7 @@ export class EntryForm {
       entryFormPrototypeSelect[0].selectedIndex = 0;
 
       this.updateForm();
-      this.resetPrototypeDropdown();
+      this.updatePrototypeDropdown();
     });
 
     // IMAGE INPUT
@@ -80,13 +78,21 @@ export class EntryForm {
     if (selectedTemplate) {
       let hasSprite = false;
 
-      for (const field in this.loreLib[selectedTemplate][selectedEntry]) {
+      const templateKey = selectedTemplate;
+      const entryKey = selectedEntry;
+
+      const loreEntry = window.electronAPI.getInformationLoreEntry({
+        templateKey,
+        entryKey,
+      });
+
+      for (const field in loreEntry) {
         if (field === "sprite") {
           hasSprite = true;
-          this.setPreview(this.loreLib[selectedTemplate][selectedEntry][field]);
+          this.setPreview(loreEntry[field]);
         } else if (field !== "valid" && field !== "version") {
           const element = document.querySelector(`[name=${field}]`);
-          element.value = this.loreLib[selectedTemplate][selectedEntry][field];
+          element.value = loreEntry[field];
         }
       }
 
@@ -161,24 +167,23 @@ export class EntryForm {
     );
     const selectedTemplate = entryFormTemplateSelect[0].value;
     if (selectedTemplate) {
-      const prototypeNames = Object.keys(this.loreLib[selectedTemplate]);
+      const templateKey = selectedTemplate;
+      const allCatagoryEntries =
+        window.electronAPI.getInformationLoreCatagory(templateKey);
+      console.log(allCatagoryEntries);
+
+      const prototypeNames = Object.keys(allCatagoryEntries);
       if (prototypeNames) {
-        // Sort the prototype names alphabetically
         prototypeNames.sort();
 
-        // Create options from sorted names
         prototypeNames.forEach((prototypeName) => {
           const option = document.createElement("option");
           option.value = prototypeName;
           option.text = prototypeName;
           entryFormPrototypeSelect[0].appendChild(option);
         });
-
-
-
-        this.enablePrototypeDropdown(); 
+        this.enablePrototypeDropdown();
       } else {
-        // Handle case where no prototypes exist for the chosen template
         console.info("No prototypes available for this template.");
       }
     }
@@ -216,7 +221,7 @@ export class EntryForm {
     }
 
     if (!file.type.startsWith("image/")) {
-      console.error("Please select an image file!");
+      console.error("Please select an image file.");
       return;
     }
 
@@ -250,7 +255,6 @@ export class EntryForm {
       ".entry-form__commands-button--clear"
     );
 
-    // Add elements to show/hide
     const elementsToShow = [
       entryFormElement[0],
       entryFormSaveAll[0],
@@ -266,15 +270,8 @@ export class EntryForm {
     const selectedTemplate = entryFormTemplateSelect[0].value;
 
     if (!!selectedTemplate) {
-      const templateFieldsResult =
+      const templateFields =
         window.electronAPI.getInformationTemplateFields(selectedTemplate);
-
-      console.log(
-        "Requested information:template-fields...",
-        templateFieldsResult
-      );
-
-      const templateFields = this.templateMaker.templates[selectedTemplate];
 
       for (const fieldName in templateFields) {
         const fieldData = templateFields[fieldName];
@@ -356,10 +353,8 @@ export class EntryForm {
       const parts = filePath.split(/[\\/]/);
 
       newEntry["sprite"] = parts[parts.length - 1];
-      // console.log(parts[parts.length - 1]);
     }
 
-    // Get the appropriate key based on the template
     const entryFormTemplateSelect = document.querySelectorAll(
       ".entry-form__template-select"
     );
@@ -385,8 +380,6 @@ export class EntryForm {
       }
 
       window.electronAPI.saveInformationLoreEntry({ templateKey, newEntry });
-
-      this.loreLib[templateKey][entryKey] = newEntry; // depreciated - will be removed soon
 
       const informationToast = document.querySelectorAll(
         ".lore-app__information"

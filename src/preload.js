@@ -37,6 +37,14 @@ const electronAPI = {
     return response;
   },
 
+  getInformationLoreCatagory(templateKey) {
+    const response = ipcRenderer.sendSync(
+      "information:lore-catagory",
+      templateKey
+    );
+    return response;
+  },
+
   saveInformationLoreEntry({ templateKey, newEntry }) {
     const response = ipcRenderer.sendSync("save:lore-entry", {
       templateKey,

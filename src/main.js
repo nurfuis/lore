@@ -446,6 +446,13 @@ class Catalog {
       }
     );
 
+    ipcMain.on(
+      "information:lore-catagory",
+      (event, templateKey) => {
+        this.getLoreCatagory(templateKey, event);
+      }
+    );
+
     ipcMain.on("save:lore-entry", (event, { templateKey, newEntry }) => {
       this.saveLoreEntry(newEntry, templateKey, event);
     });
@@ -611,6 +618,18 @@ class Catalog {
       event.returnValue = result;
     }
   }
+
+  getLoreCatagory(templateKey, event) {
+    const result =
+      this.information?.lore?.main?.data?.[templateKey] ?? null;
+
+    if (result) {
+      event.returnValue = result;
+    } else {
+      event.returnValue = result;
+    }
+  }
+
   saveLoreEntry(newEntry, templateKey, event) {
     console.log(newEntry.name);
 
