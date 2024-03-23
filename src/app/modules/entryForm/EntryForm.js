@@ -1,25 +1,17 @@
-import { UIElements } from "../../UIElements";
 import { removeExtension } from "../../../main/utils/removeExtension";
 
 export class EntryForm {
   constructor() {
-    this.ui = new UIElements();
-    this.spriteName = undefined;
-    this.selectedTemplate = undefined;
-    this.selectedEntry = undefined;
-
+    // TEMPLATE SELECTOR
     const entryFormTemplateSelect = document.querySelectorAll(
       ".entry-form__template-select"
     );
     entryFormTemplateSelect[0].addEventListener("change", () => {
-      const activeTemplate = entryFormTemplateSelect[0].value;
-
-      this.selectedTemplate = activeTemplate; // TODO phase out this property
-
       this.updateForm();
       this.updatePrototypeDropdown();
     });
 
+    // PROTOTYPE SELECTOR
     const entryFormPrototypeSelect = document.querySelectorAll(
       ".entry-form__prototype-select"
     );
@@ -27,6 +19,7 @@ export class EntryForm {
       this.handlePrototypeSelect(event);
     });
 
+    // CLEAR FORM
     const entryFormCommandButtonClear = document.querySelectorAll(
       ".entry-form__commands-button--clear"
     );
@@ -40,9 +33,12 @@ export class EntryForm {
 
       entryFormTemplateSelect[0].selectedIndex = 0;
       entryFormPrototypeSelect[0].selectedIndex = 0;
+
       this.updateForm();
+      this.resetPrototypeDropdown();
     });
 
+    // IMAGE INPUT
     const entryFormImageInput = document.querySelectorAll(
       ".entry-form__image--input"
     );
@@ -50,6 +46,7 @@ export class EntryForm {
       this.updateImagePreview(event);
     });
 
+    // IMAGE CLEAR
     const entryFormImageClear = document.querySelectorAll(
       ".entry-form__image-button--clear"
     );
@@ -57,6 +54,7 @@ export class EntryForm {
       this.clearImagePreview();
     });
 
+    // SAVE ENTRY
     const entryFormSaveAll = document.querySelectorAll(
       ".entry-form__save-button"
     );
@@ -65,26 +63,33 @@ export class EntryForm {
       this.updatePrototypeDropdown();
     });
   }
+
   handlePrototypeSelect(event) {
+    // avtive entry
     const selectedEntry = event.target.value;
 
+    // active template
     const entryFormTemplateSelect = document.querySelectorAll(
       ".entry-form__template-select"
     );
     const selectedTemplate = entryFormTemplateSelect[0].value;
 
+    // fill out the form with the selected entry
     if (selectedTemplate) {
+      let hasSprite = false;
+
       for (const field in this.loreLib[selectedTemplate][selectedEntry]) {
-        if (field == "sprite") {
+        if (field === "sprite") {
+          hasSprite = true;
           this.setPreview(this.loreLib[selectedTemplate][selectedEntry][field]);
-          this.spriteName =
-            this.loreLib[selectedTemplate][selectedEntry][field];
         } else if (field !== "valid" && field !== "version") {
           const element = document.querySelector(`[name=${field}]`);
           element.value = this.loreLib[selectedTemplate][selectedEntry][field];
-
-          this.clearImagePreview();
         }
+      }
+
+      if (!hasSprite) {
+        this.clearImagePreview();
       }
 
       if (selectedEntry) {
@@ -94,6 +99,78 @@ export class EntryForm {
         entryFormGeneratePromptButton[0].style.display = "flex";
       } else {
         entryFormGeneratePromptButton[0].style.display = "none";
+      }
+    }
+  }
+
+  enablePrototypeDropdown() {
+    try {
+      const entryFormPrototypeSelect = document.querySelectorAll(
+        ".entry-form__prototype-select"
+      );
+      if (entryFormPrototypeSelect[0].options.length > 1) {
+        entryFormPrototypeSelect[0].disabled = false;
+      } else {
+        console.info("No prototypes available for this template.");
+        entryFormPrototypeSelect[0].disabled = true;
+      }
+    } catch (error) {
+      console.error("Error enabling prototype dropdown:", error);
+      entryFormPrototypeSelect[0].disabled = true;
+    }
+  }
+
+  resetPrototypeDropdown() {
+    const entryFormPrototypeSelect = document.querySelectorAll(
+      ".entry-form__prototype-select"
+    );
+    entryFormPrototypeSelect[0].selectedIndex = 0;
+    entryFormPrototypeSelect[0].innerHTML = "";
+
+    const defaultOption = document.createElement("option");
+    defaultOption.value = "";
+    defaultOption.text = "-- Select Entry (Optional) --";
+    entryFormPrototypeSelect[0].appendChild(defaultOption);
+    entryFormPrototypeSelect[0].disabled = true;
+  }
+
+  updatePrototypeDropdown() {
+    const entryFormPrototypeSelect = document.querySelectorAll(
+      ".entry-form__prototype-select"
+    );
+
+    entryFormPrototypeSelect[0].selectedIndex = 0;
+    entryFormPrototypeSelect[0].innerHTML = "";
+
+    // this.ui.generatePromptButton.style.display = "none";
+
+    const defaultOption = document.createElement("option");
+    defaultOption.value = "";
+    defaultOption.text = "-- Select Entry (Optional) --";
+    entryFormPrototypeSelect[0].appendChild(defaultOption);
+
+    const entryFormTemplateSelect = document.querySelectorAll(
+      ".entry-form__template-select"
+    );
+    const selectedTemplate = entryFormTemplateSelect[0];
+    if (selectedTemplate) {
+      const prototypeNames = Object.keys(this.loreLib[selectedTemplate]);
+      if (prototypeNames) {
+        // Sort the prototype names alphabetically
+        prototypeNames.sort();
+
+        // Create options from sorted names
+        prototypeNames.forEach((prototypeName) => {
+          const option = document.createElement("option");
+          option.value = prototypeName;
+          option.text = prototypeName;
+          entryFormPrototypeSelect[0].appendChild(option);
+        });
+
+        this.enablePrototypeDropdown(); // Enable the dropdown if prototypes are available
+      } else {
+        // Handle case where no prototypes exist for the chosen template
+        console.info("No prototypes available for this template.");
       }
     }
   }
@@ -109,13 +186,9 @@ export class EntryForm {
       ".entry-form__image--input"
     );
     entryFormImageInput[0].value = "";
-
-    this.spriteName = undefined;
   }
 
   setPreview(fileKey) {
-    this.spriteName = fileKey;
-
     const imageSource = window.electronAPI.getPathSpritesPreview(fileKey);
 
     const entryFormImagePreview = document.querySelectorAll(
@@ -137,8 +210,6 @@ export class EntryForm {
       console.error("Please select an image file!");
       return;
     }
-
-    this.spriteName = removeExtension(file.name);
 
     const pathToSource = electronAPI.saveImage(file.path);
 
@@ -293,8 +364,6 @@ export class EntryForm {
     });
 
     if (entryKey && !loreEntry) {
-      // this.loreLib[templateKey][entryKey] = newEntry;
-
       if (loreEntry?.valid) {
         if (loreEntry["version"]) {
           const version = loreEntry["version"] + 1;
@@ -305,11 +374,16 @@ export class EntryForm {
         console.log("New entry:", newEntry["version"]);
       }
 
-      // electronAPI.saveLore(this.loreLib);
       window.electronAPI.saveInformationLoreEntry({ templateKey, newEntry });
 
-      this.ui.information.innerText = `Entry "${newEntry.name}" type: ${templateKey} saved successfully!`;
-      // this.updateForm();
+      this.loreLib[templateKey][entryKey] = newEntry; // depreciated - will be removed soon
+
+      const informationToast = document.querySelectorAll(
+        ".lore-app__information"
+      );
+      informationToast[0].innerText = `Entry "${newEntry.name}" type: ${templateKey} saved successfully!`;
+      this.updateForm();
+
       console.log(
         "No entry exists under this name, saving data without issues"
       );
@@ -317,62 +391,6 @@ export class EntryForm {
       console.log("No entry exists, but the new entry lacks a name");
     } else if (loreEntry && entryKey) {
       console.log("An entry already exists under this name.");
-    }
-  }
-
-  enablePrototypeDropdown() {
-    try {
-      // Check if options are available within the dropdown
-      if (this.ui.prototypeSelect.options.length > 1) {
-        this.ui.prototypeSelect.disabled = false; // Enable the dropdown
-      } else {
-        // Handle case where no prototypes are available (optional)
-        console.info("No prototypes available for this template.");
-        this.ui.prototypeSelect.disabled = true; // Keep the dropdown disabled
-      }
-    } catch (error) {
-      // Handle potential errors (optional)
-      console.error("Error enabling prototype dropdown:", error);
-      this.ui.prototypeSelect.disabled = true; // Keep the dropdown disabled on error
-    }
-  }
-
-  updatePrototypeDropdown() {
-    this.ui.prototypeSelect.innerHTML = ""; // Clear existing options
-    // this.selectedEntry = undefined; // TODO Reason where this should happen
-    this.ui.generatePromptButton.style.display = "none";
-
-    const defaultOption = document.createElement("option");
-    defaultOption.value = "";
-    defaultOption.text = "-- Select Entry (Optional) --";
-    this.ui.prototypeSelect.appendChild(defaultOption);
-
-    // Call your renderer to get prototype names based on the selected template
-    // console.log(
-    //   'this.selectedTemplate',
-    //   Object.keys(this.loreLib),
-    //   this.selectedTemplate
-    // );
-
-    if (this.selectedTemplate) {
-      const prototypeNames = Object.keys(this.loreLib[this.selectedTemplate]);
-      if (prototypeNames) {
-        // Sort the prototype names alphabetically
-        prototypeNames.sort();
-
-        // Create options from sorted names
-        prototypeNames.forEach((prototypeName) => {
-          const option = document.createElement("option");
-          option.value = prototypeName;
-          option.text = prototypeName;
-          this.ui.prototypeSelect.appendChild(option);
-        });
-
-        this.enablePrototypeDropdown(); // Enable the dropdown if prototypes are available
-      } else {
-        // Handle case where no prototypes exist for the chosen template
-        console.info("No prototypes available for this template.");
-      }
     }
   }
 }

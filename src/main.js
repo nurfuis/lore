@@ -612,21 +612,26 @@ class Catalog {
     }
   }
   saveLoreEntry(newEntry, templateKey, event) {
-    console.log(this.information.lore.temp.data);
+    console.log(newEntry.name);
+
+    this.information.lore.temp.data[templateKey][newEntry.name] = newEntry;
 
     const filename = this.information.lore.temp.path;
 
     console.log("Writing changes to temp:", newEntry);
     event.returnValue = true;
 
-    // fs.writeFile(filename, JSON.stringify(data), (err) => {
-    //   if (err) {
-    //     console.error("Error saving lore:", err);
-    //   } else {
-    //     this.information.lore.temp.data = data;
-    //     console.log("Lore saved to temp file successfully.");
-    //   }
-    // });
+    fs.writeFile(
+      filename,
+      JSON.stringify(this.information.lore.temp.data),
+      (err) => {
+        if (err) {
+          console.error("Error saving lore:", err);
+        } else {
+          console.log("Lore saved to temp file successfully.");
+        }
+      }
+    );
   }
 }
 
