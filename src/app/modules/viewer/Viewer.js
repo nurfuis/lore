@@ -14,10 +14,12 @@ export class Viewer {
   }
   deleteConfirmed(itemToDelete, type) {
     // TODO add API call to preload & main
-    electronAPI.deleteLoreEntry({ itemToDelete, type }); // Save the updated data
+    console.log(itemToDelete, type)
+    // electronAPI.deleteLoreEntry({ itemToDelete, type }); 
 
     // TODO update to class selector
     uiElements.information.innerText = `Entry "${itemToDelete.name}" deleted successfully!`;
+    // TODO remove the li element as opposed to reloading the entire module
     this.renderGameData();
   }
 

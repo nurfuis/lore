@@ -12,7 +12,6 @@ const menu = new Menu();
 
 templateMaker.entryForm = entryForm;
 
-viewer.entryForm = entryForm;
 
 menu.viewer = viewer;
 
