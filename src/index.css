@@ -88,7 +88,7 @@ nav .button:hover {
   background-color: var(--button-hover-color);
 }
 .edit-entry__form-wrapper,
-.viewer-container {
+.viewer__cards-wrapper {
   display: none;
   padding: 20px;
   border: 1px solid var(--secondary-color); /* Bright purple border */

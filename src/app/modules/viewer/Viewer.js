@@ -19,7 +19,7 @@ export class Viewer {
       ".lore-main__information-toast"
     );
     informationToast[0].innerText = `Entry "${itemToDelete.name}" deleted successfully!`;
-    
+
     // TODO remove the li element as opposed to reloading the entire module
     this.renderGameData();
   }
@@ -157,14 +157,16 @@ export class Viewer {
   }
 
   renderGameData() {
-    uiElements.gameDataViewer.innerHTML = ""; // Clear any existing content
+    const viewerCards = document.querySelectorAll(".viewer__cards-wrapper");
+    viewerCards[0].innerHTML = "";
 
     const loreLibrary = window.loreAPI.getInformationLoreLibrary("temp");
 
     for (const type in loreLibrary) {
       if (Object.keys(loreLibrary).length > 0) {
         const card = this.createCard(type);
-        uiElements.gameDataViewer.appendChild(card);
+
+        viewerCards[0].appendChild(card);
       }
     }
   }
@@ -186,38 +188,49 @@ function createDetailsButton(item) {
   return detailsButton;
 }
 function updateDetailsModal(item) {
+  const modalEntryDetailsSprite = document.querySelectorAll(
+    ".modal__entry-details--sprite"
+  );
+
+  
   document.getElementById("item-details-name").textContent = item.name;
+  
   document.getElementById("item-details-description").textContent =
     item.description || "No description available";
 
   const detailsList = createEntryList(item);
+  
   const existingEntries = document.getElementById(
     "item-details-description"
   ).nextElementSibling;
+  
   if (existingEntries && existingEntries.tagName === "UL") {
     existingEntries.remove();
-    uiElements.spriteContainer.innerHTML = ""; // Clear any existing sprite
+
+    modalEntryDetailsSprite[0].innerHTML = ""; // Clear any existing sprite
   }
   if (item.sprite) {
-    uiElements.spriteContainer.innerHTML = ""; // Clear any existing sprite
+     modalEntryDetailsSprite[0].innerHTML = ""; // Clear any existing sprite
 
     const spriteImage = document.createElement("img");
     const imageSource = window.loreAPI.getPathSpritesPreview(item.sprite);
 
     spriteImage.src = imageSource;
-    uiElements.spriteContainer.appendChild(spriteImage);
+    modalEntryDetailsSprite[0].appendChild(spriteImage);
   }
+  
   document
     .getElementById("item-details-description")
     .parentElement.appendChild(detailsList);
 
-  uiElements.detailsModal.style.display = "block"; // Show the modal
+  
+    uiElements.detailsModal.style.display = "block";
 }
 function createEntryList(item) {
   const detailsList = document.createElement("ul");
   for (const entry in item) {
     const entryItem = document.createElement("li");
-    entryItem.textContent = `${entry}: ${item[entry]}`; // Combine entry name and value
+    entryItem.textContent = `${entry}: ${item[entry]}`;
     detailsList.appendChild(entryItem);
   }
   return detailsList;
