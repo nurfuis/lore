@@ -37,8 +37,11 @@ const electronAPI = {
     return response;
   },
 
-  saveInformationLoreEntry(newEntry) {
-    const response = ipcRenderer.sendSync("save:lore-entry", newEntry);
+  saveInformationLoreEntry({ templateKey, newEntry }) {
+    const response = ipcRenderer.sendSync("save:lore-entry", {
+      templateKey,
+      newEntry,
+    });
     return response;
   },
 

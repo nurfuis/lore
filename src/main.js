@@ -74,29 +74,27 @@ app.on("ready", () => {
 
   createWindow(mainWindow);
 
-  ipcMain.on("load:lore-data-project-directory", (event) => {
-    const isLoaded = loadLoreCatalog();
+  ipcMain.on("load:lore-data-project-directory", async (event) => {
+    const isLoaded = await loadLoreCatalog();
 
     event.returnValue = isLoaded;
 
     console.log("Catalog is loaded...", isLoaded);
   });
 
-  function loadLoreCatalog() {
+  async function loadLoreCatalog() {
     console.log("Loading...");
 
-    const information = new Library().initializeProjectDirectories(root);
+    const library = new Library();
+
+    const information = await library.initializeProjectDirectories(root);
 
     const catalog = new Catalog(userMode, root, information);
 
     mainWindow.webContents.send("send:catalog-data", catalog);
     mainWindow.webContents.send("send:current-directory", root);
 
-    if (userMode === DEV) {
-      console.log("Catalog information:", catalog.information);
-    }
-
-    return true;
+    return information;
   }
 });
 
@@ -153,7 +151,7 @@ app.on("activate", () => {
 
 class Library {
   constructor() {}
-  initializeProjectDirectories(root) {
+  async initializeProjectDirectories(root) {
     console.log("Initializing project directories...");
 
     const userAppDataPath = root;
@@ -184,17 +182,18 @@ class Library {
     console.log("Initialized previews directory", previewsPath);
 
     // Directories are ready, load the project data
-    const loreFiles = this.readProjectData(projectDataDirectory);
+    const loreFiles = await this.readProjectData(projectDataDirectory);
 
     return loreFiles;
   }
 
-  readProjectData(projectDataDirectory) {
+  async readProjectData(projectDataDirectory) {
     const sprites = this.readSprites(projectDataDirectory);
     const templates = this.readTemplates(projectDataDirectory);
-    const lore = this.readLore(projectDataDirectory, templates);
-
-    return { lore, sprites, templates };
+    const lore = await this.readLore(projectDataDirectory, templates);
+    if (!!lore) {
+      return { lore, sprites, templates };
+    }
   }
 
   readSprites(projectDataDirectory) {
@@ -255,7 +254,7 @@ class Library {
     return { data: results, path: templatesFile };
   }
 
-  readLore(projectDataDirectory, templates) {
+  async readLore(projectDataDirectory, templates) {
     console.log("Reading lore file...");
 
     const fileSet = {
@@ -307,10 +306,27 @@ class Library {
         fs.readFileSync(fileSet.temp.path, "utf-8")
       );
       console.log("Unsuccesful shutdown detected.");
-      this.resolveBadShutdown(projectDataDirectory);
+      const result = await this.resolveBadShutdown(projectDataDirectory);
+      console.log("Resolved bad shutdown with:", result);
+      if (result === 0) {
+        // temp data was overwritten to the main file...
+        // restart the loading process or somethin?
+        // for now just quit to protect data until
+        // this is resolved correctly
+        app.quit();
+        return undefined;
+      } else if (result === 1) {
+        // old temp data was removed, set temp data to a copy of the main
+        fileSet.temp.data = fileSet.main.data;
+      } else {
+        app.quit();
+        console.log("The app should have or will be quitting...");
+        return undefined;
+      }
     } catch (err) {
       if (err.code === "ENOENT") {
-        console.log("Checking last shutdown...");
+        console.log("Last shutdown was good...");
+        fileSet.temp.data = fileSet.main.data;
       } else {
         console.error("Error reading temp file.");
       }
@@ -367,14 +383,14 @@ class Library {
               );
               fs.unlinkSync(path.join(projectDataDirectory, LORE_LIBRARY_TEMP));
               console.log("Temp data overwritten to main file.");
-              resolve(true);
+              resolve(choice.response);
             } else if (choice.response === 1) {
               fs.unlinkSync(path.join(projectDataDirectory, LORE_LIBRARY_TEMP));
               console.log("Temporary file removed.");
 
-              resolve(true);
+              resolve(choice.response);
             } else {
-              resolve(false);
+              resolve(2);
             }
           } catch (error) {
             reject(error);
@@ -430,8 +446,8 @@ class Catalog {
       }
     );
 
-    ipcMain.on("save:lore-entry", (event, newEntry) => {
-      this.saveLoreEntry(newEntry, event);
+    ipcMain.on("save:lore-entry", (event, { templateKey, newEntry }) => {
+      this.saveLoreEntry(newEntry, templateKey, event);
     });
   }
 
@@ -595,7 +611,9 @@ class Catalog {
       event.returnValue = result;
     }
   }
-  saveLoreEntry(newEntry, event) {
+  saveLoreEntry(newEntry, templateKey, event) {
+    console.log(this.information.lore.temp.data);
+
     const filename = this.information.lore.temp.path;
 
     console.log("Writing changes to temp:", newEntry);

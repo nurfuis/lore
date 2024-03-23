@@ -306,7 +306,7 @@ export class EntryForm {
       }
 
       // electronAPI.saveLore(this.loreLib);
-      window.electronAPI.saveInformationLoreEntry(newEntry);
+      window.electronAPI.saveInformationLoreEntry({ templateKey, newEntry });
 
       this.ui.information.innerText = `Entry "${newEntry.name}" type: ${templateKey} saved successfully!`;
       // this.updateForm();
