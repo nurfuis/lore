@@ -1,10 +1,6 @@
 import { UIElements } from "./UIElements";
 const uiElements = new UIElements();
 
-function toggleSettingsModal() {
-  uiElements.settingsModal.style.display = "block";
-}
-
 export class Menu {
   constructor() {  
     const navButtonEditEntry = document.querySelectorAll(".lore-navigation__button--edit-entry")

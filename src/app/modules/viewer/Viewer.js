@@ -3,6 +3,7 @@ const uiElements = new UIElements();
 
 export class Viewer {
   constructor() {
+   
     window.addEventListener("click", function (event) {
       if (event.target === uiElements.detailsModal) {
         uiElements.detailsModal.style.display = "none";
@@ -188,12 +189,9 @@ function createDetailsButton(item) {
   return detailsButton;
 }
 function updateDetailsModal(item) {
-  const modalEntryDetailsSprite = document.querySelectorAll(
-    ".modal__entry-details--sprite"
-  );
 
-  
-  document.getElementById("item-details-name").textContent = item.name;
+  const modalEntryDetailsHeading = document.querySelectorAll(".modal__entry-details--heading");
+  modalEntryDetailsHeading[0].textContent = item.name;
   
   document.getElementById("item-details-description").textContent =
     item.description || "No description available";
@@ -204,6 +202,9 @@ function updateDetailsModal(item) {
     "item-details-description"
   ).nextElementSibling;
   
+  const modalEntryDetailsSprite = document.querySelectorAll(
+    ".modal__entry-details--sprite"
+  ); 
   if (existingEntries && existingEntries.tagName === "UL") {
     existingEntries.remove();
 
