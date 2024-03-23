@@ -11,10 +11,10 @@ function copyPromptText() {
   navigator.clipboard
     .writeText(promptText.textContent)
     .then(() => {
-      console.log("Prompt copied successfully!"); // Optional success message
+      console.log("Prompt copied successfully!");
     })
     .catch(() => {
-      console.error("Failed to copy prompt!"); // Optional error message
+      console.error("Failed to copy prompt!");
     });
   selection.removeAllRanges();
   promptModal.style.display = "none";
