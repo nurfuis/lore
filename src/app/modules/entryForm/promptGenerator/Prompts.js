@@ -1,40 +1,27 @@
 import { promptTemplates } from "./promptTemplates";
+/*
+    TODO:
+      select prompt modal by class selector
+      select copyPromptButton with class 
 
-function copyPromptText() {
-  const promptText = document.getElementById("promptText");
-  const selection = window.getSelection();
-  const range = document.createRange();
-  range.selectNodeContents(promptText);
-  selection.removeAllRanges();
-  selection.addRange(range);
+      include in modal rework when that happens
 
-  navigator.clipboard
-    .writeText(promptText.textContent)
-    .then(() => {
-      console.log("Prompt copied successfully!");
-    })
-    .catch(() => {
-      console.error("Failed to copy prompt!");
-    });
-  selection.removeAllRanges();
-  promptModal.style.display = "none";
-}
-
+*/
 export class Prompts {
   constructor() {
-    const promptModal = document.getElementById("promptModal");
-    const copyPromptButton = document.getElementById("copyPromptButton");
-
-    copyPromptButton.addEventListener("click", copyPromptText);
-
     const entryFormGeneratePromptButton = document.querySelectorAll(
       ".entry-form__commands-button--generate-prompt"
     );
-
     entryFormGeneratePromptButton[0].addEventListener("click", () => {
       this.generatePrompt();
       promptModal.style.display = "block";
-    });
+    });    
+      
+    const promptModal = document.getElementById("promptModal");
+    
+    const copyPromptButton = document.getElementById("copyPromptButton");
+
+    copyPromptButton.addEventListener("click", copyPromptText);
 
     window.addEventListener("click", function (event) {
       if (event.target === promptModal) {
@@ -106,4 +93,24 @@ export class Prompts {
     promptText.textContent = promptString;
     promptModal.style.display = "block"; 
   }
+}
+
+function copyPromptText() {
+  const promptText = document.getElementById("promptText");
+  const selection = window.getSelection();
+  const range = document.createRange();
+  range.selectNodeContents(promptText);
+  selection.removeAllRanges();
+  selection.addRange(range);
+
+  navigator.clipboard
+    .writeText(promptText.textContent)
+    .then(() => {
+      console.log("Prompt copied successfully!");
+    })
+    .catch(() => {
+      console.error("Failed to copy prompt!");
+    });
+  selection.removeAllRanges();
+  promptModal.style.display = "none";
 }
