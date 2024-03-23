@@ -439,19 +439,12 @@ class Catalog {
       this.getTemplateFieldsInformation(templateKey, event);
     });
 
-    ipcMain.on(
-      "information:lore-catagory",
-      (event, templateKey) => {
-        this.getLoreCatagory(templateKey, event);
-      }
-    );
-    ipcMain.on(
-      "information:lore-library",
-      (event, edition) => {
-        this.getLoreLibrary(edition, event);
-      }
-    );
-
+    ipcMain.on("information:lore-catagory", (event, templateKey) => {
+      this.getLoreCatagory(templateKey, event);
+    });
+    ipcMain.on("information:lore-library", (event, edition) => {
+      this.getLoreLibrary(edition, event);
+    });
 
     ipcMain.on("save:lore-entry", (event, { templateKey, newEntry }) => {
       this.saveLoreEntry(newEntry, templateKey, event);
@@ -467,8 +460,7 @@ class Catalog {
       (event, { templateKey, entryKey }) => {
         this.removeLoreEntryInformation(entryKey, templateKey, event);
       }
-    );    
-
+    );
   }
 
   saveLoreImage(event, filePath, information, userMode) {
@@ -610,8 +602,7 @@ class Catalog {
   }
 
   getLoreLibrary(edition, event) {
-    const result =
-      this.information?.lore?.[edition].data ?? null;
+    const result = this.information?.lore?.[edition].data ?? null;
 
     if (result) {
       event.returnValue = result;
@@ -632,8 +623,7 @@ class Catalog {
   }
 
   getLoreCatagory(templateKey, event) {
-    const result =
-      this.information?.lore?.main?.data?.[templateKey] ?? null;
+    const result = this.information?.lore?.main?.data?.[templateKey] ?? null;
 
     if (result) {
       event.returnValue = result;
@@ -642,15 +632,12 @@ class Catalog {
     }
   }
 
-  
-
   saveLoreEntry(newEntry, templateKey, event) {
     this.information.lore.temp.data[templateKey][newEntry.name] = newEntry;
 
-    const filename = this.information.lore.temp.path;
-
     event.returnValue = true;
 
+    const filename = this.information.lore.temp.path;
     fs.writeFile(
       filename,
       JSON.stringify(this.information.lore.temp.data),
@@ -666,7 +653,7 @@ class Catalog {
 
   getLoreEntryInformation(entryKey, templateKey, event) {
     const result =
-      this.information?.lore?.main?.data?.[templateKey]?.[entryKey] ?? null;
+      this.information?.lore?.temp?.data?.[templateKey]?.[entryKey] ?? null;
 
     if (result?.valid) {
       event.returnValue = result;
@@ -681,10 +668,22 @@ class Catalog {
       this.information?.lore?.temp?.data?.[templateKey]?.[entryKey] ?? null;
 
     if (result?.valid) {
-      // delete this.information.lore.temp.data[templateKey][entryKey];
-
+      delete this.information.lore.temp.data[templateKey][entryKey];
       event.returnValue = result;
-      console.log("Deleting information:...", this.information.lore.temp.data[templateKey][entryKey]);
+      const filename = this.information.lore.temp.path;
+      fs.writeFile(
+        filename,
+        JSON.stringify(this.information.lore.temp.data),
+        (err) => {
+          if (err) {
+            console.error("Error saving lore:", err);
+          } else {
+            console.log(
+              "Lore entry deleted succesfully."
+            );
+          }
+        }
+      );
     } else {
       event.returnValue = result;
     }

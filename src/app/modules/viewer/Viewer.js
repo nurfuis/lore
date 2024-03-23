@@ -13,16 +13,11 @@ export class Viewer {
     });
   }
   deleteConfirmed(itemToDelete, type) {
-    // TODO add API call to preload & main
-    console.log("Delete lore entry:", itemToDelete.name, type)
-
-
     const templateKey = type;
     const entryKey = itemToDelete.name;
 
     window.loreAPI.catalogLoreEntryDelete({ templateKey, entryKey }); 
 
-    // TODO update to class selector
     uiElements.information.innerText = `Entry "${itemToDelete.name}" deleted successfully!`;
     // TODO remove the li element as opposed to reloading the entire module
     this.renderGameData();
