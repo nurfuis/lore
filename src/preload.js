@@ -45,6 +45,11 @@ const electronAPI = {
     return response;
   },
 
+  getInformationLoreLibrary(edition) {
+    const response = ipcRenderer.sendSync("information:lore-library", edition);
+    return response;
+  },
+
   saveInformationLoreEntry({ templateKey, newEntry }) {
     const response = ipcRenderer.sendSync("save:lore-entry", {
       templateKey,

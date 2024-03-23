@@ -333,7 +333,6 @@ export class EntryForm {
   }
 
   saveEntry() {
-    // Create a new entry object from form values
     const newEntry = {};
     newEntry["valid"] = true;
 
@@ -361,8 +360,8 @@ export class EntryForm {
       ".entry-form__template-select"
     );
     entryFormTemplateSelect[0].value;
-    const templateKey = entryFormTemplateSelect[0].value;
 
+    const templateKey = entryFormTemplateSelect[0].value;
     const entryKey = newEntry?.name;
 
     const loreEntry = window.electronAPI.getInformationLoreEntry({

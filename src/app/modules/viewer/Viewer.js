@@ -58,6 +58,7 @@ export class Viewer {
   }
   deleteConfirmed(itemToDelete, type) {
     delete this.entryForm.loreLib[type][itemToDelete.name];
+    
     electronAPI.saveLore(this.entryForm.loreLib); // Save the updated data
 
     // Update UI (optional)
@@ -170,13 +171,14 @@ export class Viewer {
     const itemsContainer = this.createItemsContainer();
     card.appendChild(itemsContainer);
 
-    // Alphabetize the keys in this.entryForm.loreLib[type]
-    const sortedKeys = Object.keys(this.entryForm.loreLib[type]).sort();
+    const loreLibrary = window.electronAPI.getInformationLoreLibrary("temp")
+
+    const sortedKeys = Object.keys(loreLibrary[type]).sort();
 
     // Create cards for items in alphabetical order
     sortedKeys.forEach((key) => {
       const itemElement = this.createItem(
-        this.entryForm.loreLib[type][key],
+        loreLibrary[type][key],
         this.sprites
       );
       itemsContainer.appendChild(itemElement);
@@ -186,9 +188,12 @@ export class Viewer {
   }
 
   createCardHeader(type, card) {
+    const loreLibrary = window.electronAPI.getInformationLoreLibrary("temp")
+
     const sectionHeader = document.createElement("h2");
+    
     sectionHeader.textContent = `${type} (${
-      Object.keys(this.entryForm.loreLib[type]).length
+      Object.keys(loreLibrary[type]).length
     })`; // Add key count
     sectionHeader.classList.add("category-header");
 
@@ -202,10 +207,11 @@ export class Viewer {
   renderGameData() {
     uiElements.gameDataViewer.innerHTML = ""; // Clear any existing content
 
-    for (const type in this.entryForm.loreLib) {
-      // Check if the type has any keys (properties)
-      if (Object.keys(this.entryForm.loreLib[type]).length > 0) {
-        const card = this.createCard(type); // Delegate card creation only if keys exist
+    const loreLibrary = window.electronAPI.getInformationLoreLibrary("temp");
+
+    for (const type in loreLibrary) {
+      if (Object.keys(loreLibrary).length > 0) {
+        const card = this.createCard(type);
         uiElements.gameDataViewer.appendChild(card);
       }
     }

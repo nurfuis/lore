@@ -1,16 +1,4 @@
-import { UIElements } from "../../../UIElements";
 import { promptTemplates } from "./promptTemplates";
-
-// function fillTemplate(template, data) {
-//   let filledTemplate = template;
-//   for (const key in data) {
-//     filledTemplate = filledTemplate.replace(
-//       new RegExp(`{{${key}}}`, "g"),
-//       data[key]
-//     );
-//   }
-//   return filledTemplate;
-// }
 
 function copyPromptText() {
   const promptText = document.getElementById("promptText");
@@ -34,14 +22,17 @@ function copyPromptText() {
 
 export class Prompts {
   constructor() {
-    this.ui = new UIElements();
     this.templates = promptTemplates;
     const promptModal = document.getElementById("promptModal");
     const copyPromptButton = document.getElementById("copyPromptButton");
 
     copyPromptButton.addEventListener("click", copyPromptText);
 
-    this.ui.generatePromptButton.addEventListener("click", () => {
+    const entryFormGeneratePromptButton = document.querySelectorAll(
+      ".entry-form__commands-button--generate-prompt"
+    );
+
+    entryFormGeneratePromptButton[0].addEventListener("click", () => {
       this.generatePrompt();
       promptModal.style.display = "block";
     });
@@ -65,30 +56,30 @@ export class Prompts {
     const selectedPrototypeValue = entryPrototypeSelect[0].value;
     console.log("Selected entry:", selectedPrototypeValue);
 
-    const loreLib = this.entryForm.loreLib;
-
     let promptString = "";
 
     if (selectedPrototypeValue != undefined) {
       promptString += `Please fill in the missing details for a lore library entry in the ${selectedTemplateValue} category. You can expand or adjust details to create a more convincing lore while preserving the main details provided.; `;
 
       // iterate over the entry fields
-      for (const key in loreLib[selectedTemplateValue][
+      const loreLibrary = window.electronAPI.getInformationLoreLibrary("temp");
+
+      for (const key in loreLibrary[selectedTemplateValue][
         selectedPrototypeValue
       ]) {
         if (key !== "valid" && key !== "version" && key != "sprite") {
           // get field name
           const fieldValue =
-            loreLib[selectedTemplateValue][selectedPrototypeValue][key];
-          // console.log("prompt key", key);
-          // console.log(
-          //   "prompt data",
-          //   this.entryForm.templates[selectedTemplate][key]
-          // );
+            loreLibrary[selectedTemplateValue][selectedPrototypeValue][key];
 
           // Check for user provided prompt
-          const providedPrompt =
-            this.entryForm.templates[selectedTemplateValue][key].prompt;
+          const templateFields =
+            window.electronAPI.getInformationTemplateFields(
+              selectedTemplateValue
+            );
+
+          const providedPrompt = templateFields[key]?.prompt;
+
           const hasUserProvidedPrompt = !!providedPrompt;
 
           // get detailed prompt from presets
@@ -110,10 +101,9 @@ export class Prompts {
         }
       }
     } else {
-      promptString = "Please select a lore entry to generate a prompt for.";
+      promptString = "Please select a lore entry to generate a prompt.";
     }
     const promptText = document.getElementById("promptText");
     promptText.textContent = promptString;
-    promptModal.style.display = "block"; // Open the modal after updating prompt
-  }
+    promptModal.style.display = "block"; 
 }

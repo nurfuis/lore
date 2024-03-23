@@ -453,6 +453,13 @@ class Catalog {
       }
     );
 
+    ipcMain.on(
+      "information:lore-library",
+      (event, edition) => {
+        this.getLoreLibrary(edition, event);
+      }
+    );
+
     ipcMain.on("save:lore-entry", (event, { templateKey, newEntry }) => {
       this.saveLoreEntry(newEntry, templateKey, event);
     });
@@ -630,12 +637,21 @@ class Catalog {
     }
   }
 
+  getLoreLibrary(edition, event) {
+    const result =
+      this.information?.lore?.[edition].data ?? null;
+
+    if (result) {
+      event.returnValue = result;
+    } else {
+      event.returnValue = result;
+    }
+  }
   saveLoreEntry(newEntry, templateKey, event) {
     this.information.lore.temp.data[templateKey][newEntry.name] = newEntry;
 
     const filename = this.information.lore.temp.path;
 
-    console.log("Writing changes to temp:", newEntry.name);
     event.returnValue = true;
 
     fs.writeFile(
