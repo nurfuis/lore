@@ -631,13 +631,11 @@ class Catalog {
   }
 
   saveLoreEntry(newEntry, templateKey, event) {
-    console.log(newEntry.name);
-
     this.information.lore.temp.data[templateKey][newEntry.name] = newEntry;
 
     const filename = this.information.lore.temp.path;
 
-    console.log("Writing changes to temp:", newEntry);
+    console.log("Writing changes to temp:", newEntry.name);
     event.returnValue = true;
 
     fs.writeFile(

@@ -24,18 +24,7 @@ export class EntryForm {
       ".entry-form__commands-button--clear"
     );
     entryFormCommandButtonClear[0].addEventListener("click", () => {
-      const entryFormTemplateSelect = document.querySelectorAll(
-        ".entry-form__template-select"
-      );
-      const entryFormPrototypeSelect = document.querySelectorAll(
-        ".entry-form__prototype-select"
-      );
-
-      entryFormTemplateSelect[0].selectedIndex = 0;
-      entryFormPrototypeSelect[0].selectedIndex = 0;
-
-      this.updateForm();
-      this.updatePrototypeDropdown();
+      this.clearEntryForm();
     });
 
     // IMAGE INPUT
@@ -60,8 +49,22 @@ export class EntryForm {
     );
     entryFormSaveAll[0].addEventListener("click", () => {
       this.saveEntry();
-      this.updatePrototypeDropdown();
     });
+  }
+
+  clearEntryForm() {
+    const entryFormTemplateSelect = document.querySelectorAll(
+      ".entry-form__template-select"
+    );
+    const entryFormPrototypeSelect = document.querySelectorAll(
+      ".entry-form__prototype-select"
+    );
+
+    entryFormTemplateSelect[0].selectedIndex = 0;
+    entryFormPrototypeSelect[0].selectedIndex = 0;
+
+    this.updateForm();
+    this.updatePrototypeDropdown();
   }
 
   handlePrototypeSelect(event) {
@@ -170,7 +173,6 @@ export class EntryForm {
       const templateKey = selectedTemplate;
       const allCatagoryEntries =
         window.electronAPI.getInformationLoreCatagory(templateKey);
-      console.log(allCatagoryEntries);
 
       const prototypeNames = Object.keys(allCatagoryEntries);
       if (prototypeNames) {
@@ -386,6 +388,7 @@ export class EntryForm {
       );
       informationToast[0].innerText = `Entry "${newEntry.name}" type: ${templateKey} saved successfully!`;
       this.updateForm();
+      this.updatePrototypeDropdown();
 
       console.log(
         "No entry exists under this name, saving data without issues"
