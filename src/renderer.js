@@ -12,7 +12,6 @@ const templateMaker = new TemplateMaker();
 const viewer = new Viewer();
 const menu = new Menu();
 
-entryForm.prompts = prompts;
 prompts.entryForm = entryForm;
 
 templateMaker.entryForm = entryForm;
@@ -47,7 +46,7 @@ function start(catalog) {
   const welcomeBlock = document.querySelectorAll(".lore-welcome__wrapper");
   welcomeBlock[0].style.display = "none";
 
-  const informationToast = document.querySelectorAll(".lore-app__information");
+  const informationToast = document.querySelectorAll(".lore-main__information-toast");
   informationToast[0].innerText = "Select an option to begin...";
 
   const navButtonEditEntry = document.querySelectorAll(".lore-navigation__button--edit-entry")

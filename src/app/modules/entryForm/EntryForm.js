@@ -1,4 +1,5 @@
 import { removeExtension } from "../../../main/utils/removeExtension";
+import { promptTemplates } from "./promptGenerator/promptTemplates";
 
 export class EntryForm {
   constructor() {
@@ -286,7 +287,7 @@ export class EntryForm {
 
         promptSpan.textContent =
           fieldData.prompt ||
-          this.prompts.templates[fieldName] ||
+          promptTemplates[fieldName] ||
           fieldData.label;
 
         let inputElement;
@@ -383,7 +384,7 @@ export class EntryForm {
       window.electronAPI.saveInformationLoreEntry({ templateKey, newEntry });
 
       const informationToast = document.querySelectorAll(
-        ".lore-app__information"
+        ".lore-main__information-toast"
       );
       informationToast[0].innerText = `Entry "${newEntry.name}" type: ${templateKey} saved successfully!`;
       this.updateForm();
