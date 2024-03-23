@@ -1,6 +1,5 @@
 import "./index.css";
 import { EntryForm } from "./app/modules/entryForm/EntryForm";
-import { Prompts } from "./app/modules/entryForm/promptGenerator/Prompts";
 import { TemplateMaker } from "./app/modules/templateMaker/TemplateMaker";
 import { Viewer } from "./app/modules/viewer/Viewer";
 import { Menu } from "./app/Menu";
