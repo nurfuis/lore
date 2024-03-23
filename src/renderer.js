@@ -11,15 +11,40 @@ const viewer = new Viewer();
 const menu = new Menu();
 
 templateMaker.entryForm = entryForm;
-
-
 menu.viewer = viewer;
-
-// * OPEN THE CATALOG *//
-initializeWelcomeButtonStart();
 
 loreAPI.onOpenProject((catalog) => {
   start(catalog);
+  function start(catalog) {
+    templateMaker.templates = catalog.information.templates.data;
+
+    const welcomeBlock = document.querySelectorAll(".lore-welcome__wrapper");
+    welcomeBlock[0].style.display = "none";
+
+    const informationToast = document.querySelectorAll(
+      ".lore-main__information-toast"
+    );
+    informationToast[0].innerText = "Select an option to begin...";
+
+    const navButtonEditEntry = document.querySelectorAll(
+      ".lore-navigation__button--edit-entry"
+    );
+    navButtonEditEntry[0].style.display = "";
+
+    const navButtonCreateTemplate = document.querySelectorAll(
+      ".lore-navigation__button--create-template"
+    );
+    navButtonCreateTemplate[0].style.display = "";
+
+    const navButtonViewer = document.querySelectorAll(
+      ".lore-navigation__button--viewer"
+    );
+    navButtonViewer[0].style.display = "";
+
+    viewer.renderGameData();
+    templateMaker.updateOptions();
+    entryForm.updateForm();
+  }
 });
 
 loreAPI.onSetProjectDirectory((currentDirectory) => {
@@ -34,29 +59,7 @@ loreAPI.onSetProjectDirectory((currentDirectory) => {
   }
 });
 
-function start(catalog) {
-  templateMaker.templates = catalog.information.templates.data;
-
-  const welcomeBlock = document.querySelectorAll(".lore-welcome__wrapper");
-  welcomeBlock[0].style.display = "none";
-
-  const informationToast = document.querySelectorAll(".lore-main__information-toast");
-  informationToast[0].innerText = "Select an option to begin...";
-
-  const navButtonEditEntry = document.querySelectorAll(".lore-navigation__button--edit-entry")
-  navButtonEditEntry[0].style.display = "";
-
-  const navButtonCreateTemplate = document.querySelectorAll(".lore-navigation__button--create-template")
-  navButtonCreateTemplate[0].style.display = "";
-
-  const navButtonViewer = document.querySelectorAll(".lore-navigation__button--viewer")
-  navButtonViewer[0].style.display = "";
-
-  viewer.renderGameData();
-  templateMaker.updateOptions();
-  entryForm.updateForm();
-}
-
+initializeWelcomeButtonStart();
 function initializeWelcomeButtonStart() {
   const welcomeButtonStart = document.querySelectorAll(
     ".lore-welcome__button--start"

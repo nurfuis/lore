@@ -1,9 +1,6 @@
 import { UIElements } from "../../UIElements";
 const uiElements = new UIElements();
-/*
-    TODO:
-      we want to uncouple the viewer from the entry form
-*/
+
 export class Viewer {
   constructor() {
     window.addEventListener("click", function (event) {
@@ -16,9 +13,13 @@ export class Viewer {
     const templateKey = type;
     const entryKey = itemToDelete.name;
 
-    window.loreAPI.catalogLoreEntryDelete({ templateKey, entryKey }); 
+    window.loreAPI.catalogLoreEntryDelete({ templateKey, entryKey });
 
-    uiElements.information.innerText = `Entry "${itemToDelete.name}" deleted successfully!`;
+    const informationToast = document.querySelectorAll(
+      ".lore-main__information-toast"
+    );
+    informationToast[0].innerText = `Entry "${itemToDelete.name}" deleted successfully!`;
+    
     // TODO remove the li element as opposed to reloading the entire module
     this.renderGameData();
   }
@@ -126,10 +127,11 @@ export class Viewer {
     const sortedKeys = Object.keys(loreLibrary[type]).sort();
 
     // Create cards for items in alphabetical order
-    
+
     sortedKeys.forEach((key) => {
       const itemElement = this.createLoreSummaryEntryListItem(
-        loreLibrary[type][key], type
+        loreLibrary[type][key],
+        type
       );
       itemsContainer.appendChild(itemElement);
     });
