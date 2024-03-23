@@ -106,4 +106,5 @@ export class Prompts {
     const promptText = document.getElementById("promptText");
     promptText.textContent = promptString;
     promptModal.style.display = "block"; 
+  }
 }
