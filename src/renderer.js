@@ -7,11 +7,9 @@ import { Menu } from "./app/Menu";
 
 //* MAIN FEATURE *//
 const entryForm = new EntryForm();
-const prompts = new Prompts();
 const templateMaker = new TemplateMaker();
 const viewer = new Viewer();
 const menu = new Menu();
-
 
 templateMaker.entryForm = entryForm;
 
