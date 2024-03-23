@@ -85,7 +85,7 @@ export class EntryForm {
       const templateKey = selectedTemplate;
       const entryKey = selectedEntry;
 
-      const loreEntry = window.electronAPI.getInformationLoreEntry({
+      const loreEntry = window.loreAPI.getInformationLoreEntry({
         templateKey,
         entryKey,
       });
@@ -173,7 +173,7 @@ export class EntryForm {
     if (selectedTemplate) {
       const templateKey = selectedTemplate;
       const allCatagoryEntries =
-        window.electronAPI.getInformationLoreCatagory(templateKey);
+        window.loreAPI.getInformationLoreCatagory(templateKey);
 
       const prototypeNames = Object.keys(allCatagoryEntries);
       if (prototypeNames) {
@@ -206,7 +206,7 @@ export class EntryForm {
   }
 
   setPreview(fileKey) {
-    const imageSource = window.electronAPI.getPathSpritesPreview(fileKey);
+    const imageSource = window.loreAPI.getPathSpritesPreview(fileKey);
 
     const entryFormImagePreview = document.querySelectorAll(
       ".entry-form__image--preview"
@@ -228,7 +228,7 @@ export class EntryForm {
       return;
     }
 
-    const pathToSource = electronAPI.saveImage(file.path);
+    const pathToSource = loreAPI.saveImage(file.path);
 
     const entryFormImagePreview = document.querySelectorAll(
       ".entry-form__image--preview"
@@ -274,7 +274,7 @@ export class EntryForm {
 
     if (!!selectedTemplate) {
       const templateFields =
-        window.electronAPI.getInformationTemplateFields(selectedTemplate);
+        window.loreAPI.getInformationTemplateFields(selectedTemplate);
 
       for (const fieldName in templateFields) {
         const fieldData = templateFields[fieldName];
@@ -365,7 +365,7 @@ export class EntryForm {
     const templateKey = entryFormTemplateSelect[0].value;
     const entryKey = newEntry?.name;
 
-    const loreEntry = window.electronAPI.getInformationLoreEntry({
+    const loreEntry = window.loreAPI.getInformationLoreEntry({
       templateKey,
       entryKey,
     });
@@ -381,7 +381,7 @@ export class EntryForm {
         console.log("New entry:", newEntry["version"]);
       }
 
-      window.electronAPI.saveInformationLoreEntry({ templateKey, newEntry });
+      window.loreAPI.saveInformationLoreEntry({ templateKey, newEntry });
 
       const informationToast = document.querySelectorAll(
         ".lore-main__information-toast"

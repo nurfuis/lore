@@ -18,11 +18,11 @@ menu.viewer = viewer;
 // * OPEN THE CATALOG *//
 initializeWelcomeButtonStart();
 
-electronAPI.onOpenProject((catalog) => {
+loreAPI.onOpenProject((catalog) => {
   start(catalog);
 });
 
-electronAPI.onSetProjectDirectory((currentDirectory) => {
+loreAPI.onSetProjectDirectory((currentDirectory) => {
   setDetailsProjectDirectory(currentDirectory);
   function setDetailsProjectDirectory(currentDirectory) {
     const detailsProjectDirectory = document.querySelectorAll(
@@ -62,7 +62,7 @@ function initializeWelcomeButtonStart() {
     ".lore-welcome__button--start"
   );
   welcomeButtonStart[0].addEventListener("click", () => {
-    const isLoaded = electronAPI.loadLoreData();
+    const isLoaded = loreAPI.loadLoreData();
     console.log("Project directory is loaded", isLoaded);
   });
 }

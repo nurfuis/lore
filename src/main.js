@@ -440,19 +440,11 @@ class Catalog {
     });
 
     ipcMain.on(
-      "information:lore-data-entry",
-      (event, { templateKey, entryKey }) => {
-        this.getLoreEntryInformation(entryKey, templateKey, event);
-      }
-    );
-
-    ipcMain.on(
       "information:lore-catagory",
       (event, templateKey) => {
         this.getLoreCatagory(templateKey, event);
       }
     );
-
     ipcMain.on(
       "information:lore-library",
       (event, edition) => {
@@ -460,9 +452,23 @@ class Catalog {
       }
     );
 
+
     ipcMain.on("save:lore-entry", (event, { templateKey, newEntry }) => {
       this.saveLoreEntry(newEntry, templateKey, event);
     });
+    ipcMain.on(
+      "information:lore-data-entry",
+      (event, { templateKey, entryKey }) => {
+        this.getLoreEntryInformation(entryKey, templateKey, event);
+      }
+    );
+    ipcMain.on(
+      "catalog:lore-entry-delete",
+      (event, { templateKey, entryKey }) => {
+        this.removeLoreEntryInformation(entryKey, templateKey, event);
+      }
+    );    
+
   }
 
   saveLoreImage(event, filePath, information, userMode) {
@@ -603,6 +609,17 @@ class Catalog {
     }
   }
 
+  getLoreLibrary(edition, event) {
+    const result =
+      this.information?.lore?.[edition].data ?? null;
+
+    if (result) {
+      event.returnValue = result;
+    } else {
+      event.returnValue = result;
+    }
+  }
+
   getTemplateFieldsInformation(templateKey, event) {
     const result = this.information.templates.data[templateKey];
     if (result) {
@@ -611,18 +628,6 @@ class Catalog {
     } else {
       event.returnValue = result;
       // console.log("Requested recieved for undefined template...", templateKey);
-    }
-  }
-
-  getLoreEntryInformation(entryKey, templateKey, event) {
-    const result =
-      this.information?.lore?.main?.data?.[templateKey]?.[entryKey] ?? null;
-
-    if (result?.valid) {
-      event.returnValue = result;
-      // console.log("Replying to information:lore-data-entry ...", result);
-    } else {
-      event.returnValue = result;
     }
   }
 
@@ -637,16 +642,8 @@ class Catalog {
     }
   }
 
-  getLoreLibrary(edition, event) {
-    const result =
-      this.information?.lore?.[edition].data ?? null;
+  
 
-    if (result) {
-      event.returnValue = result;
-    } else {
-      event.returnValue = result;
-    }
-  }
   saveLoreEntry(newEntry, templateKey, event) {
     this.information.lore.temp.data[templateKey][newEntry.name] = newEntry;
 
@@ -665,6 +662,32 @@ class Catalog {
         }
       }
     );
+  }
+
+  getLoreEntryInformation(entryKey, templateKey, event) {
+    const result =
+      this.information?.lore?.main?.data?.[templateKey]?.[entryKey] ?? null;
+
+    if (result?.valid) {
+      event.returnValue = result;
+      // console.log("Replying to information:lore-data-entry ...", result);
+    } else {
+      event.returnValue = result;
+    }
+  }
+
+  removeLoreEntryInformation(entryKey, templateKey, event) {
+    const result =
+      this.information?.lore?.temp?.data?.[templateKey]?.[entryKey] ?? null;
+
+    if (result?.valid) {
+      // delete this.information.lore.temp.data[templateKey][entryKey];
+
+      event.returnValue = result;
+      console.log("Deleting information:...", this.information.lore.temp.data[templateKey][entryKey]);
+    } else {
+      event.returnValue = result;
+    }
   }
 }
 

@@ -14,8 +14,13 @@ export class Viewer {
   }
   deleteConfirmed(itemToDelete, type) {
     // TODO add API call to preload & main
-    console.log(itemToDelete, type)
-    // electronAPI.deleteLoreEntry({ itemToDelete, type }); 
+    console.log("Delete lore entry:", itemToDelete.name, type)
+
+
+    const templateKey = type;
+    const entryKey = itemToDelete.name;
+
+    window.loreAPI.catalogLoreEntryDelete({ templateKey, entryKey }); 
 
     // TODO update to class selector
     uiElements.information.innerText = `Entry "${itemToDelete.name}" deleted successfully!`;
@@ -88,7 +93,7 @@ export class Viewer {
 
     if (item.sprite) {
       const entryImagePeviewElement = document.createElement("img");
-      const imageSource = window.electronAPI.getPathSpritesPreview(item.sprite);
+      const imageSource = window.loreAPI.getPathSpritesPreview(item.sprite);
       entryImagePeviewElement.src = imageSource;
       entryImagePeviewElement.classList.add(
         "lore-summary__entry-image-preview"
@@ -121,7 +126,7 @@ export class Viewer {
     const itemsContainer = createItemsContainer();
     card.appendChild(itemsContainer);
 
-    const loreLibrary = window.electronAPI.getInformationLoreLibrary("temp");
+    const loreLibrary = window.loreAPI.getInformationLoreLibrary("temp");
 
     const sortedKeys = Object.keys(loreLibrary[type]).sort();
 
@@ -138,7 +143,7 @@ export class Viewer {
   }
 
   createCardHeader(type, card) {
-    const loreLibrary = window.electronAPI.getInformationLoreLibrary("temp");
+    const loreLibrary = window.loreAPI.getInformationLoreLibrary("temp");
 
     const sectionHeader = document.createElement("h2");
 
@@ -157,7 +162,7 @@ export class Viewer {
   renderGameData() {
     uiElements.gameDataViewer.innerHTML = ""; // Clear any existing content
 
-    const loreLibrary = window.electronAPI.getInformationLoreLibrary("temp");
+    const loreLibrary = window.loreAPI.getInformationLoreLibrary("temp");
 
     for (const type in loreLibrary) {
       if (Object.keys(loreLibrary).length > 0) {
@@ -200,7 +205,7 @@ function updateDetailsModal(item) {
     uiElements.spriteContainer.innerHTML = ""; // Clear any existing sprite
 
     const spriteImage = document.createElement("img");
-    const imageSource = window.electronAPI.getPathSpritesPreview(item.sprite);
+    const imageSource = window.loreAPI.getPathSpritesPreview(item.sprite);
 
     spriteImage.src = imageSource;
     uiElements.spriteContainer.appendChild(spriteImage);

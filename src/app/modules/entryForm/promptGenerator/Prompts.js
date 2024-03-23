@@ -48,7 +48,7 @@ export class Prompts {
       promptString += `Please fill in the missing details for a lore library entry in the ${selectedTemplateValue} category. You can expand or adjust details to create a more convincing lore while preserving the main details provided.; `;
 
       // iterate over the entry fields
-      const loreLibrary = window.electronAPI.getInformationLoreLibrary("temp");
+      const loreLibrary = window.loreAPI.getInformationLoreLibrary("temp");
 
       for (const key in loreLibrary[selectedTemplateValue][
         selectedPrototypeValue
@@ -60,7 +60,7 @@ export class Prompts {
 
           // Check for user provided prompt
           const templateFields =
-            window.electronAPI.getInformationTemplateFields(
+            window.loreAPI.getInformationTemplateFields(
               selectedTemplateValue
             );
 

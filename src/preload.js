@@ -1,6 +1,6 @@
 const { contextBridge, ipcRenderer } = require("electron");
 
-const electronAPI = {
+const loreAPI = {
   //* CALL AND RESPONSE *//
 
   loadLoreData(path) {
@@ -31,6 +31,15 @@ const electronAPI = {
 
   getInformationLoreEntry({ templateKey, entryKey }) {
     const response = ipcRenderer.sendSync("information:lore-data-entry", {
+      templateKey,
+      entryKey,
+    });
+    return response;
+  },
+  //* BEST EXAMPLE OF API *//
+  catalogLoreEntryDelete({ templateKey, entryKey })
+  {
+    const response = ipcRenderer.sendSync("catalog:lore-entry-delete", {
       templateKey,
       entryKey,
     });
@@ -72,4 +81,4 @@ const electronAPI = {
   saveLore: (data) => ipcRenderer.send("save:lore-information", data),
   saveTemplates: (data) => ipcRenderer.send("save:templates-information", data),
 };
-contextBridge.exposeInMainWorld("electronAPI", electronAPI);
+contextBridge.exposeInMainWorld("loreAPI", loreAPI);

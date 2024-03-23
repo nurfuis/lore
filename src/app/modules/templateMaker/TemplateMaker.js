@@ -368,10 +368,10 @@ export class TemplateMaker {
       );
     }
 
-    electronAPI.saveTemplates(this.templates); // Save updated gameData
+    loreAPI.saveTemplates(this.templates); // Save updated gameData
 
     // TODO offload this to entryForm so each module manages its own save and data
-    electronAPI.saveLore(this.entryForm.loreLib); // Save updated gameData
+    loreAPI.saveLore(this.entryForm.loreLib); // Save updated gameData
 
     // 5. Close the modal
     const createTemplateModal = document.getElementById(
@@ -418,7 +418,7 @@ export class TemplateMaker {
 
   //     // 3. Save updated gameData
   //     try {
-  //       window.electronAPI.saveTemplates(templates);
+  //       window.loreAPI.saveTemplates(templates);
   //       console.log(`Template "${templateName}" deleted successfully.`);
   //     } catch (error) {
   //       console.error(`Failed to delete template: ${error.message}`);

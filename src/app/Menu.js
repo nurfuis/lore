@@ -16,7 +16,7 @@ export class Menu {
       this.toggleView(false)
     );
     uiElements.fileBrowserButton.addEventListener("click", async () => {
-      const result = await electronAPI.openFileDialog();
+      const result = await loreAPI.openFileDialog();
       this.currentDirectory = result;
       console.log(this.currentDirectory);
       const modalLabels = document.querySelectorAll(".modal-label");
@@ -26,7 +26,7 @@ export class Menu {
       }
     });
     uiElements.modalProceedButton[0].addEventListener("click", () => {
-      const result = electronAPI.init(this.currentDirectory);
+      const result = loreAPI.init(this.currentDirectory);
       console.log(result);
       if (result) {
         uiElements.settingsModal.style.display = "none";
