@@ -7,6 +7,8 @@ export class EntryForm {
       ".entry-form__template-select"
     );
     entryFormTemplateSelect[0].addEventListener("change", () => {
+      const activeTemplate = entryFormTemplateSelect[0].value;
+
       this.updateForm();
       this.updatePrototypeDropdown();
     });
@@ -92,13 +94,14 @@ export class EntryForm {
         this.clearImagePreview();
       }
 
-      if (selectedEntry) {
-        const entryFormGeneratePromptButton = document.querySelectorAll(
-          ".entry-form__commands-button--generate-prompt"
-        );
+      const entryFormGeneratePromptButton = document.querySelectorAll(
+        ".entry-form__commands-button--generate-prompt"
+      );
+      if (!!selectedEntry) {
         entryFormGeneratePromptButton[0].style.display = "flex";
       } else {
         entryFormGeneratePromptButton[0].style.display = "none";
+        this.updateForm();
       }
     }
   }
@@ -142,7 +145,11 @@ export class EntryForm {
     entryFormPrototypeSelect[0].selectedIndex = 0;
     entryFormPrototypeSelect[0].innerHTML = "";
 
-    // this.ui.generatePromptButton.style.display = "none";
+    const entryFormGeneratePromptButton = document.querySelectorAll(
+      ".entry-form__commands-button--generate-prompt"
+    );
+
+    entryFormGeneratePromptButton[0].style.display = "none";
 
     const defaultOption = document.createElement("option");
     defaultOption.value = "";
@@ -152,7 +159,7 @@ export class EntryForm {
     const entryFormTemplateSelect = document.querySelectorAll(
       ".entry-form__template-select"
     );
-    const selectedTemplate = entryFormTemplateSelect[0];
+    const selectedTemplate = entryFormTemplateSelect[0].value;
     if (selectedTemplate) {
       const prototypeNames = Object.keys(this.loreLib[selectedTemplate]);
       if (prototypeNames) {
@@ -167,7 +174,9 @@ export class EntryForm {
           entryFormPrototypeSelect[0].appendChild(option);
         });
 
-        this.enablePrototypeDropdown(); // Enable the dropdown if prototypes are available
+
+
+        this.enablePrototypeDropdown(); 
       } else {
         // Handle case where no prototypes exist for the chosen template
         console.info("No prototypes available for this template.");
@@ -260,10 +269,10 @@ export class EntryForm {
       const templateFieldsResult =
         window.electronAPI.getInformationTemplateFields(selectedTemplate);
 
-      // console.log(
-      //   "Requested information:template-fields...",
-      //   templateFieldsResult
-      // );
+      console.log(
+        "Requested information:template-fields...",
+        templateFieldsResult
+      );
 
       const templateFields = this.templateMaker.templates[selectedTemplate];
 
@@ -320,6 +329,7 @@ export class EntryForm {
     } else {
       elementsToShow.forEach((element) => (element.style.display = "none")); // Hide elements
       elementsToHide.forEach((element) => (element.style.display = "block")); // Hide elements
+      this.resetPrototypeDropdown();
     }
   }
 
