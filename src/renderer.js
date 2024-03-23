@@ -12,10 +12,8 @@ const templateMaker = new TemplateMaker();
 const viewer = new Viewer();
 const menu = new Menu();
 
-prompts.entryForm = entryForm;
 
 templateMaker.entryForm = entryForm;
-entryForm.templateMaker = templateMaker;
 
 viewer.entryForm = entryForm;
 

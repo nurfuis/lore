@@ -22,7 +22,6 @@ function copyPromptText() {
 
 export class Prompts {
   constructor() {
-    this.templates = promptTemplates;
     const promptModal = document.getElementById("promptModal");
     const copyPromptButton = document.getElementById("copyPromptButton");
 
