@@ -7,12 +7,10 @@ function toggleSettingsModal() {
 
 export class Menu {
   constructor() {  
-
-    const navButtonEditEntry = document.querySelectorAll(".navigation__button--edit")
+    const navButtonEditEntry = document.querySelectorAll(".lore-navigation__button--edit-entry")
     navButtonEditEntry[0].addEventListener("click", () =>
       this.toggleView(true)
     );
-
 
     uiElements.viewButton.addEventListener("click", () =>
       this.toggleView(false)
@@ -49,10 +47,7 @@ export class Menu {
     });
   }
   toggleView(showCreateForm) {
-    if (uiElements.welcomeDiv.style.display != "none") {
-      uiElements.welcomeDiv.style.display = "none";
-    }
-    if (showCreateForm) {
+      if (showCreateForm) {
       // console.log('Display the entry form.');
     } else {
       // console.log('Display the viewer.');
