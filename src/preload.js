@@ -3,10 +3,9 @@ const { contextBridge, ipcRenderer } = require("electron");
 const loreAPI = {
   //* CALL AND RESPONSE *//
 
-  loadLoreData(path) {
+  loadLoreData() {
     const response = ipcRenderer.sendSync(
-      "load:lore-data-project-directory",
-      path
+      "load:lore-data-project-directory"
     );
     return response;
   },

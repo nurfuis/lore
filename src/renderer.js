@@ -1,7 +1,7 @@
 import "./index.css";
-import { EntryForm } from "./app/modules/entryForm/EntryForm";
-import { TemplateMaker } from "./app/modules/templateMaker/TemplateMaker";
-import { Viewer } from "./app/modules/viewer/Viewer";
+import { EntryForm } from "./catalog/modules/entryForm/EntryForm";
+import { TemplateMaker } from "./catalog/modules/templateMaker/TemplateMaker";
+import { Viewer } from "./catalog/modules/viewer/Viewer";
 
 //* INSTANCES *//
 const entryForm = new EntryForm();
@@ -14,7 +14,7 @@ const welcomeButtonStart = document.querySelectorAll(
 );
 welcomeButtonStart[0].addEventListener("click", () => {
   const isLoaded = loreAPI.loadLoreData();
-  console.log("Project directory is loaded", isLoaded);
+  console.log("Catalog is loaded...", isLoaded);
 });
 
 // Edit Entry

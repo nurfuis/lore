@@ -1,4 +1,4 @@
-import { removeExtension } from "../../../main/utils/removeExtension";
+import { removeExtension } from "../../../utils/removeExtension";
 import { Prompts } from "./promptGenerator/Prompts";
 import { promptTemplates } from "./promptGenerator/promptTemplates";
 

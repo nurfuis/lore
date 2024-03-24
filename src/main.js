@@ -32,7 +32,7 @@ const {
 
 const { defaultTemplates } = require("./main/settings/templatesConfiguration");
 
-const { removeExtension } = require("./main/utils/removeExtension");
+const { removeExtension } = require("./utils/removeExtension");
 
 const { cycleBackgrounds } = require("./main/menu/cycleBackgrounds");
 const { toggleTheme } = require("./main/menu/toggleTheme");
@@ -94,7 +94,7 @@ app.on("ready", () => {
     mainWindow.webContents.send("send:catalog-data", catalog);
     mainWindow.webContents.send("send:current-directory", root);
 
-    return information;
+    return true;
   }
 });
 
