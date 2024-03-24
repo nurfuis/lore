@@ -121,7 +121,6 @@ export class TemplateMaker {
   }
 
   updateOptions() {
-    // API call to get current templates
     const templates = window.loreAPI.catalogGetTemplates();
     if (templates) {
       const availableTemplates = Object.keys(templates);

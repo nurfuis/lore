@@ -279,7 +279,7 @@ class Library {
     } catch (err) {
       if (err.code === "ENOENT") {
         console.log("No main file found, making new library", templates.data);
-        const newLibrary = { dateId: Date.now() };
+        const newLibrary = {};
         fileSet.main.data = this.fillMissingLoreEntries(
           newLibrary,
           templates.data.template

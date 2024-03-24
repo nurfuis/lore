@@ -58,6 +58,7 @@ loreAPI.onSetProjectDirectory((currentDirectory) => {
     return true;
   }
 });
+
 loreAPI.onOpenProject((catalog) => {
   start(catalog);
   function start(catalog) {
@@ -85,19 +86,15 @@ loreAPI.onOpenProject((catalog) => {
       ".lore-navigation__button--viewer"
     );
     navButtonViewer[0].style.display = "";
-
-    viewer.renderGameData();
-    templateMaker.updateOptions();
-    entryForm.updateForm();
   }
 });
 
 //* FUNCS *//
 function toggleView(showCreateForm) {
   if (showCreateForm) {
-    // console.log('Display the entry form.');
+    templateMaker.updateOptions();
+    entryForm.updateForm();   
   } else {
-    // console.log('Display the viewer.');
     viewer.renderGameData();
   }
 
