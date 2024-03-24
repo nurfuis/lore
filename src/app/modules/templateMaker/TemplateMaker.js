@@ -6,41 +6,44 @@ export class TemplateMaker {
     this.existingTemplateNames = new Set();
     this.isCreatingTemplate = false;
 
-
-    uiElements.createTemplateButton.addEventListener("click", () => {
-      this.openCreateTemplateModal();
-    });
-
     document.addEventListener("keydown", (event) => {
       if (event.key === "Escape") {
-        uiElements.createTemplateModal.style.display = "none";
+        const modal = document.querySelectorAll(".modal");
+        modal[1].style.display = "none";
         this.isCreatingTemplate = false;
       }
     });
 
-    uiElements.closeModalButton.addEventListener("click", () => {
-      uiElements.createTemplateModal.style.display = "none";
-      this.isCreatingTemplate = false;
-    });
-
-    window.addEventListener("click", function (event) {
-      if (event.target === uiElements.createTemplateModal) {
-        console.log("Clicked off from template modal.");
-      }
-    });
-
-    uiElements.addFieldButton.addEventListener("click", () => {
-      this.addFieldEvent();
-    });
-
     document.addEventListener("keydown", (event) => {
       if (event.key === "Tab" && this.isCreatingTemplate) {
-        event.preventDefault(); // Prevent default Alt+Tab behavior
+        event.preventDefault();
         this.addFieldEvent();
       }
     });
 
-    uiElements.saveTemplateButton.addEventListener("click", () => {
+    const navButtonCreateTemplate = document.querySelectorAll(
+      ".lore-navigation__button--create-template"
+    );
+    navButtonCreateTemplate[0].addEventListener("click", () => {
+      this.openCreateTemplateModal();
+    });
+
+    const modalButtonClose = document.querySelectorAll(".modal_button--close");
+    modalButtonClose[1].addEventListener("click", () => {
+      this.isCreatingTemplate = false;
+    });
+
+    const templateMakerButtonAddField = document.querySelectorAll(
+      ".template-maker__button--add-field"
+    );
+    templateMakerButtonAddField[0].addEventListener("click", () => {
+      this.addFieldEvent();
+    });
+
+    const templateMakerButtonSaveForm = document.querySelectorAll(
+      ".template-maker__button--save-form"
+    );
+    templateMakerButtonSaveForm[0].addEventListener("click", () => {
       this.createTemplate();
     });
 
@@ -76,12 +79,16 @@ export class TemplateMaker {
     const modal = document.querySelectorAll(".modal");
     modal[1].style.display = "block";
 
-    const templateMakerFieldsWrapper = document.querySelectorAll(".template-maker__fields-wrapper")
+    const templateMakerFieldsWrapper = document.querySelectorAll(
+      ".template-maker__fields-wrapper"
+    );
     templateMakerFieldsWrapper[0].innerHTML = "";
 
     this.isCreatingTemplate = true;
 
-    const nameInput = document.querySelectorAll(".template-maker__input-field--template-key");
+    const nameInput = document.querySelectorAll(
+      ".template-maker__input-field--template-key"
+    );
     if (nameInput[0]) {
       nameInput[0].focus();
     }
@@ -203,6 +210,7 @@ export class TemplateMaker {
   }
 
   processTemplate(templateName) {
+
     const templateFieldsContainer = document.getElementById("template-fields");
 
     const fields = {}; // Initialize an empty object for fields
@@ -252,23 +260,24 @@ export class TemplateMaker {
     });
 
     // 4. Add fields to the templateData object
-    this.templates[templateName] = fields;
-    // TODO  PREVENT OVERWRITE?!
-    // add a catagory to the library for the new template
+    this.templates[templateName] = fields; // <-- remove this line
 
-    // TODO couple EntryForm to templateMaker
-    if (!this.entryForm.loreLib[templateName]) {
-      this.entryForm.loreLib[templateName] = {};
-    } else {
+    if (!this.entryForm.loreLib[templateName]) { // <-- API call to see if template exists
+      this.entryForm.loreLib[templateName] = {}; // <-- move this line to saveTemplate func
+                                                // in main Catalog
+      // <-- window.loreAPI. save the template here                                            
+    } else { // <-- a template of this name already exists
+      // <-- figure out what to do ... prompt the user? overwrite?
       console.log(
         "do something about items when getting their template changed"
       );
     }
 
-    loreAPI.saveTemplates(this.templates); // Save updated gameData
-
-    // TODO offload this to entryForm so each module manages its own save and data
-    loreAPI.saveLore(this.entryForm.loreLib); // Save updated gameData
+    loreAPI.saveTemplates(this.templates); // <-- instead of sending an object of all templates
+                                           // we will send only the new template to main Catalog
+    loreAPI.saveLore(this.entryForm.loreLib); // <-- remove this api call to save the entire librart
+                                              // We will update the library with the new key and
+                                              // save the file in the save template function in main Catalog
 
     // 5. Close the modal
     const createTemplateModal = document.getElementById(
@@ -276,18 +285,17 @@ export class TemplateMaker {
     );
     createTemplateModal.style.display = "none";
 
-    // 6. (Optional) Update template options in templateSelect (implementation depends on your logic)
+      
+    this.entryForm.updateForm(); // <--  this can be 1  way signal from main to entry 
+                                 // form when save is done
 
-    // updateOptions();// still in renderer
-    this.entryForm.updateForm();
-    console.log("Template created:", templateName); // Log for confirmation
+    console.log("Template created:", templateName);
   }
 
   createTemplate() {
-    const templateName = document.getElementById("template-name").value;
-
-    if (templateName) {
-      this.processTemplate(templateName);
+    const templateName = document.querySelectorAll(".template-maker__input-field--template-key");
+    if (templateName[0]) {
+      this.processTemplate(templateName[0]);
     }
 
     // if (uiElements.templateDropdown.value) {
