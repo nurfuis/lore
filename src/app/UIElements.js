@@ -32,7 +32,7 @@ export class UIElements {
     this.generatePromptButton = document.getElementById("generate-prompt");
     this.promptModal = document.getElementById("promptModal");
 
-    this.closeModalButton = document.querySelector(".close-modal");
+    this.closeModalButton = document.querySelector(".modal_button--close");
     this.modal = document.querySelector(".modal");
     this.modalProceedButton = document.querySelectorAll(".modal-proceed");
 

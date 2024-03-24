@@ -1,15 +1,13 @@
-import { UIElements } from "../../UIElements";
-const uiElements = new UIElements();
-
 export class Viewer {
   constructor() {
-   
+    const modal = document.querySelectorAll(".modal");
     window.addEventListener("click", function (event) {
-      if (event.target === uiElements.detailsModal) {
-        uiElements.detailsModal.style.display = "none";
+      if (event.target === modal[3]) {
+        modal[3].style.display = "none";
       }
     });
   }
+
   deleteConfirmed(itemToDelete, type) {
     const templateKey = type;
     const entryKey = itemToDelete.name;
@@ -26,21 +24,24 @@ export class Viewer {
   }
 
   deleteEntry(itemToDelete, type) {
-    console.log(itemToDelete.name);
+    const modal = document.querySelectorAll(".modal");
 
-    const confirmationModal = document.getElementById("confirmation-modal");
-    confirmationModal.style.display = "block"; // Show the modal
+    modal[2].style.display = "block"; // Show the modal
 
-    const confirmDeleteButton = document.getElementById("confirm-delete");
+    const confirmDeleteButton = document.querySelectorAll(
+      ".modal__confirmation--delete"
+    );
 
-    confirmDeleteButton.addEventListener("click", () => {
+    confirmDeleteButton[0].addEventListener("click", () => {
       this.deleteConfirmed(itemToDelete, type);
-      confirmationModal.style.display = "none";
+      modal[2].style.display = "none";
     });
 
-    const cancelDeleteButton = document.getElementById("cancel-delete");
+    const cancelDeleteButton = document.querySelectorAll(
+      ".modal__confirmation--cancel"
+    );
     cancelDeleteButton.addEventListener("click", () => {
-      confirmationModal.style.display = "none"; // Hide the modal on cancel
+      modal[2].style.display = "none"; // Hide the modal on cancel
     });
   }
 
@@ -127,8 +128,7 @@ export class Viewer {
 
     const sortedKeys = Object.keys(loreLibrary[type]).sort();
 
-    // Create cards for items in alphabetical order
-
+    // Create cards for entries in alphabetical order
     sortedKeys.forEach((key) => {
       const itemElement = this.createLoreSummaryEntryListItem(
         loreLibrary[type][key],
@@ -189,29 +189,33 @@ function createDetailsButton(item) {
   return detailsButton;
 }
 function updateDetailsModal(item) {
-
-  const modalEntryDetailsHeading = document.querySelectorAll(".modal__entry-details--heading");
+  const modalEntryDetailsHeading = document.querySelectorAll(
+    ".modal__entry-details--heading"
+  );
   modalEntryDetailsHeading[0].textContent = item.name;
-  
-  document.getElementById("item-details-description").textContent =
+
+  const modalEntryDetailsDescription = document.querySelectorAll(
+    ".modal__entry-details--description"
+  );
+
+  modalEntryDetailsDescription[0].textContent =
     item.description || "No description available";
 
   const detailsList = createEntryList(item);
-  
-  const existingEntries = document.getElementById(
-    "item-details-description"
-  ).nextElementSibling;
-  
+
+  const existingEntries = modalEntryDetailsDescription[0].nextElementSibling;
+
   const modalEntryDetailsSprite = document.querySelectorAll(
     ".modal__entry-details--sprite"
-  ); 
+  );
+
   if (existingEntries && existingEntries.tagName === "UL") {
     existingEntries.remove();
-
-    modalEntryDetailsSprite[0].innerHTML = ""; // Clear any existing sprite
+    modalEntryDetailsSprite[0].innerHTML = "";
   }
+
   if (item.sprite) {
-     modalEntryDetailsSprite[0].innerHTML = ""; // Clear any existing sprite
+    modalEntryDetailsSprite[0].innerHTML = "";
 
     const spriteImage = document.createElement("img");
     const imageSource = window.loreAPI.getPathSpritesPreview(item.sprite);
@@ -219,13 +223,11 @@ function updateDetailsModal(item) {
     spriteImage.src = imageSource;
     modalEntryDetailsSprite[0].appendChild(spriteImage);
   }
-  
-  document
-    .getElementById("item-details-description")
-    .parentElement.appendChild(detailsList);
 
-  
-    uiElements.detailsModal.style.display = "block";
+  modalEntryDetailsDescription[0].parentElement.appendChild(detailsList);
+
+  const modal = document.querySelectorAll(".modal");
+  modal[3].style.display = "block";
 }
 function createEntryList(item) {
   const detailsList = document.createElement("ul");

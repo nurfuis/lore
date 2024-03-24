@@ -9,18 +9,20 @@ import { promptTemplates } from "./promptTemplates";
 */
 export class Prompts {
   constructor() {
+    const promptModal = document.getElementById("promptModal");
+
+    
     const entryFormGeneratePromptButton = document.querySelectorAll(
       ".entry-form__commands-button--generate-prompt"
     );
     entryFormGeneratePromptButton[0].addEventListener("click", () => {
+      console.log("click")
       this.generatePrompt();
       promptModal.style.display = "block";
     });    
       
-    const promptModal = document.getElementById("promptModal");
     
     const copyPromptButton = document.getElementById("copyPromptButton");
-
     copyPromptButton.addEventListener("click", copyPromptText);
 
     window.addEventListener("click", function (event) {

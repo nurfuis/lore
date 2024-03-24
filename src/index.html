@@ -5,16 +5,28 @@
     <title>Lore</title>
   </head>
 
-  <body class ="lore-app__body">
+  <body class="lore-app__body">
     <div class="lore-app__details">
       <div class="details__icon"></div>
       <div><h4 class="details__project-directory"></h4></div>
     </div>
 
-    <nav class ="lore-app__navigation">
-      <button id="create-button" class="button lore-navigation__button--edit-entry">Edit Entry</button>
-      <button id="create-template" class="button lore-navigation__button--create-template">Create Template</button>
-      <button id="view-button" class="button lore-navigation__button--viewer">View Lore</button>
+    <nav class="lore-app__navigation">
+      <button
+        id="create-button"
+        class="button lore-navigation__button--edit-entry"
+      >
+        Edit Entry
+      </button>
+      <button
+        id="create-template"
+        class="button lore-navigation__button--create-template"
+      >
+        Create Template
+      </button>
+      <button id="view-button" class="button lore-navigation__button--viewer">
+        View Lore
+      </button>
     </nav>
 
     <div class="lore-welcome__wrapper">
@@ -27,8 +39,6 @@
       <p id="info" class="lore-main__information-toast"></p>
 
       <div id="create-form-container" class="edit-entry__form-wrapper">
-
-
         <div class="main-content">
           <div id="input" class="full-width">
             <h1>Edit Entry</h1>
@@ -37,31 +47,65 @@
               <option value="">-- Select Template --</option>
             </select>
 
-            <select id="prototype-select" class="entry-form__prototype-select" disabled>
+            <select
+              id="prototype-select"
+              class="entry-form__prototype-select"
+              disabled
+            >
               <option value="">-- Select Entry (Optional) --</option>
             </select>
 
-            <div id="template-nav" class ="entry-form__commands-wrapper">
-              <button id="clear-form" class="entry-form__commands-button--clear" type="reset">Clear Form</button>
-              <button id="generate-prompt" type="button" class="entry-form__commands-button--generate-prompt">
+            <div id="template-nav" class="entry-form__commands-wrapper">
+              <button
+                id="clear-form"
+                class="entry-form__commands-button--clear"
+                type="reset"
+              >
+                Clear Form
+              </button>
+              <button
+                id="generate-prompt"
+                type="button"
+                class="entry-form__commands-button--generate-prompt"
+              >
                 Generate Prompt
               </button>
             </div>
 
             <div id="image" class="full-width">
-              <img id="image-preview" src="" class="entry-form__image--preview" />
+              <img
+                id="image-preview"
+                src=""
+                class="entry-form__image--preview"
+              />
             </div>
 
             <div id="image-file-upload" class="entry-form__image">
               <label for="image-input">Select Image</label>
-              <input type="file" id="image-input" class="entry-form__image--input" accept="image/*" />
-              <button id="clear-image-button" class="entry-form__image-button--clear">Clear Image</button>
+              <input
+                type="file"
+                id="image-input"
+                class="entry-form__image--input"
+                accept="image/*"
+              />
+              <button
+                id="clear-image-button"
+                class="entry-form__image-button--clear"
+              >
+                Clear Image
+              </button>
             </div>
 
             <div id="form">
               <form id="entry-form" class="entry-form__form-element"></form>
             </div>
-            <button id="save-entry" type="submit" class="entry-form__save-button">Save Entry</button>
+            <button
+              id="save-entry"
+              type="submit"
+              class="entry-form__save-button"
+            >
+              Save Entry
+            </button>
           </div>
         </div>
       </div>
@@ -78,6 +122,8 @@
 
     <div id="promptModal" class="modal">
       <div class="modal-content">
+        <span class="modal_button--close">&times;</span>
+
         <h2>Lore Library Prompt</h2>
         <button id="copyPromptButton">Copy Prompt</button>
         <p id="promptText"></p>
@@ -86,7 +132,7 @@
 
     <div id="create-template-modal" class="modal">
       <div class="modal-content">
-        <span class="close-modal">&times;</span>
+        <span class="modal_button--close">&times;</span>
 
         <h2>Create New Template</h2>
         <select id="template-dropdown">
@@ -112,25 +158,35 @@
 
     <div id="confirmation-modal" class="modal">
       <div class="modal-content">
+        <span class="modal_button--close">&times;</span>
+
         <p>Are you sure you want to delete this entry?</p>
         <div class="modal-buttons">
-          <button id="confirm-delete" class="button">Delete</button>
-          <button id="cancel-delete" class="button">Cancel</button>
+          <button id="confirm-delete" class="button modal__confirmation--delete">Delete</button>
+          <button id="cancel-delete" class="button button modal__confirmation--cancel">Cancel</button>
         </div>
       </div>
     </div>
 
     <div id="item-details-modal" class="modal">
       <div class="modal-content">
-        <span class="close-modal">&times;</span>
+        <span class="modal_button--close">&times;</span>
         <h2 id="item-details-name" class="modal__entry-details--heading"></h2>
-        <div id="item-details-sprite" class="modal__entry-details--sprite"></div>
-        <p id="item-details-description"></p>
+        <div
+          id="item-details-sprite"
+          class="modal__entry-details--sprite"
+        ></div>
+        <p
+          id="item-details-description"
+          class="modal__entry-details--description"
+        ></p>
       </div>
     </div>
 
     <div id="settings-modal" class="modal">
       <div class="modal-content">
+        <span class="modal_button--close">&times;</span>
+
         <h2>Settings</h2>
         <form id="settings-form">
           <p>

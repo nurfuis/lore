@@ -1,8 +1,10 @@
 import { removeExtension } from "../../../main/utils/removeExtension";
+import { Prompts } from "./promptGenerator/Prompts";
 import { promptTemplates } from "./promptGenerator/promptTemplates";
 
 export class EntryForm {
   constructor() {
+    this.promptGenerator = new Prompts();
     // TEMPLATE SELECTOR
     const entryFormTemplateSelect = document.querySelectorAll(
       ".entry-form__template-select"

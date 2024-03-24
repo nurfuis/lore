@@ -228,15 +228,15 @@ button:hover {
   margin: 1rem;
 }
 /* Close button styles */
-.close-modal {
+.modal_button--close {
   color: var(--text-color); /* White for readability */
   float: right;
   font-size: 30px;
   font-weight: bold;
   overflow: hidden;
 }
-.close-modal:hover,
-.close-modal:focus {
+.modal_button--close:hover,
+.modal_button--close:focus {
   color: var(--button-color); /* Bright purple on hover */
   cursor: pointer;
 }
