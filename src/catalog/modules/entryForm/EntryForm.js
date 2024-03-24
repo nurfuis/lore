@@ -365,40 +365,99 @@ export class EntryForm {
     entryFormTemplateSelect[0].value;
 
     const templateKey = entryFormTemplateSelect[0].value;
-    const entryKey = newEntry?.name;
 
-    const loreEntry = window.loreAPI.getInformationLoreEntry({
+    const response = window.loreAPI.saveInformationLoreEntry({
       templateKey,
-      entryKey,
+      newEntry,
     });
 
-    if (entryKey && !loreEntry) {
-      if (loreEntry?.valid) {
-        if (loreEntry["version"]) {
-          const version = loreEntry["version"] + 1;
-          newEntry["version"] = version;
-        }
-      } else {
-        newEntry["version"] = 1;
-        console.log("New entry:", newEntry["version"]);
-      }
+    console.log("save entry:", response);
 
-      window.loreAPI.saveInformationLoreEntry({ templateKey, newEntry });
+    if (response.status === "incomplete") {
+      const modal = document.querySelectorAll(".modal");
+      modal[5].style.display = "block";
 
-      const informationToast = document.querySelectorAll(
-        ".lore-main__information-toast"
-      );
-      informationToast[0].innerText = `Entry "${newEntry.name}" type: ${templateKey} saved successfully!`;
-      this.updateForm();
-      this.updatePrototypeDropdown();
+      const message = document.querySelectorAll(".modal__error-message");
+      message[0].innerText = response.message;
 
-      console.log(
-        "No entry exists under this name, saving data without issues"
-      );
-    } else if (!loreEntry && !entryKey) {
-      console.log("No entry exists, but the new entry lacks a name");
-    } else if (loreEntry && entryKey) {
-      console.log("An entry already exists under this name.");
+      // Create the button element
+      const acceptButton = document.createElement("button");
+      acceptButton.textContent = "OK"; // Set button text
+      acceptButton.classList.add("modal__error--ok"); // Add class for styling
+
+      // Get the buttons wrapper element
+      const buttonsWrapper = document.querySelectorAll(".modal_buttons-wrapper");
+
+      // Append the button to the wrapper
+      buttonsWrapper[0].appendChild(acceptButton);
+
+      // Add the event listener to the button
+      acceptButton.addEventListener("click", () => {
+        modal[5].style.display = "none";
+
+        // Remove the button and the event listener
+        buttonsWrapper[0].removeChild(acceptButton);
+      });
+    }
+
+    if (response.status === "conflict") {
+      const modal = document.querySelectorAll(".modal");
+      modal[5].style.display = "block";
+    
+      const message = document.querySelectorAll(".modal__error-message");
+      message[0].innerText = "A file with this name already exists. Do you want to overwrite it?";
+    
+      // Create the buttons wrapper (if it doesn't exist)
+      const buttonsWrapper = document.querySelectorAll(".modal__buttons-wrapper");
+    
+      // Create and append buttons
+      const cancelButton = document.createElement("button");
+      cancelButton.textContent = "Cancel";
+      cancelButton.classList.add("modal__button");
+    
+      const overwriteButton = document.createElement("button");
+      overwriteButton.textContent = "Overwrite";
+      overwriteButton.classList.add("modal__button");
+      overwriteButton.classList.add("modal__button--destructive"); // Add class for styling (optional)
+    
+      buttonsWrapper[0].appendChild(cancelButton);
+      buttonsWrapper[0].appendChild(overwriteButton);
+    
+      // Add event listeners
+      cancelButton.addEventListener("click", () => {
+        modal[5].style.display = "none";
+        buttonsWrapper[0].removeChild(cancelButton);
+        buttonsWrapper[0].removeChild(overwriteButton);
+      });
+    
+      overwriteButton.addEventListener("click", () => {
+        // Handle overwrite logic (replace existing file or perform other action)
+        modal[5].style.display = "none";
+        buttonsWrapper[0].removeChild(cancelButton);
+        buttonsWrapper[0].removeChild(overwriteButton);
+      });
+    }
+
+    this.updateForm();
+    this.updatePrototypeDropdown();
+
+    function trySave(newEntry, templateKey) {
+      // if (loreEntry?.valid) {
+      //   if (loreEntry["version"]) {
+      //     const version = loreEntry["version"] + 1;
+      //     newEntry["version"] = version;
+      //   }
+      // } else {
+      //   newEntry["version"] = 1;
+      //   console.log("New entry:", newEntry["version"]);
+      // }
+      // const informationToast = document.querySelectorAll(
+      //   ".lore-main__information-toast"
+      // );
+      // informationToast[0].innerText = `Entry "${newEntry.name}" type: ${templateKey} saved successfully!`;
+      // console.log(
+      //   "No entry exists under this name, saving data without issues"
+      // );
     }
   }
 }

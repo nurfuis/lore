@@ -146,7 +146,7 @@
         <button id="delete-template" type="button">Delete Template</button>
 
         <form id="create-template-form">
-          <label for="template-name">Template Name</label>
+          <label for="template-name">Template Key</label>
           <input
             type="text"
             id="template-name"
@@ -231,6 +231,15 @@
           <button id="file-browser-button" type="button">Browse</button>
           <button class="modal-proceed" type="button">Proceed</button>
         </form>
+      </div>
+    </div>
+
+    <div id="error-modal" class="modal">
+      <div class="modal-content">
+        <span class="modal_button--close">&times;</span>
+        <p class="modal__error-message">error message</p>
+        <div class="modal_buttons-wrapper">
+        </div>
       </div>
     </div>
   </body>

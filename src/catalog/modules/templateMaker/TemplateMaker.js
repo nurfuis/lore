@@ -98,12 +98,100 @@ export class TemplateMaker {
 
     this.isCreatingTemplate = true;
 
-    const nameInput = document.querySelectorAll(
+    const templateKeyInputField = document.querySelectorAll(
       ".template-maker__input-field--template-key"
     );
-    if (nameInput[0]) {
-      nameInput[0].focus();
+    if (templateKeyInputField[0]) {
+      templateKeyInputField[0].focus();
     }
+
+
+
+
+    const newField = document.createElement("div");
+    newField.classList.add("template-field");
+
+    const fieldNameLabel = document.createElement("label");
+    fieldNameLabel.textContent = "Field Name";
+    newField.appendChild(fieldNameLabel);
+
+    const fieldNameInput = document.createElement("input");
+    fieldNameInput.type = "text";
+    fieldNameInput.name = "field-name";
+    fieldNameInput.value = "name";
+    fieldNameInput.readOnly = true;
+    newField.appendChild(fieldNameInput);
+
+    const fieldTypeSelect = document.createElement("select");
+    fieldTypeSelect.name = "field-type";
+    fieldTypeSelect.disabled = true;
+    newField.appendChild(fieldTypeSelect);
+
+    const fieldPromptLabel = document.createElement("label");
+    fieldPromptLabel.textContent = "Field Prompt";
+    newField.appendChild(fieldPromptLabel);
+
+    const fieldPrompt = document.createElement("input"); // Placeholder for the prompt
+    fieldPrompt.classList.add("field-prompt"); // Add a class for styling
+    fieldPrompt.name = "field-prompt";
+    newField.appendChild(fieldPrompt);
+
+    const fieldTypes = ["text", "textarea", "select"];
+    fieldTypes.forEach((type) => {
+      const option = document.createElement("option");
+      option.value = type;
+      option.textContent = type;
+      fieldTypeSelect.appendChild(option);
+    });
+    const hr = document.createElement("hr");
+    newField.appendChild(hr);
+    templateMakerFieldsWrapper[0].appendChild(newField);
+
+    
+    
+    
+    
+    
+    const descriptionField = document.createElement("div");
+    descriptionField.classList.add("template-field");
+
+    const descriptionFieldNameLabel = document.createElement("label");
+    descriptionFieldNameLabel.textContent = "Field Name:";
+    descriptionField.appendChild(descriptionFieldNameLabel);
+
+    const descriptionFieldNameInput = document.createElement("input");
+    descriptionFieldNameInput.type = "text";
+    descriptionFieldNameInput.name = "field-name";
+    descriptionFieldNameInput.value = "description";
+    descriptionFieldNameInput.readOnly = true;
+    descriptionField.appendChild(descriptionFieldNameInput);
+
+    const descriptionFieldTypeSelect = document.createElement("select");
+    descriptionFieldTypeSelect.name = "field-type";
+    descriptionFieldTypeSelect.disabled = true;
+    descriptionField.appendChild(descriptionFieldTypeSelect);
+
+    const descriptionFieldPromptLabel = document.createElement("label");
+    descriptionFieldPromptLabel.textContent = "Field Prompt:";
+    descriptionField.appendChild(descriptionFieldPromptLabel);
+
+    const descriptionFieldPrompt = document.createElement("input"); // Placeholder for the prompt
+    descriptionFieldPrompt.classList.add("field-prompt"); // Add a class for styling
+    descriptionFieldPrompt.name = "field-prompt";
+    descriptionField.appendChild(descriptionFieldPrompt);
+
+    const descriptionFieldTypes = ["text", "textarea", "select"];
+    descriptionFieldTypes.forEach((type) => {
+      const option = document.createElement("option");
+      option.value = type;
+      option.textContent = type;
+      descriptionFieldTypeSelect.appendChild(option);
+    });
+    descriptionFieldTypeSelect.value = "textarea";
+
+    const descriptionHr = document.createElement("hr");
+    descriptionField.appendChild(descriptionHr);
+    templateMakerFieldsWrapper[0].appendChild(descriptionField);
   }
   populateTemplateMakerForm(templateMakerTemplateSelect) {
     const selectedTemplate = templateMakerTemplateSelect[0].value;
@@ -119,9 +207,10 @@ export class TemplateMaker {
     const formContainer = templateMakerFieldsWrapper[0];
 
     // Iterate through the template data
+
     for (const fieldName in templateData) {
       const fieldData = templateData[fieldName];
-      // console.log("fieldData", fieldData);
+
       const newField = createNewField();
       const fieldInput = newField.querySelector("input");
       fieldInput.value = fieldData.label;
@@ -236,12 +325,6 @@ export class TemplateMaker {
     if (templateName[0]) {
       this.processFilledTemplateMakerForm(templateName[0]);
     }
-
-    // if (uiElements.templateDropdown.value) {
-    //   // this is stopping writing when a template has been extended TODO sort this out
-    //   console.log(uiElements.templateDropdown.value);
-    // }
-    // template has a name, save it
   }
   processFilledTemplateMakerForm(templateName) {
     const templateMakerFieldsWrapper = document.querySelectorAll(
@@ -303,18 +386,14 @@ export class TemplateMaker {
       // <-- a template of this name already exists
       // <-- figure out what to do ... prompt the user? overwrite?
     } else {
-      const message = window.loreAPI.saveCatalogTemplate({
+      window.loreAPI.saveCatalogTemplate({
         templateKey,
         fields,
       });
-      console.log(message);
     }
-
     // 5. Close the modal
     const modal = document.querySelectorAll(".modal");
     modal[1].style.display = "none";
-
-    console.log("Template created:", templateName);
   }
   //   deleteTemplate(templateName) {
   //     // 1. Confirm deletion with the user
@@ -350,6 +429,7 @@ export class TemplateMaker {
   //     uiElements.createTemplateModal.style.display = "none";
   //   }
 }
+
 function createNewField() {
   const newField = document.createElement("div");
   newField.classList.add("template-field");

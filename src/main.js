@@ -36,6 +36,7 @@ const { removeExtension } = require("./utils/removeExtension");
 
 const { cycleBackgrounds } = require("./main/menu/cycleBackgrounds");
 const { toggleTheme } = require("./main/menu/toggleTheme");
+const { error } = require("console");
 
 process.env["ELECTRON_DISABLE_SECURITY_WARNINGS"] = true;
 
@@ -454,9 +455,12 @@ class Catalog {
         this.getLoreEntryInformation(entryKey, templateKey, event);
       }
     );
-    ipcMain.on("save:lore-entry", (event, { templateKey, newEntry }) => {
-      this.saveLoreEntry(newEntry, templateKey, event);
-    });
+    ipcMain.on(
+      "save:lore-entry",
+      (event, { templateKey, newEntry }) => {
+        this.saveLoreEntry(newEntry, templateKey, event);
+      }
+    );
     ipcMain.on(
       "catalog:lore-entry-delete",
       (event, { templateKey, entryKey }) => {
@@ -603,10 +607,13 @@ class Catalog {
   }
   saveTemplate(fields, templateKey, event) {
     const templateData = this.information.templates.data;
+
     templateData[templateKey] = fields;
 
-    if (!this.information.lore.temp.data.hasOwnProperty(templateKey)) {
-      this.information.lore.temp.data[templateKey] = {};
+    const loreInfo = this.information.lore.temp.data;
+
+    if (!loreInfo.hasOwnProperty(templateKey)) {
+      loreInfo[templateKey] = {};
       console.log("Key added to lore library:", templateKey);
       this.saveCatalogInformationToTemp();
     }
@@ -617,11 +624,8 @@ class Catalog {
       (err) => {
         if (err) {
           console.error("Error saving templates:");
-          event.sender.send("save-failed", "Error saving templates");
         } else {
           console.log("Templates saved successfully!");
-          event.sender.send("save-success");
-          this.information.lore;
         }
       }
     );
@@ -647,22 +651,38 @@ class Catalog {
     }
   }
   saveLoreEntry(newEntry, templateKey, event) {
-    this.information.lore.temp.data[templateKey][newEntry.name] = newEntry;
+    const entryKey =
+      newEntry?.name ||
+      newEntry?.Name ||
+      newEntry?.index ||
+      newEntry?.Index ||
+      newEntry?.key ||
+      newEntry?.Key; 
 
-    event.returnValue = true;
+    if (!entryKey) {
+      event.returnValue = { status: "incomplete", message: "Entry name is required." };
+    } else if (this.information.lore.temp.data[templateKey][entryKey]) {
+      event.returnValue = { status: "conflict", message: "Entry with that name already exists. Do you want to overwrite it?" };
 
-    const filename = this.information.lore.temp.path;
-    fs.writeFile(
-      filename,
-      JSON.stringify(this.information.lore.temp.data),
-      (err) => {
-        if (err) {
-          console.error("Error saving lore:", err);
-        } else {
-          console.log("Lore saved to temp file successfully.");
-        }
-      }
-    );
+
+    }
+
+    // this.information.lore.temp.data[templateKey][newEntry.name] = newEntry;
+
+    // event.returnValue = true;
+
+    // const filename = this.information.lore.temp.path;
+    // fs.writeFile(
+    //   filename,
+    //   JSON.stringify(this.information.lore.temp.data),
+    //   (err) => {
+    //     if (err) {
+    //       console.error("Error saving lore:", err);
+    //     } else {
+    //       console.log("Lore saved to temp file successfully.");
+    //     }
+    //   }
+    // );
   }
   removeLoreEntryInformation(entryKey, templateKey, event) {
     const result =

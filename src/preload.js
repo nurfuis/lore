@@ -4,9 +4,7 @@ const loreAPI = {
   //* CALL AND RESPONSE *//
 
   loadCatalog() {
-    const response = ipcRenderer.sendSync(
-      "catalog:load"
-    );
+    const response = ipcRenderer.sendSync("catalog:load");
     return response;
   },
 
@@ -74,7 +72,9 @@ const loreAPI = {
   //* ONE WAY FROM MAIN *//
 
   onLoadCatalog: (callback) =>
-    ipcRenderer.on("catalog:send-full-library", (_event, value) => callback(value)),
+    ipcRenderer.on("catalog:send-full-library", (_event, value) =>
+      callback(value)
+    ),
 
   onSetPath: (callback) =>
     ipcRenderer.on("catalog:send-library-path", (_event, value) =>
@@ -83,6 +83,7 @@ const loreAPI = {
 
   //* ONE WAY TO MAIN *//
   saveLore: () => ipcRenderer.send("save:lore-information"),
-  saveCatalogTemplate: (template) => ipcRenderer.send("catalog:save-template", template),
+  saveCatalogTemplate: (template) =>
+    ipcRenderer.send("catalog:save-template", template),
 };
 contextBridge.exposeInMainWorld("loreAPI", loreAPI);
