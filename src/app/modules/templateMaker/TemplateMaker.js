@@ -1,6 +1,3 @@
-import { UIElements } from "../../UIElements";
-const uiElements = new UIElements();
-
 export class TemplateMaker {
   constructor() {
     this.existingTemplateNames = new Set();
@@ -225,7 +222,11 @@ export class TemplateMaker {
 
     this.handleFieldTypeChange(fieldTypeSelect, fieldOptionsContainer);
     const inputToFocus = newField.querySelector("input"); // Directly target the input element
-    uiElements.templateFieldsContainer.appendChild(newField);
+
+    const templateMakerFieldsWrapper = document.querySelectorAll(
+      ".template-maker__fields-wrapper"
+    );
+    templateMakerFieldsWrapper[0].appendChild(newField);
     inputToFocus.focus();
   }
 
@@ -406,7 +407,10 @@ function createNewField() {
   removeFieldButton.classList.add("remove-field-button"); // Add a class for styling
   removeFieldButton.addEventListener("click", function () {
     const fieldToRemove = this.parentElement; // Get the field element containing this button
-    uiElements.templateFieldsContainer.removeChild(fieldToRemove);
+    const templateMakerFieldsWrapper = document.querySelectorAll(
+      ".template-maker__fields-wrapper"
+    );
+    templateMakerFieldsWrapper[0].removeChild(fieldToRemove);
   });
   newField.appendChild(removeFieldButton);
 
@@ -416,7 +420,10 @@ function createNewField() {
   insertFieldButton.classList.add("insert-field-button");
   insertFieldButton.addEventListener("click", function () {
     const newField = createNewField(); // Create a new field
-    uiElements.templateFieldsContainer.insertBefore(
+    const templateMakerFieldsWrapper = document.querySelectorAll(
+      ".template-maker__fields-wrapper"
+    );
+    templateMakerFieldsWrapper[0].templateFieldsContainer.insertBefore(
       newField,
       this.parentElement.nextSibling
     ); // Insert it after this field
