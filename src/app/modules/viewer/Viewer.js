@@ -40,7 +40,7 @@ export class Viewer {
     const cancelDeleteButton = document.querySelectorAll(
       ".modal__confirmation--cancel"
     );
-    cancelDeleteButton.addEventListener("click", () => {
+    cancelDeleteButton[0].addEventListener("click", () => {
       modal[2].style.display = "none"; // Hide the modal on cancel
     });
   }
