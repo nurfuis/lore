@@ -13,7 +13,7 @@ const welcomeButtonStart = document.querySelectorAll(
   ".lore-welcome__button--start"
 );
 welcomeButtonStart[0].addEventListener("click", () => {
-  const isLoaded = loreAPI.loadLoreData();
+  const isLoaded = loreAPI.loadCatalog();
   console.log("Catalog is loaded...", isLoaded);
 });
 
@@ -47,7 +47,7 @@ for (let i = 0; i < modalButtonClose.length; i++) {
 }
 
 //* EVENTS *//
-loreAPI.onSetProjectDirectory((currentDirectory) => {
+loreAPI.onSetPath((currentDirectory) => {
   setDetailsProjectDirectory(currentDirectory);
   function setDetailsProjectDirectory(currentDirectory) {
     const detailsProjectDirectory = document.querySelectorAll(
@@ -59,7 +59,7 @@ loreAPI.onSetProjectDirectory((currentDirectory) => {
   }
 });
 
-loreAPI.onOpenProject((catalog) => {
+loreAPI.onLoadCatalog((catalog) => {
   start(catalog);
   function start(catalog) {
     templateMaker.templates = catalog.information.templates.data;

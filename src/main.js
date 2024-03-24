@@ -74,16 +74,16 @@ app.on("ready", () => {
 
   createWindow(mainWindow);
 
-  ipcMain.on("load:lore-data-project-directory", async (event) => {
-    const isLoaded = await loadLoreCatalog();
+  ipcMain.on("catalog:load", async (event) => {
+    const catalogIsLoaded = await loadCatalog();
 
-    event.returnValue = isLoaded;
+    event.returnValue = catalogIsLoaded;
 
-    console.log("Catalog is loaded...", isLoaded);
+    console.log("Catalog is loaded...", catalogIsLoaded);
   });
 
-  async function loadLoreCatalog() {
-    console.log("Loading...");
+  async function loadCatalog() {
+    console.log("Loading catalog...");
 
     const library = new Library();
 
@@ -91,8 +91,8 @@ app.on("ready", () => {
 
     const catalog = new Catalog(userMode, root, information);
 
-    mainWindow.webContents.send("send:catalog-data", catalog);
-    mainWindow.webContents.send("send:current-directory", root);
+    mainWindow.webContents.send("catalog:send-full-library", catalog);
+    mainWindow.webContents.send("catalog:send-library-path", root);
 
     return true;
   }

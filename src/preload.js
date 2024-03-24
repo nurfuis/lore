@@ -3,9 +3,9 @@ const { contextBridge, ipcRenderer } = require("electron");
 const loreAPI = {
   //* CALL AND RESPONSE *//
 
-  loadLoreData() {
+  loadCatalog() {
     const response = ipcRenderer.sendSync(
-      "load:lore-data-project-directory"
+      "catalog:load"
     );
     return response;
   },
@@ -73,11 +73,11 @@ const loreAPI = {
 
   //* ONE WAY FROM MAIN *//
 
-  onOpenProject: (callback) =>
-    ipcRenderer.on("send:catalog-data", (_event, value) => callback(value)),
+  onLoadCatalog: (callback) =>
+    ipcRenderer.on("catalog:send-full-library", (_event, value) => callback(value)),
 
-  onSetProjectDirectory: (callback) =>
-    ipcRenderer.on("send:current-directory", (_event, value) =>
+  onSetPath: (callback) =>
+    ipcRenderer.on("catalog:send-library-path", (_event, value) =>
       callback(value)
     ),
 
