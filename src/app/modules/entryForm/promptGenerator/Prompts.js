@@ -14,8 +14,10 @@ export class Prompts {
       modal[0].style.display = "block";
     });
 
-    const copyPromptButton = document.getElementById("copyPromptButton");
-    copyPromptButton.addEventListener("click", copyPromptText);
+    const copyPromptButton = document.querySelectorAll(
+      ".modal__button--copy-text"
+    );
+    copyPromptButton[0].addEventListener("click", copyPromptText);
 
     window.addEventListener("click", function (event) {
       if (event.target === modal[0]) {
@@ -83,8 +85,11 @@ export class Prompts {
     } else {
       promptString = "Please select a lore entry to generate a prompt.";
     }
-    const promptText = document.getElementById("promptText");
-    promptText.textContent = promptString;
+
+    const promptText = document.querySelectorAll(
+      ".modal__contents--prompt-text"
+    );
+    promptText[0].textContent = promptString;
 
     const modal = document.querySelectorAll(".modal");
     modal[0].style.display = "block";
@@ -92,15 +97,15 @@ export class Prompts {
 }
 
 function copyPromptText() {
-  const promptText = document.getElementById("promptText");
+  const promptText = document.querySelectorAll(".modal__contents--prompt-text");
   const selection = window.getSelection();
   const range = document.createRange();
-  range.selectNodeContents(promptText);
+  range.selectNodeContents(promptText[0]);
   selection.removeAllRanges();
   selection.addRange(range);
 
   navigator.clipboard
-    .writeText(promptText.textContent)
+    .writeText(promptText[0].textContent)
     .then(() => {
       console.log("Prompt copied successfully!");
     })
