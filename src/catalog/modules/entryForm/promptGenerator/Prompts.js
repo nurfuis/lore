@@ -113,5 +113,7 @@ function copyPromptText() {
       console.error("Failed to copy prompt!");
     });
   selection.removeAllRanges();
+  const modal = document.querySelectorAll(".modal");
+
   modal[0].style.display = "none";
 }

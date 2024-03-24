@@ -14,7 +14,7 @@ export class TemplateMaker {
     document.addEventListener("keydown", (event) => {
       if (event.key === "Tab" && this.isCreatingTemplate) {
         event.preventDefault();
-        this.addFieldEvent();
+        this.addNewFieldToFormEvent();
       }
     });
     // open template maker
@@ -22,9 +22,9 @@ export class TemplateMaker {
       ".lore-navigation__button--create-template"
     );
     navButtonCreateTemplate[0].addEventListener("click", () => {
-      this.openCreateTemplateModal();
+      this.openTemplateMakerModal();
     });
-    // disable isCreatingTemplate when closing modal (needed flag for tab behavior)
+    // disable template modal tab-behavior by setting flag "isCreatingTemplate" false when closing
     const modalButtonClose = document.querySelectorAll(".modal_button--close");
     modalButtonClose[1].addEventListener("click", () => {
       this.isCreatingTemplate = false;
@@ -34,14 +34,14 @@ export class TemplateMaker {
       ".template-maker__button--add-field"
     );
     templateMakerButtonAddField[0].addEventListener("click", () => {
-      this.addFieldEvent();
+      this.addNewFieldToFormEvent();
     });
     // save form button listener
     const templateMakerButtonSaveForm = document.querySelectorAll(
       ".template-maker__button--save-form"
     );
     templateMakerButtonSaveForm[0].addEventListener("click", () => {
-      this.createTemplate();
+      this.saveTemplateMakerFormToFile();
     });
     // dropdown listener (populate form with existing an template's values)
     const templateMakerTemplateSelect = document.querySelectorAll(
@@ -54,6 +54,56 @@ export class TemplateMaker {
     // uiElements.deleteTemplateButton.addEventListener("click", () => {
     //   deleteTemplate(selectedTemplate);
     // });
+  }
+  updateTemplateMakerDropdownOptions() {
+    const templates = window.loreAPI.catalogGetTemplates();
+    if (templates) {
+      const availableTemplates = Object.keys(templates);
+
+      // Filter out existing templates and append only new ones
+      availableTemplates
+        .filter((templateName) => !this.existingTemplateNames.has(templateName))
+        .forEach((templateName) => {
+          const entryOption = document.createElement("option");
+          entryOption.value = templateName;
+          entryOption.text = templateName;
+
+          const entryFormTemplateSelect = document.querySelectorAll(
+            ".entry-form__template-select"
+          );
+          entryFormTemplateSelect[0].appendChild(entryOption);
+
+          const templateOption = document.createElement("option");
+          templateOption.value = templateName;
+          templateOption.text = templateName;
+
+          const templateMakerTemplateSelect = document.querySelectorAll(
+            ".template-maker__select--template"
+          );
+          templateMakerTemplateSelect[0].appendChild(templateOption);
+
+          this.existingTemplateNames.add(templateName); // Add new template to the set
+        });
+    }
+  }
+  openTemplateMakerModal() {
+    this.updateTemplateMakerDropdownOptions();
+    const modal = document.querySelectorAll(".modal");
+    modal[1].style.display = "block";
+
+    const templateMakerFieldsWrapper = document.querySelectorAll(
+      ".template-maker__fields-wrapper"
+    );
+    templateMakerFieldsWrapper[0].innerHTML = "";
+
+    this.isCreatingTemplate = true;
+
+    const nameInput = document.querySelectorAll(
+      ".template-maker__input-field--template-key"
+    );
+    if (nameInput[0]) {
+      nameInput[0].focus();
+    }
   }
   populateTemplateMakerForm(templateMakerTemplateSelect) {
     const selectedTemplate = templateMakerTemplateSelect[0].value;
@@ -83,7 +133,10 @@ export class TemplateMaker {
 
       fieldTypeSelect.value = fieldData.type;
 
-      this.handleFieldTypeChange(fieldTypeSelect, fieldOptionsContainer);
+      this.handleFormFieldTypeSelectorChange(
+        fieldTypeSelect,
+        fieldOptionsContainer
+      );
 
       if (fieldData.type == "select" && fieldData.options != undefined) {
         console.log(fieldData.type);
@@ -119,59 +172,7 @@ export class TemplateMaker {
       formContainer.appendChild(newField);
     }
   }
-
-  updateOptions() {
-    const templates = window.loreAPI.catalogGetTemplates();
-    if (templates) {
-      const availableTemplates = Object.keys(templates);
-
-      // Filter out existing templates and append only new ones
-      availableTemplates
-        .filter((templateName) => !this.existingTemplateNames.has(templateName))
-        .forEach((templateName) => {
-          const entryOption = document.createElement("option");
-          entryOption.value = templateName;
-          entryOption.text = templateName;
-
-          const entryFormTemplateSelect = document.querySelectorAll(
-            ".entry-form__template-select"
-          );
-          entryFormTemplateSelect[0].appendChild(entryOption);
-
-          const templateOption = document.createElement("option");
-          templateOption.value = templateName;
-          templateOption.text = templateName;
-
-          const templateMakerTemplateSelect = document.querySelectorAll(
-            ".template-maker__select--template"
-          );
-          templateMakerTemplateSelect[0].appendChild(templateOption);
-
-          this.existingTemplateNames.add(templateName); // Add new template to the set
-        });
-    }
-  }
-
-  openCreateTemplateModal() {
-    const modal = document.querySelectorAll(".modal");
-    modal[1].style.display = "block";
-
-    const templateMakerFieldsWrapper = document.querySelectorAll(
-      ".template-maker__fields-wrapper"
-    );
-    templateMakerFieldsWrapper[0].innerHTML = "";
-
-    this.isCreatingTemplate = true;
-
-    const nameInput = document.querySelectorAll(
-      ".template-maker__input-field--template-key"
-    );
-    if (nameInput[0]) {
-      nameInput[0].focus();
-    }
-  }
-
-  handleFieldTypeChange(fieldTypeSelect, fieldOptionsContainer) {
+  handleFormFieldTypeSelectorChange(fieldTypeSelect, fieldOptionsContainer) {
     fieldTypeSelect.addEventListener("change", function () {
       const selectedType = this.value;
       fieldOptionsContainer.innerHTML = ""; // Clear existing options
@@ -210,14 +211,16 @@ export class TemplateMaker {
         selectedType === "select" ? "block" : "none";
     });
   }
-
-  addFieldEvent() {
+  addNewFieldToFormEvent() {
     const newField = createNewField();
     const fieldTypeSelect = newField.querySelector("select[name='field-type']");
 
     const fieldOptionsContainer = newField.querySelector(".field-options");
 
-    this.handleFieldTypeChange(fieldTypeSelect, fieldOptionsContainer);
+    this.handleFormFieldTypeSelectorChange(
+      fieldTypeSelect,
+      fieldOptionsContainer
+    );
     const inputToFocus = newField.querySelector("input"); // Directly target the input element
 
     const templateMakerFieldsWrapper = document.querySelectorAll(
@@ -226,8 +229,21 @@ export class TemplateMaker {
     templateMakerFieldsWrapper[0].appendChild(newField);
     inputToFocus.focus();
   }
+  saveTemplateMakerFormToFile() {
+    const templateName = document.querySelectorAll(
+      ".template-maker__input-field--template-key"
+    );
+    if (templateName[0]) {
+      this.processFilledTemplateMakerForm(templateName[0]);
+    }
 
-  processTemplate(templateName) {
+    // if (uiElements.templateDropdown.value) {
+    //   // this is stopping writing when a template has been extended TODO sort this out
+    //   console.log(uiElements.templateDropdown.value);
+    // }
+    // template has a name, save it
+  }
+  processFilledTemplateMakerForm(templateName) {
     const templateMakerFieldsWrapper = document.querySelectorAll(
       ".template-maker__fields-wrapper"
     );
@@ -236,6 +252,7 @@ export class TemplateMaker {
     // 3. Parse fields from modal (iterate through generated fields)
     const fieldElements =
       templateMakerFieldsWrapper[0].querySelectorAll(".template-field");
+
     fieldElements.forEach((fieldElement) => {
       const fieldNameInput = fieldElement.querySelector(
         "input[name='field-name']"
@@ -279,52 +296,26 @@ export class TemplateMaker {
     });
 
     // // 4. Add fields to the templateData object
-    // if (!this.entryForm.loreLib[templateName]) {
-    //   // <-- API call to see if template exists
-    //   this.entryForm.loreLib[templateName] = {}; // <-- move this line to saveTemplate func
-    //   // in main Catalog
-    //   // <-- window.loreAPI. save the template here
-    // } else {
-    //   // <-- a template of this name already exists
-    //   // <-- figure out what to do ... prompt the user? overwrite?
-    //   console.log(
-    //     "do something about items when getting their template changed"
-    //   );
-    // }
-
-    // loreAPI.saveTemplates(templates); // <-- instead of sending an object of all templates
-    // we will send only the new template to main Catalog
-    // loreAPI.saveLore(this.entryForm.loreLib); // <-- remove this api call to save the entire librart
-    // We will update the library with the new key and
-    // save the file in the save template function in main Catalog
+    const templateKey = templateName.value;
+    console.log(this.existingTemplateNames.has());
+    if (this.existingTemplateNames.has(templateKey)) {
+      console.log("A template with this name already exists in the catalog.");
+      // <-- a template of this name already exists
+      // <-- figure out what to do ... prompt the user? overwrite?
+    } else {
+      const message = window.loreAPI.saveCatalogTemplate({
+        templateKey,
+        fields,
+      });
+      console.log(message);
+    }
 
     // 5. Close the modal
-
     const modal = document.querySelectorAll(".modal");
-
     modal[1].style.display = "none";
-
-    // this.entryForm.updateForm(); // <--  this can be 1  way signal from main to entry
-    // form when save is done
 
     console.log("Template created:", templateName);
   }
-
-  createTemplate() {
-    const templateName = document.querySelectorAll(
-      ".template-maker__input-field--template-key"
-    );
-    if (templateName[0]) {
-      this.processTemplate(templateName[0]);
-    }
-
-    // if (uiElements.templateDropdown.value) {
-    //   // this is stopping writing when a template has been extended TODO sort this out
-    //   console.log(uiElements.templateDropdown.value);
-    // }
-    // template has a name, save it
-  }
-
   //   deleteTemplate(templateName) {
   //     // 1. Confirm deletion with the user
   //     if (!templateName) return;
@@ -450,7 +441,6 @@ function addOptionInput(fieldOptionsContainer) {
 
   fieldOptionsContainer.appendChild(optionInput);
 }
-
 // function removeTemplateEntry(templateName) {
 //   // 1. Remove from the set
 //   existingTemplateNames.delete(templateName);

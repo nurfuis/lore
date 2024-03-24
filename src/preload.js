@@ -82,7 +82,7 @@ const loreAPI = {
     ),
 
   //* ONE WAY TO MAIN *//
-  saveLore: (data) => ipcRenderer.send("save:lore-information", data),
-  saveTemplates: (data) => ipcRenderer.send("save:templates-information", data),
+  saveLore: () => ipcRenderer.send("save:lore-information"),
+  saveCatalogTemplate: (template) => ipcRenderer.send("catalog:save-template", template),
 };
 contextBridge.exposeInMainWorld("loreAPI", loreAPI);

@@ -62,8 +62,6 @@ loreAPI.onSetPath((currentDirectory) => {
 loreAPI.onLoadCatalog((catalog) => {
   start(catalog);
   function start(catalog) {
-    templateMaker.templates = catalog.information.templates.data;
-
     const welcomeBlock = document.querySelectorAll(".lore-welcome__wrapper");
     welcomeBlock[0].style.display = "none";
 
@@ -92,7 +90,7 @@ loreAPI.onLoadCatalog((catalog) => {
 //* FUNCS *//
 function toggleView(showCreateForm) {
   if (showCreateForm) {
-    templateMaker.updateOptions();
+    templateMaker.updateTemplateMakerDropdownOptions();
     entryForm.updateForm();   
   } else {
     viewer.renderGameData();

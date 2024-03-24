@@ -94,7 +94,13 @@ app.on("ready", () => {
     mainWindow.webContents.send("catalog:send-full-library", catalog);
     mainWindow.webContents.send("catalog:send-library-path", root);
 
-    return true;
+    if (userMode === DEV) {
+      return information;
+    } else if (userMode === DIST) {
+      return true;
+    } else {
+      return false;
+    }
   }
 });
 
@@ -408,7 +414,6 @@ class Library {
     return fullDirectoryPath;
   }
 }
-
 class Catalog {
   #userMode = userMode;
   #root = root;
@@ -418,37 +423,30 @@ class Catalog {
 
     this.#userMode = userMode;
     this.#root = root;
-
-    ipcMain.on("path:sprites-preview", (event, fileKey) => {
-      this.getSpritePreviewPath(fileKey, event);
-    });
-
-    ipcMain.on("save:lore-information", (event, data) => {
-      this.saveLoreInformation(data, event);
-    });
-
-    ipcMain.on("save:templates-information", (event, data) => {
-      this.saveTemplatesInformation(data, event);
-    });
-
-    ipcMain.on("save:lore-image", (event, filePath) => {
-      this.saveLoreImage(event, filePath, this.information, this.#userMode);
-    });
-
-    ipcMain.on("information:template-fields", (event, templateKey) => {
-      this.getTemplateFieldsInformation(templateKey, event);
-    });
-    ipcMain.on("catalog:get-templates", (event) => {
-      this.getTemplates(event);
-    });
-    ipcMain.on("information:lore-catagory", (event, templateKey) => {
-      this.getLoreCatagory(templateKey, event);
-    });
+    // catalog
     ipcMain.on("information:lore-library", (event, edition) => {
       this.getLoreLibrary(edition, event);
     });
-    ipcMain.on("save:lore-entry", (event, { templateKey, newEntry }) => {
-      this.saveLoreEntry(newEntry, templateKey, event);
+    // sprites
+    ipcMain.on("save:lore-image", (event, filePath) => {
+      this.saveLoreImage(event, filePath, this.information, this.#userMode);
+    });
+    ipcMain.on("path:sprites-preview", (event, fileKey) => {
+      this.getSpritePreviewPath(fileKey, event);
+    });
+    //templates
+    ipcMain.on("catalog:get-templates", (event) => {
+      this.getTemplates(event);
+    });
+    ipcMain.on("catalog:save-template", (event, { templateKey, fields }) => {
+      this.saveTemplate(fields, templateKey, event);
+    });
+    ipcMain.on("information:template-fields", (event, templateKey) => {
+      this.getTemplateFieldsInformation(templateKey, event);
+    });
+    // lore
+    ipcMain.on("information:lore-catagory", (event, templateKey) => {
+      this.getLoreCatagory(templateKey, event);
     });
     ipcMain.on(
       "information:lore-data-entry",
@@ -456,14 +454,31 @@ class Catalog {
         this.getLoreEntryInformation(entryKey, templateKey, event);
       }
     );
+    ipcMain.on("save:lore-entry", (event, { templateKey, newEntry }) => {
+      this.saveLoreEntry(newEntry, templateKey, event);
+    });
     ipcMain.on(
       "catalog:lore-entry-delete",
       (event, { templateKey, entryKey }) => {
         this.removeLoreEntryInformation(entryKey, templateKey, event);
       }
     );
+    ipcMain.on("save:lore-information", (event) => {
+      this.saveCatalogInformationToTemp();
+      console.log(event);
+    });
   }
+  // catalog
+  getLoreLibrary(edition, event) {
+    const result = this.information?.lore?.[edition].data ?? null;
 
+    if (result) {
+      event.returnValue = result;
+    } else {
+      event.returnValue = result;
+    }
+  }
+  // sprites
   saveLoreImage(event, filePath, information, userMode) {
     saveImageData(event, filePath, information, userMode);
     async function saveImageData(event, sourceFilePath, information) {
@@ -501,8 +516,14 @@ class Catalog {
       );
 
       if (userMode === DEV) {
+        // In development mode, set the return value to a temporary path within the
+        // data/assets/sprites directory to ensure the page doesn't reload due to webpack
+        // noticing file changes. This approach might not be ideal for long-term
+        // maintainability. Is there a preferred way to handle this scenario?
         event.returnValue = path.join("../data/assets/sprites", filename);
       } else if (userMode === DIST) {
+        // In production mode, set the return value to the final path within the
+        // data/assets/sprites directory relative to the application root.
         event.returnValue = path.join(
           this.#root,
           "/data/assets/sprites",
@@ -543,46 +564,6 @@ class Catalog {
       }
     }
   }
-
-  saveTemplatesInformation(data, event) {
-    if (!data) {
-      console.error("Invalid data format: Missing templates section");
-      event.sender.send("save-failed", "Invalid data format");
-    } else {
-      const templateData = (this.information.templates.data.template = data);
-      fs.writeFile(
-        this.information.templates.path,
-        JSON.stringify(templateData),
-        (err) => {
-          if (err) {
-            console.error("Error saving templates:");
-            event.sender.send("save-failed", "Error saving templates");
-          } else {
-            console.log("Templates saved successfully!");
-            event.sender.send("save-success");
-          }
-        }
-      );
-    }
-  }
-
-  saveLoreInformation(data, event) {
-    const filename = this.information.lore.temp.path;
-
-    console.log("Writing changes to temp:", filename);
-
-    fs.writeFile(filename, JSON.stringify(data), (err) => {
-      if (err) {
-        console.error("Error saving lore:", err);
-        event.sender.send("save-failed");
-      } else {
-        event.sender.send("save-success", filename);
-        this.information.lore.temp.data = data;
-        console.log("Lore saved to temp file successfully.");
-      }
-    });
-  }
-
   getSpritePreviewPath(fileKey, event) {
     if (userMode === DEV) {
       const relativeFilePath = path.join(
@@ -601,17 +582,7 @@ class Catalog {
       event.returnValue = filePath;
     }
   }
-
-  getLoreLibrary(edition, event) {
-    const result = this.information?.lore?.[edition].data ?? null;
-
-    if (result) {
-      event.returnValue = result;
-    } else {
-      event.returnValue = result;
-    }
-  }
-
+  // templates
   getTemplates(event) {
     const result = this.information.templates.data;
     if (result) {
@@ -620,7 +591,6 @@ class Catalog {
       event.returnValue = result;
     }
   }
-
   getTemplateFieldsInformation(templateKey, event) {
     const result = this.information.templates.data[templateKey];
     if (result) {
@@ -631,7 +601,32 @@ class Catalog {
       // console.log("Requested recieved for undefined template...", templateKey);
     }
   }
+  saveTemplate(fields, templateKey, event) {
+    const templateData = this.information.templates.data;
+    templateData[templateKey] = fields;
 
+    if (!this.information.lore.temp.data.hasOwnProperty(templateKey)) {
+      this.information.lore.temp.data[templateKey] = {};
+      console.log("Key added to lore library:", templateKey);
+      this.saveCatalogInformationToTemp();
+    }
+
+    fs.writeFile(
+      this.information.templates.path,
+      JSON.stringify(templateData),
+      (err) => {
+        if (err) {
+          console.error("Error saving templates:");
+          event.sender.send("save-failed", "Error saving templates");
+        } else {
+          console.log("Templates saved successfully!");
+          event.sender.send("save-success");
+          this.information.lore;
+        }
+      }
+    );
+  }
+  // lore
   getLoreCatagory(templateKey, event) {
     const result = this.information?.lore?.main?.data?.[templateKey] ?? null;
     if (result) {
@@ -640,7 +635,17 @@ class Catalog {
       event.returnValue = result;
     }
   }
+  getLoreEntryInformation(entryKey, templateKey, event) {
+    const result =
+      this.information?.lore?.temp?.data?.[templateKey]?.[entryKey] ?? null;
 
+    if (result?.valid) {
+      event.returnValue = result;
+      // console.log("Replying to information:lore-data-entry ...", result);
+    } else {
+      event.returnValue = result;
+    }
+  }
   saveLoreEntry(newEntry, templateKey, event) {
     this.information.lore.temp.data[templateKey][newEntry.name] = newEntry;
 
@@ -659,19 +664,6 @@ class Catalog {
       }
     );
   }
-
-  getLoreEntryInformation(entryKey, templateKey, event) {
-    const result =
-      this.information?.lore?.temp?.data?.[templateKey]?.[entryKey] ?? null;
-
-    if (result?.valid) {
-      event.returnValue = result;
-      // console.log("Replying to information:lore-data-entry ...", result);
-    } else {
-      event.returnValue = result;
-    }
-  }
-
   removeLoreEntryInformation(entryKey, templateKey, event) {
     const result =
       this.information?.lore?.temp?.data?.[templateKey]?.[entryKey] ?? null;
@@ -695,8 +687,21 @@ class Catalog {
       event.returnValue = result;
     }
   }
+  saveCatalogInformationToTemp() {
+    const filename = this.information.lore.temp.path;
+    fs.writeFile(
+      filename,
+      JSON.stringify(this.information.lore.temp.data),
+      (err) => {
+        if (err) {
+          console.error("Error saving lore:", err);
+        } else {
+          console.log("Lore saved to temp file successfully.");
+        }
+      }
+    );
+  }
 }
-
 function createWindow(mainWindow) {
   const menu = Menu.buildFromTemplate([
     {
