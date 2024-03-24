@@ -21,14 +21,6 @@ const loreAPI = {
     return response;
   },
 
-  getInformationTemplateFields(templateKey) {
-    const response = ipcRenderer.sendSync(
-      "information:template-fields",
-      templateKey
-    );
-    return response;
-  },
-
   getInformationLoreEntry({ templateKey, entryKey }) {
     const response = ipcRenderer.sendSync("information:lore-data-entry", {
       templateKey,
@@ -36,17 +28,30 @@ const loreAPI = {
     });
     return response;
   },
-  //* BEST EXAMPLE OF API *//
-  catalogLoreEntryDelete({ templateKey, entryKey })
-  {
+  catalogLoreEntryDelete({ templateKey, entryKey }) {
     const response = ipcRenderer.sendSync("catalog:lore-entry-delete", {
       templateKey,
       entryKey,
     });
     return response;
   },
+  catalogGetTemplates() {
+    // returns all saved templates
+    const response = ipcRenderer.sendSync("catalog:get-templates");
+    return response;
+  },
+
+  getInformationTemplateFields(templateKey) {
+    // returns the individual fields of a selected template
+    const response = ipcRenderer.sendSync(
+      "information:template-fields",
+      templateKey
+    );
+    return response;
+  },
 
   getInformationLoreCatagory(templateKey) {
+    // returns the entries in a template catagory from the library data
     const response = ipcRenderer.sendSync(
       "information:lore-catagory",
       templateKey

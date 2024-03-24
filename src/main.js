@@ -438,14 +438,15 @@ class Catalog {
     ipcMain.on("information:template-fields", (event, templateKey) => {
       this.getTemplateFieldsInformation(templateKey, event);
     });
-
+    ipcMain.on("catalog:get-templates", (event) => {
+      this.getTemplates(event);
+    });
     ipcMain.on("information:lore-catagory", (event, templateKey) => {
       this.getLoreCatagory(templateKey, event);
     });
     ipcMain.on("information:lore-library", (event, edition) => {
       this.getLoreLibrary(edition, event);
     });
-
     ipcMain.on("save:lore-entry", (event, { templateKey, newEntry }) => {
       this.saveLoreEntry(newEntry, templateKey, event);
     });
@@ -610,6 +611,15 @@ class Catalog {
       event.returnValue = result;
     }
   }
+  
+  getTemplates(event) {
+    const result = this.information.templates.data;
+    if (result) {
+      event.returnValue = result;
+    } else {
+      event.returnValue = result;
+    }
+  }
 
   getTemplateFieldsInformation(templateKey, event) {
     const result = this.information.templates.data[templateKey];
@@ -624,7 +634,6 @@ class Catalog {
 
   getLoreCatagory(templateKey, event) {
     const result = this.information?.lore?.main?.data?.[templateKey] ?? null;
-
     if (result) {
       event.returnValue = result;
     } else {
@@ -678,9 +687,7 @@ class Catalog {
           if (err) {
             console.error("Error saving lore:", err);
           } else {
-            console.log(
-              "Lore entry deleted succesfully."
-            );
+            console.log("Lore entry deleted succesfully.");
           }
         }
       );

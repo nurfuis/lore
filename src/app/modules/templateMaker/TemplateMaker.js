@@ -53,7 +53,11 @@ export class TemplateMaker {
   }
 
   updateOptions() {
-    if (this.templates) {
+    // API call to get current templates
+    const templates = window.loreAPI.catalogGetTemplates();
+    console.log(templates);
+
+    if (templates) {
       const availableTemplates = Object.keys(this.templates);
 
       // Filter out existing templates and append only new ones
@@ -63,12 +67,20 @@ export class TemplateMaker {
           const entryOption = document.createElement("option");
           entryOption.value = templateName;
           entryOption.text = templateName;
-          uiElements.templateSelect.appendChild(entryOption);
+
+          const entryFormTemplateSelect = document.querySelectorAll(
+            ".entry-form__template-select"
+          );
+          entryFormTemplateSelect[0].appendChild(entryOption);
 
           const templateOption = document.createElement("option");
           templateOption.value = templateName;
           templateOption.text = templateName;
-          uiElements.templateDropdown.appendChild(templateOption);
+
+          const templateMakerTemplateSelect = document.querySelectorAll(
+            ".template-maker__select--template"
+          );
+          templateMakerTemplateSelect[0].appendChild(templateOption);
 
           this.existingTemplateNames.add(templateName); // Add new template to the set
         });
@@ -129,10 +141,10 @@ export class TemplateMaker {
           fieldOptionsContainer.removeChild(existingButtonContainer);
         }
       }
-
       fieldOptionsContainer.style.display =
         selectedType === "select" ? "block" : "none";
     });
+
     uiElements.templateDropdown.addEventListener("change", (event) => {
       selectedTemplate = uiElements.templateDropdown.value;
       const templateData = templates[selectedTemplate];
@@ -210,7 +222,6 @@ export class TemplateMaker {
   }
 
   processTemplate(templateName) {
-
     const templateFieldsContainer = document.getElementById("template-fields");
 
     const fields = {}; // Initialize an empty object for fields
@@ -262,11 +273,13 @@ export class TemplateMaker {
     // 4. Add fields to the templateData object
     this.templates[templateName] = fields; // <-- remove this line
 
-    if (!this.entryForm.loreLib[templateName]) { // <-- API call to see if template exists
+    if (!this.entryForm.loreLib[templateName]) {
+      // <-- API call to see if template exists
       this.entryForm.loreLib[templateName] = {}; // <-- move this line to saveTemplate func
-                                                // in main Catalog
-      // <-- window.loreAPI. save the template here                                            
-    } else { // <-- a template of this name already exists
+      // in main Catalog
+      // <-- window.loreAPI. save the template here
+    } else {
+      // <-- a template of this name already exists
       // <-- figure out what to do ... prompt the user? overwrite?
       console.log(
         "do something about items when getting their template changed"
@@ -274,10 +287,10 @@ export class TemplateMaker {
     }
 
     loreAPI.saveTemplates(this.templates); // <-- instead of sending an object of all templates
-                                           // we will send only the new template to main Catalog
+    // we will send only the new template to main Catalog
     loreAPI.saveLore(this.entryForm.loreLib); // <-- remove this api call to save the entire librart
-                                              // We will update the library with the new key and
-                                              // save the file in the save template function in main Catalog
+    // We will update the library with the new key and
+    // save the file in the save template function in main Catalog
 
     // 5. Close the modal
     const createTemplateModal = document.getElementById(
@@ -285,15 +298,16 @@ export class TemplateMaker {
     );
     createTemplateModal.style.display = "none";
 
-      
-    this.entryForm.updateForm(); // <--  this can be 1  way signal from main to entry 
-                                 // form when save is done
+    this.entryForm.updateForm(); // <--  this can be 1  way signal from main to entry
+    // form when save is done
 
     console.log("Template created:", templateName);
   }
 
   createTemplate() {
-    const templateName = document.querySelectorAll(".template-maker__input-field--template-key");
+    const templateName = document.querySelectorAll(
+      ".template-maker__input-field--template-key"
+    );
     if (templateName[0]) {
       this.processTemplate(templateName[0]);
     }
