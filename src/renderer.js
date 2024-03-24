@@ -2,18 +2,62 @@ import "./index.css";
 import { EntryForm } from "./app/modules/entryForm/EntryForm";
 import { TemplateMaker } from "./app/modules/templateMaker/TemplateMaker";
 import { Viewer } from "./app/modules/viewer/Viewer";
-import { Menu } from "./app/Menu";
 
-//* MAIN FEATURE *//
+//* INSTANCES *//
 const entryForm = new EntryForm();
 const templateMaker = new TemplateMaker();
 const viewer = new Viewer();
-const menu = new Menu();
 
+// Start
+const welcomeButtonStart = document.querySelectorAll(
+  ".lore-welcome__button--start"
+);
+welcomeButtonStart[0].addEventListener("click", () => {
+  const isLoaded = loreAPI.loadLoreData();
+  console.log("Project directory is loaded", isLoaded);
+});
 
-templateMaker.entryForm = entryForm;
-menu.viewer = viewer;
+// Edit Entry
+const navButtonEditEntry = document.querySelectorAll(
+  ".lore-navigation__button--edit-entry"
+);
+navButtonEditEntry[0].style.display = "none";
+navButtonEditEntry[0].addEventListener("click", () => toggleView(true));
 
+// Card Viewer
+const navButtonCardViewer = document.querySelectorAll(
+  ".lore-navigation__button--viewer"
+);
+navButtonCardViewer[0].style.display = "none";
+navButtonCardViewer[0].addEventListener("click", () => toggleView(false));
+
+// Template Maker
+const navButtonTemplateMaker = document.querySelectorAll(
+  ".lore-navigation__button--create-template"
+);
+navButtonTemplateMaker[0].style.display = "none";
+
+// Modal
+const modal = document.querySelectorAll(".modal");
+const modalButtonClose = document.querySelectorAll(".modal_button--close");
+for (let i = 0; i < modalButtonClose.length; i++) {
+  modalButtonClose[i].addEventListener("click", function () {
+    modal[i].style.display = "none";
+  });
+}
+
+//* EVENTS *//
+loreAPI.onSetProjectDirectory((currentDirectory) => {
+  setDetailsProjectDirectory(currentDirectory);
+  function setDetailsProjectDirectory(currentDirectory) {
+    const detailsProjectDirectory = document.querySelectorAll(
+      ".details__project-directory"
+    );
+    detailsProjectDirectory[0].innerText = "";
+    detailsProjectDirectory[0].innerText = "Project Path " + currentDirectory;
+    return true;
+  }
+});
 loreAPI.onOpenProject((catalog) => {
   start(catalog);
   function start(catalog) {
@@ -48,25 +92,22 @@ loreAPI.onOpenProject((catalog) => {
   }
 });
 
-loreAPI.onSetProjectDirectory((currentDirectory) => {
-  setDetailsProjectDirectory(currentDirectory);
-  function setDetailsProjectDirectory(currentDirectory) {
-    const detailsProjectDirectory = document.querySelectorAll(
-      ".details__project-directory"
-    );
-    detailsProjectDirectory[0].innerText = "";
-    detailsProjectDirectory[0].innerText = "Project Path " + currentDirectory;
-    return true;
+//* FUNCS *//
+function toggleView(showCreateForm) {
+  if (showCreateForm) {
+    // console.log('Display the entry form.');
+  } else {
+    // console.log('Display the viewer.');
+    this.viewer.renderGameData();
   }
-});
 
-initializeWelcomeButtonStart();
-function initializeWelcomeButtonStart() {
-  const welcomeButtonStart = document.querySelectorAll(
-    ".lore-welcome__button--start"
+  const editEntryFormWrapper = document.querySelectorAll(
+    ".edit-entry__form-wrapper"
   );
-  welcomeButtonStart[0].addEventListener("click", () => {
-    const isLoaded = loreAPI.loadLoreData();
-    console.log("Project directory is loaded", isLoaded);
-  });
+  editEntryFormWrapper[0].style.display = showCreateForm ? "block" : "none";
+
+  const viewerCardsWrapper = document.querySelectorAll(
+    ".viewer__cards-wrapper"
+  );
+  viewerCardsWrapper[0].style.display = showCreateForm ? "none" : "block";
 }

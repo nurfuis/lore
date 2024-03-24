@@ -231,12 +231,14 @@ export class TemplateMaker {
   }
 
   processTemplate(templateName) {
-    const templateFieldsContainer = document.getElementById("template-fields");
+    const templateMakerFieldsWrapper = document.querySelectorAll(
+      ".template-maker__fields-wrapper"
+    );
 
     const fields = {}; // Initialize an empty object for fields
     // 3. Parse fields from modal (iterate through generated fields)
     const fieldElements =
-      templateFieldsContainer.querySelectorAll(".template-field");
+      templateMakerFieldsWrapper[0].querySelectorAll(".template-field");
     fieldElements.forEach((fieldElement) => {
       const fieldNameInput = fieldElement.querySelector(
         "input[name='field-name']"
@@ -302,10 +304,10 @@ export class TemplateMaker {
     // save the file in the save template function in main Catalog
 
     // 5. Close the modal
-    const createTemplateModal = document.getElementById(
-      "create-template-modal"
-    );
-    createTemplateModal.style.display = "none";
+
+    const modal = document.querySelectorAll(".modal");
+
+    modal[1].style.display = "none";
 
     this.entryForm.updateForm(); // <--  this can be 1  way signal from main to entry
     // form when save is done
@@ -423,7 +425,7 @@ function createNewField() {
     const templateMakerFieldsWrapper = document.querySelectorAll(
       ".template-maker__fields-wrapper"
     );
-    templateMakerFieldsWrapper[0].templateFieldsContainer.insertBefore(
+    templateMakerFieldsWrapper[0].insertBefore(
       newField,
       this.parentElement.nextSibling
     ); // Insert it after this field
