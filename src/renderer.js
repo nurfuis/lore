@@ -98,7 +98,7 @@ function toggleView(showCreateForm) {
     // console.log('Display the entry form.');
   } else {
     // console.log('Display the viewer.');
-    this.viewer.renderGameData();
+    viewer.renderGameData();
   }
 
   const editEntryFormWrapper = document.querySelectorAll(

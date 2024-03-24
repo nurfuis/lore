@@ -611,7 +611,7 @@ class Catalog {
       event.returnValue = result;
     }
   }
-  
+
   getTemplates(event) {
     const result = this.information.templates.data;
     if (result) {
