@@ -10,6 +10,7 @@ const templateMaker = new TemplateMaker();
 const viewer = new Viewer();
 const menu = new Menu();
 
+
 templateMaker.entryForm = entryForm;
 menu.viewer = viewer;
 

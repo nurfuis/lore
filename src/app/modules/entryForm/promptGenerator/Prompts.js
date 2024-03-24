@@ -1,36 +1,29 @@
 import { promptTemplates } from "./promptTemplates";
-/*
-    TODO:
-      select prompt modal by class selector
-      select copyPromptButton with class 
 
-      include in modal rework when that happens
-
-*/
 export class Prompts {
-  constructor() {
-    const promptModal = document.getElementById("promptModal");
+  constructor() {}
+  ready() {
+    const modal = document.querySelectorAll(".modal");
 
-    
     const entryFormGeneratePromptButton = document.querySelectorAll(
       ".entry-form__commands-button--generate-prompt"
     );
     entryFormGeneratePromptButton[0].addEventListener("click", () => {
-      console.log("click")
+      console.log("click");
       this.generatePrompt();
-      promptModal.style.display = "block";
-    });    
-      
-    
+      modal[0].style.display = "block";
+    });
+
     const copyPromptButton = document.getElementById("copyPromptButton");
     copyPromptButton.addEventListener("click", copyPromptText);
 
     window.addEventListener("click", function (event) {
-      if (event.target === promptModal) {
-        promptModal.style.display = "none";
+      if (event.target === modal[0]) {
+        modal[0].style.display = "none";
       }
     });
   }
+
   generatePrompt() {
     const entryTemplateSelect = document.querySelectorAll(
       ".entry-form__template-select"
@@ -61,10 +54,9 @@ export class Prompts {
             loreLibrary[selectedTemplateValue][selectedPrototypeValue][key];
 
           // Check for user provided prompt
-          const templateFields =
-            window.loreAPI.getInformationTemplateFields(
-              selectedTemplateValue
-            );
+          const templateFields = window.loreAPI.getInformationTemplateFields(
+            selectedTemplateValue
+          );
 
           const providedPrompt = templateFields[key]?.prompt;
 
@@ -93,7 +85,9 @@ export class Prompts {
     }
     const promptText = document.getElementById("promptText");
     promptText.textContent = promptString;
-    promptModal.style.display = "block"; 
+
+    const modal = document.querySelectorAll(".modal");
+    modal[0].style.display = "block";
   }
 }
 
@@ -114,5 +108,5 @@ function copyPromptText() {
       console.error("Failed to copy prompt!");
     });
   selection.removeAllRanges();
-  promptModal.style.display = "none";
+  modal[0].style.display = "none";
 }

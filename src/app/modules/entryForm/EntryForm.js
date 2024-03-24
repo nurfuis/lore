@@ -4,7 +4,9 @@ import { promptTemplates } from "./promptGenerator/promptTemplates";
 
 export class EntryForm {
   constructor() {
-    this.promptGenerator = new Prompts();
+    const promptGenerator = new Prompts();
+    promptGenerator.ready();
+
     // TEMPLATE SELECTOR
     const entryFormTemplateSelect = document.querySelectorAll(
       ".entry-form__template-select"
@@ -288,9 +290,7 @@ export class EntryForm {
         promptSpan.classList.add("prompt");
 
         promptSpan.textContent =
-          fieldData.prompt ||
-          promptTemplates[fieldName] ||
-          fieldData.label;
+          fieldData.prompt || promptTemplates[fieldName] || fieldData.label;
 
         let inputElement;
         switch (fieldData.type) {
