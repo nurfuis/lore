@@ -5,7 +5,7 @@ export class TemplateMaker {
   constructor() {
     this.existingTemplateNames = new Set();
     this.isCreatingTemplate = false;
-
+    // esc to close template maker
     document.addEventListener("keydown", (event) => {
       if (event.key === "Escape") {
         const modal = document.querySelectorAll(".modal");
@@ -13,43 +13,114 @@ export class TemplateMaker {
         this.isCreatingTemplate = false;
       }
     });
-
+    // tab creates new field when using template maker
     document.addEventListener("keydown", (event) => {
       if (event.key === "Tab" && this.isCreatingTemplate) {
         event.preventDefault();
         this.addFieldEvent();
       }
     });
-
+    // open template maker
     const navButtonCreateTemplate = document.querySelectorAll(
       ".lore-navigation__button--create-template"
     );
     navButtonCreateTemplate[0].addEventListener("click", () => {
       this.openCreateTemplateModal();
     });
-
+    // disable isCreatingTemplate when closing modal (needed flag for tab behavior)
     const modalButtonClose = document.querySelectorAll(".modal_button--close");
     modalButtonClose[1].addEventListener("click", () => {
       this.isCreatingTemplate = false;
     });
-
+    // add field button listener
     const templateMakerButtonAddField = document.querySelectorAll(
       ".template-maker__button--add-field"
     );
     templateMakerButtonAddField[0].addEventListener("click", () => {
       this.addFieldEvent();
     });
-
+    // save form button listener
     const templateMakerButtonSaveForm = document.querySelectorAll(
       ".template-maker__button--save-form"
     );
     templateMakerButtonSaveForm[0].addEventListener("click", () => {
       this.createTemplate();
     });
+    // dropdown listener (populate form with existing an template's values)
+    const templateMakerTemplateSelect = document.querySelectorAll(
+      ".template-maker__select--template"
+    );
+    templateMakerTemplateSelect[0].addEventListener("change", (event) => {
+      this.populateTemplateMakerForm(templateMakerTemplateSelect);
+    });
 
     // uiElements.deleteTemplateButton.addEventListener("click", () => {
     //   deleteTemplate(selectedTemplate);
     // });
+  }
+  populateTemplateMakerForm(templateMakerTemplateSelect) {
+    const selectedTemplate = templateMakerTemplateSelect[0].value;
+
+    const templates = window.loreAPI.catalogGetTemplates();
+    const templateData = templates[selectedTemplate];
+
+    const templateMakerFieldsWrapper = document.querySelectorAll(
+      ".template-maker__fields-wrapper"
+    );
+    templateMakerFieldsWrapper[0].innerHTML = "";
+
+    const formContainer = templateMakerFieldsWrapper[0];
+
+    // Iterate through the template data
+    for (const fieldName in templateData) {
+      const fieldData = templateData[fieldName];
+      // console.log("fieldData", fieldData);
+      const newField = createNewField();
+      const fieldInput = newField.querySelector("input");
+      fieldInput.value = fieldData.label;
+
+      const fieldTypeSelect = newField.querySelector(
+        "select[name='field-type']"
+      );
+      const fieldOptionsContainer = newField.querySelector(".field-options");
+
+      fieldTypeSelect.value = fieldData.type;
+
+      this.handleFieldTypeChange(fieldTypeSelect, fieldOptionsContainer);
+
+      if (fieldData.type == "select" && fieldData.options != undefined) {
+        console.log(fieldData.type);
+        for (let i = 0; i < fieldData.options.length; i++) {
+          const optionInput = document.createElement("input");
+          optionInput.type = "text";
+          optionInput.value = fieldData.options[i];
+          optionInput.classList.add("option-input"); // Add the class
+
+          fieldOptionsContainer.appendChild(optionInput);
+        }
+        const optionButtonContainer = document.createElement("div");
+        optionButtonContainer.classList.add("option-button-container"); // Add a class for styling
+
+        const addOptionButton = document.createElement("button");
+        addOptionButton.textContent = "Add Option";
+        addOptionButton.addEventListener("click", function () {
+          addOptionInput(fieldOptionsContainer); // Call function to add option input
+        });
+        optionButtonContainer.appendChild(addOptionButton);
+
+        const removeOptionButton = document.createElement("button");
+        removeOptionButton.textContent = "Remove Option";
+        removeOptionButton.addEventListener("click", function () {
+          removeOptionInput(fieldOptionsContainer); // Call function to remove option input
+        });
+        optionButtonContainer.appendChild(removeOptionButton);
+
+        // Append the button container to the options container
+        fieldOptionsContainer.appendChild(optionButtonContainer);
+      }
+
+      formContainer.appendChild(newField);
+    }
   }
 
   updateOptions() {
@@ -143,69 +214,6 @@ export class TemplateMaker {
       }
       fieldOptionsContainer.style.display =
         selectedType === "select" ? "block" : "none";
-    });
-
-    uiElements.templateDropdown.addEventListener("change", (event) => {
-      selectedTemplate = uiElements.templateDropdown.value;
-      const templateData = templates[selectedTemplate];
-      const formContainer = uiElements.templateFieldsContainer;
-      // console.log(formContainer);
-      formContainer.innerHTML = "";
-      function appendTemplateFields(templateData, formContainer) {
-        // Iterate through the template data
-        for (const fieldName in templateData) {
-          const fieldData = templateData[fieldName];
-          // console.log("fieldData", fieldData);
-
-          const newField = createNewField();
-          const fieldInput = newField.querySelector("input");
-          fieldInput.value = fieldData.label;
-
-          const fieldTypeSelect = newField.querySelector(
-            "select[name='field-type']"
-          );
-          const fieldOptionsContainer =
-            newField.querySelector(".field-options");
-
-          fieldTypeSelect.value = fieldData.type;
-
-          handleFieldTypeChange(fieldTypeSelect, fieldOptionsContainer);
-
-          if (fieldData.type == "select" && fieldData.options != undefined) {
-            console.log(fieldData.type);
-            for (let i = 0; i < fieldData.options.length; i++) {
-              const optionInput = document.createElement("input");
-              optionInput.type = "text";
-              optionInput.value = fieldData.options[i];
-              optionInput.classList.add("option-input"); // Add the class
-
-              fieldOptionsContainer.appendChild(optionInput);
-            }
-            const optionButtonContainer = document.createElement("div");
-            optionButtonContainer.classList.add("option-button-container"); // Add a class for styling
-
-            const addOptionButton = document.createElement("button");
-            addOptionButton.textContent = "Add Option";
-            addOptionButton.addEventListener("click", function () {
-              addOptionInput(fieldOptionsContainer); // Call function to add option input
-            });
-            optionButtonContainer.appendChild(addOptionButton);
-
-            const removeOptionButton = document.createElement("button");
-            removeOptionButton.textContent = "Remove Option";
-            removeOptionButton.addEventListener("click", function () {
-              removeOptionInput(fieldOptionsContainer); // Call function to remove option input
-            });
-            optionButtonContainer.appendChild(removeOptionButton);
-
-            // Append the button container to the options container
-            fieldOptionsContainer.appendChild(optionButtonContainer);
-          }
-
-          uiElements.templateFieldsContainer.appendChild(newField);
-        }
-      }
-      appendTemplateFields(templateData, formContainer);
     });
   }
 
