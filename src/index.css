@@ -1,5 +1,4 @@
 :root {
-  /* Earth Theme */
   --primary-color-earth: #a52a2a;
   --secondary-color-earth: #bdb76b;
   --background-color-earth: #38a3a5;
@@ -10,7 +9,6 @@
   --form-background-earth: #373a44;
   --highlight-color-earth: #ffff00;
 
-  /* Fey Theme */
   --primary-color-fey: #90e0e0;
   --secondary-color-fey: #c2c2f0;
   --background-color-fey: #282a35;
@@ -21,7 +19,6 @@
   --form-background-fey: #373a44;
   --highlight-color-fey: #ff00ff;
 
-  /* Current Theme (initially set to earth) */
   --primary-color: var(--primary-color-earth);
   --secondary-color: var(--secondary-color-earth);
   --background-color: var(--background-color-earth);

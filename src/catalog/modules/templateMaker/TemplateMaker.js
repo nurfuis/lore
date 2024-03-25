@@ -58,11 +58,18 @@ export class TemplateMaker {
       this.populateTemplateMakerForm(templateMakerTemplateSelect);
     });
 
+    const navButtonEditEntry = document.querySelectorAll(
+      ".lore-navigation__button--edit-entry"
+    );
+    navButtonEditEntry[0].addEventListener("click", () => {
+      this.updateTemplateDropdownOptions();
+    });
+
     // uiElements.deleteTemplateButton.addEventListener("click", () => {
     //   deleteTemplate(selectedTemplate);
     // });
   }
-  updateTemplateMakerDropdownOptions() {
+  updateTemplateDropdownOptions() {
     const templates = window.loreAPI.catalogGetTemplates();
     if (templates) {
       const availableTemplates = Object.keys(templates);
@@ -94,7 +101,7 @@ export class TemplateMaker {
     }
   }
   openTemplateMakerModal() {
-    this.updateTemplateMakerDropdownOptions();
+    this.updateTemplateDropdownOptions();
     const modal = document.querySelectorAll(".modal");
     modal[1].style.display = "block";
 

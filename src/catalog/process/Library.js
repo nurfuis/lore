@@ -18,10 +18,10 @@ const { defaultTemplates } = require("./templatesConfiguration");
 
 class Library {
   constructor() {}
-  async initializeProjectDirectories(root) {
+  async initializeProjectDirectories(projectPath) {
     console.log("Initializing project directories...");
 
-    const userAppDataPath = root;
+    const userAppDataPath = projectPath;
     console.log("User Data Path:", userAppDataPath);
 
     const projectDataDirectory = this.tryMakeDirectory(userAppDataPath, _DIR);

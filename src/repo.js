@@ -1,7 +1,7 @@
 // main
 function getUserDataPath() {
   console.log("Reading user config file...");
-  const configFile = root + "/config.json";
+  const configFile = projectPath + "/config.json";
   console.log(configFile);
   let result;
   try {
@@ -10,7 +10,7 @@ function getUserDataPath() {
   } catch (err) {
     console.error("Error loading config data:", err);
     console.log("Creating new config file...");
-    result = { USER_PATH: root };
+    result = { USER_PATH: projectPath };
     console.log("initialize USER_PATH", result);
 
     fs.writeFile(configFile, JSON.stringify(result), (err) => {
@@ -42,7 +42,7 @@ async function handleOpenDialog() {
 }
 function updateCurrentDirectory(filePath) {
   currentDirectory = filePath;
-  const configFile = root + "/config.json";
+  const configFile = projectPath + "/config.json";
   const data = { USER_PATH: filePath };
   console.log("update USER_PATH", data);
   fs.writeFile(configFile, JSON.stringify(data), (err) => {

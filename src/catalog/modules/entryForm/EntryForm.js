@@ -7,7 +7,7 @@ export class EntryForm {
   constructor() {
     const promptGenerator = new Prompts();
     promptGenerator.ready();
-    // NAV BUTTON
+    
     const navButtonEditEntry = document.querySelectorAll(
       ".lore-navigation__button--edit-entry"
     );

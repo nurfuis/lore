@@ -1,4 +1,4 @@
-const { app, BrowserWindow, Menu, Notification } = require("electron");
+const { app, BrowserWindow, Notification } = require("electron");
 
 const fs = require("fs");
 const path = require("path");
@@ -14,11 +14,9 @@ const {
   LORE_LIBRARY_TEMP,
 } = require("./catalog/process/directoryConfiguration");
 
-const { cycleBackgrounds } = require("./main/menu/cycleBackgrounds");
-const { toggleTheme } = require("./main/menu/toggleTheme");
-
-const { openLoreLibrary } = require("./catalog/process/openLoreLibrary");
 const { themes } = require("./main/settings/themes");
+
+const { mainCatalog } = require("./catalog/mainCatalog");
 
 process.env["ELECTRON_DISABLE_SECURITY_WARNINGS"] = true;
 
@@ -26,9 +24,9 @@ app.setAppUserModelId("Lore");
 
 const userMode = DEV;
 
-const root = getRoot(userMode);
+const projectPath = getProjectPath(userMode);
 
-function getRoot(userMode) {
+function getProjectPath(userMode) {
   console.log("User mode:", userMode);
 
   if (DEV && userMode === DEV) {
@@ -41,7 +39,7 @@ function getRoot(userMode) {
   }
 }
 
-const appIcon = path.join(root, APP_ICON);
+const appIcon = path.join(projectPath, APP_ICON);
 
 const DEFAULT_WINDOW_OPTIONS = {
   width: 900,
@@ -57,15 +55,15 @@ const DEFAULT_WINDOW_OPTIONS = {
 app.on("ready", () => {
   const mainWindow = new BrowserWindow(DEFAULT_WINDOW_OPTIONS);
   configureWindow(mainWindow);
-  openLoreLibrary(mainWindow, root, userMode);
+  mainCatalog(mainWindow, projectPath, userMode);
 });
 
 app.on("window-all-closed", () => {
   try {
     saveChanges({ reason: "exit" });
     function saveChanges({ reason }) {
-      const mainFile = path.join(root, _DIR, LORE_LIBRARY);
-      const tempFile = path.join(root, _DIR, LORE_LIBRARY_TEMP);
+      const mainFile = path.join(projectPath, _DIR, LORE_LIBRARY);
+      const tempFile = path.join(projectPath, _DIR, LORE_LIBRARY_TEMP);
 
       try {
         fs.copyFileSync(tempFile, mainFile);
@@ -112,26 +110,10 @@ app.on("activate", () => {
 });
 
 function configureWindow(window) {
-  const menu = Menu.buildFromTemplate([
-    {
-      label: "Cycle Backgrounds",
-      click: () => {
-        cycleBackgrounds(window, root);
-      },
-    },
-    {
-      label: "Toggle Theme",
-      click: () => {
-        toggleTheme(window);
-      },
-    },
-  ]);
-  Menu.setApplicationMenu(menu);
-
-  window.setMenuBarVisibility(true);
+  window.setMenuBarVisibility(false);
   window.loadURL(MAIN_WINDOW_WEBPACK_ENTRY);
   // window.webContents.openDevTools();
-  window.once('ready-to-show', () => {
-    window.show()
-  })
+  window.once("ready-to-show", () => {
+    window.show();
+  });
 }

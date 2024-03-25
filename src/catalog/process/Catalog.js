@@ -18,9 +18,9 @@ class Catalog {
     }
   }
   // sprites
-  saveLoreImage(event, filePath, information, userMode, root) {
-    saveImageData(event, filePath, information, userMode, root);
-    async function saveImageData(event, sourceFilePath, information, userMode, root) {
+  saveLoreImage(event, filePath, information, userMode, projectPath) {
+    saveImageData(event, filePath, information, userMode, projectPath);
+    async function saveImageData(event, sourceFilePath, information, userMode, projectPath) {
       console.log("Saving image data...");
 
       if (!(await isFileAccessible(sourceFilePath))) {
@@ -60,9 +60,9 @@ class Catalog {
         event.returnValue = path.join("../data/assets/sprites", filename);
       } else if (userMode === DIST) {
         // In production mode, set the return value to the final path within the
-        // data/assets/sprites directory relative to the application root.
+        // data/assets/sprites directory relative to the application projectPath.
         event.returnValue = path.join(
-          root,
+          projectPath,
           "/data/assets/sprites",
           filename
         );
@@ -101,7 +101,7 @@ class Catalog {
       }
     }
   }
-  getSpritePreviewPath(fileKey, event, userMode, root) {
+  getSpritePreviewPath(fileKey, event, userMode, projectPath) {
     if (userMode === DEV) {
       const relativeFilePath = path.join(
         "../data/assets/sprites",
@@ -110,7 +110,7 @@ class Catalog {
       event.returnValue = relativeFilePath;
     } else if (userMode === DIST) {
       const filePath = path.join(
-        root,
+        projectPath,
         _DIR,
         _ASSETS_DIR,
         _SPRITES_DIR,

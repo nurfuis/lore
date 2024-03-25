@@ -1,19 +1,19 @@
 const { ipcMain } = require("electron");
 
 class CatalogAPI {
-  constructor(userMode, root) {
+  constructor(userMode, projectPath) {
     this.userMode = userMode;
-    this.root = root;
+    this.projectPath = projectPath;
     // catalog
     ipcMain.on("information:lore-library", (event, edition) => {
       this.module.getLoreLibrary(edition, event);
     });
     // sprites
     ipcMain.on("save:lore-image", (event, filePath) => {
-      this.module.saveLoreImage(event, filePath, this.module.information, this.userMode, this.root);
+      this.module.saveLoreImage(event, filePath, this.module.information, this.userMode, this.projectPath);
     });
     ipcMain.on("path:sprites-preview", (event, fileKey) => {
-      this.module.getSpritePreviewPath(fileKey, event, this.userMode, this.root);
+      this.module.getSpritePreviewPath(fileKey, event, this.userMode, this.projectPath);
     });
     //templates
     ipcMain.on("catalog:get-templates", (event) => {

@@ -2,12 +2,24 @@ import { toggleView } from "../../../renderer";
 
 export class Viewer {
   constructor() {
-    // Card Viewer
     const navButtonCardViewer = document.querySelectorAll(
       ".lore-navigation__button--viewer"
     );
     navButtonCardViewer[0].style.display = "none";
-    navButtonCardViewer[0].addEventListener("click", () => toggleView(false));
+    navButtonCardViewer[0].addEventListener("click", () =>{
+      const cardViewerWrapper = document.querySelectorAll(
+        ".viewer__cards-wrapper"
+      );
+
+      if (cardViewerWrapper[0].style.display != "block") {
+        cardViewerWrapper[0].style.display = "block";
+        this.renderGameData();
+        const viewerCardsWrapper = document.querySelectorAll(
+          ".edit-entry__form-wrapper"
+        );
+        viewerCardsWrapper[0].style.display = "none";
+      }
+    });
 
     const modal = document.querySelectorAll(".modal");
     window.addEventListener("click", function (event) {
