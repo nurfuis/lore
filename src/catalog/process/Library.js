@@ -13,8 +13,8 @@ const {
   LORE_LIBRARY,
   LORE_LIBRARY_TEMP,
   LORE_LIBRARY_BAK,
-} = require("../directoryConfiguration");
-const { defaultTemplates } = require("../templatesConfiguration");
+} = require("./directoryConfiguration");
+const { defaultTemplates } = require("./templatesConfiguration");
 
 class Library {
   constructor() {}

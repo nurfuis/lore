@@ -12,7 +12,7 @@ const {
   _DIR,
   LORE_LIBRARY,
   LORE_LIBRARY_TEMP,
-} = require("./catalog/directoryConfiguration");
+} = require("./catalog/process/directoryConfiguration");
 
 const { cycleBackgrounds } = require("./main/menu/cycleBackgrounds");
 const { toggleTheme } = require("./main/menu/toggleTheme");
@@ -130,7 +130,7 @@ function configureWindow(window) {
 
   window.setMenuBarVisibility(true);
   window.loadURL(MAIN_WINDOW_WEBPACK_ENTRY);
-  window.webContents.openDevTools();
+  // window.webContents.openDevTools();
   window.once('ready-to-show', () => {
     window.show()
   })

@@ -4,8 +4,6 @@ class CatalogAPI {
   constructor(userMode, root) {
     this.userMode = userMode;
     this.root = root;
-
-
     // catalog
     ipcMain.on("information:lore-library", (event, edition) => {
       this.module.getLoreLibrary(edition, event);

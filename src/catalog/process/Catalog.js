@@ -1,7 +1,7 @@
 const fs = require("fs");
 const path = require("path");
 const { DEV, DIST } = require("../../main/settings/appConfiguration");
-const { SPRITES_KEY, PREVIEWS_KEY, _DIR, _ASSETS_DIR, _SPRITES_DIR } = require("../directoryConfiguration");
+const { SPRITES_KEY, PREVIEWS_KEY, _DIR, _ASSETS_DIR, _SPRITES_DIR } = require("./directoryConfiguration");
 const { removeExtension } = require("../../utils/removeExtension");
 
 class Catalog {
