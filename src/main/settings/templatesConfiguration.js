@@ -1,4 +1,4 @@
-export const DEFAULT_TEMPLATES = {
+export const defaultTemplates = {
   template: {
     world: {
       name: { label: 'Name', type: 'text' },

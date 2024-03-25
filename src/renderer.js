@@ -1,61 +1,53 @@
 import "./index.css";
-import { UIElements } from "./app/UIElements";
-import { EntryForm } from "./app/modules/EntryForm";
-import { Prompts } from "./app/modules/Prompts";
-import { TemplateMaker } from "./app/modules/TemplateMaker";
-import { Viewer } from "./app/modules/Viewer";
-import { Menu } from "./app/modules/Menu";
-//* MAIN FEATURE *//
-const uiElements = new UIElements();
+import { EntryForm } from "./catalog/modules/entryForm/EntryForm";
+import { TemplateMaker } from "./catalog/modules/templateMaker/TemplateMaker";
+import { Viewer } from "./catalog/modules/viewer/Viewer";
+
+//* INSTANCES *//
 const entryForm = new EntryForm();
-const prompts = new Prompts();
 const templateMaker = new TemplateMaker();
 const viewer = new Viewer();
-const menu = new Menu();
-// Couple the entry form with prompts
-entryForm.prompts = prompts;
-prompts.entryForm = entryForm;
-// Couple the entry form with templates
-templateMaker.entryForm = entryForm;
-entryForm.templateMaker = templateMaker;
-// Inject the viewer with entryForm
-viewer.entryForm = entryForm;
-// Inject the menu with viewer
-menu.viewer = viewer;
-// * OPEN THE CATALOG *//
-function start(catalog) {
-  entryForm.loreLib = catalog.lore.main.data;
-  entryForm.templates = catalog.templates.data;
-  // TODO start move over to new catalog property?
-  entryForm.sprites = catalog.sprites;
-  viewer.sprites = catalog.sprites;
-  console.log(
-    "renderer templates injection to entry form",
-    catalog.templates.data
-  );
-  // entry form is coupled to the templates now
-  // it can read templates from thetemplates module now
-  // and the references need to be updated in entryForm
-  // before unlinking templates from the entry form here
-  templateMaker.templates = catalog.templates.data;
-  // The block below configures the workspace elements
-  // it can probably be part of the menu and use a method to run it
-  uiElements.welcomeDiv.innerText = "Select an option to begin...";
-  uiElements.createButton.style.display = "";
-  uiElements.viewButton.style.display = "";
-  uiElements.createTemplateButton.style.display = "";
-  // The next part tells the modules that their data is loaded
-  // and to hurry up and set their initial states
-  viewer.renderGameData();
-  templateMaker.updateOptions();
-  entryForm.updateForm();
-}
-// Listen for start command and its data pack
-electronAPI.onOpenProject((catalog) => {
-  start(catalog);
+
+// Start
+const welcomeButtonStart = document.querySelectorAll(
+  ".lore-welcome__button--start"
+);
+welcomeButtonStart[0].addEventListener("click", () => {
+  const isLoaded = loreAPI.loadCatalog();
+  console.log("Catalog is loaded...", isLoaded);
 });
-// make an event to listen for the update
-electronAPI.onSetProjectDirectory((currentDirectory) => {
+
+// Edit Entry
+const navButtonEditEntry = document.querySelectorAll(
+  ".lore-navigation__button--edit-entry"
+);
+navButtonEditEntry[0].style.display = "none";
+navButtonEditEntry[0].addEventListener("click", () => toggleView(true));
+
+// Card Viewer
+const navButtonCardViewer = document.querySelectorAll(
+  ".lore-navigation__button--viewer"
+);
+navButtonCardViewer[0].style.display = "none";
+navButtonCardViewer[0].addEventListener("click", () => toggleView(false));
+
+// Template Maker
+const navButtonTemplateMaker = document.querySelectorAll(
+  ".lore-navigation__button--create-template"
+);
+navButtonTemplateMaker[0].style.display = "none";
+
+// Modal
+const modal = document.querySelectorAll(".modal");
+const modalButtonClose = document.querySelectorAll(".modal_button--close");
+for (let i = 0; i < modalButtonClose.length; i++) {
+  modalButtonClose[i].addEventListener("click", function () {
+    modal[i].style.display = "none";
+  });
+}
+
+//* EVENTS *//
+loreAPI.onSetPath((currentDirectory) => {
   setDetailsProjectDirectory(currentDirectory);
   function setDetailsProjectDirectory(currentDirectory) {
     const detailsProjectDirectory = document.querySelectorAll(
@@ -66,3 +58,51 @@ electronAPI.onSetProjectDirectory((currentDirectory) => {
     return true;
   }
 });
+
+loreAPI.onLoadCatalog((catalog) => {
+  start(catalog);
+  function start(catalog) {
+    const welcomeBlock = document.querySelectorAll(".lore-welcome__wrapper");
+    welcomeBlock[0].style.display = "none";
+
+    const informationToast = document.querySelectorAll(
+      ".lore-main__information-toast"
+    );
+    informationToast[0].innerText = "Select an option to begin...";
+
+    const navButtonEditEntry = document.querySelectorAll(
+      ".lore-navigation__button--edit-entry"
+    );
+    navButtonEditEntry[0].style.display = "";
+
+    const navButtonCreateTemplate = document.querySelectorAll(
+      ".lore-navigation__button--create-template"
+    );
+    navButtonCreateTemplate[0].style.display = "";
+
+    const navButtonViewer = document.querySelectorAll(
+      ".lore-navigation__button--viewer"
+    );
+    navButtonViewer[0].style.display = "";
+  }
+});
+
+//* FUNCS *//
+function toggleView(showCreateForm) {
+  if (showCreateForm) {
+    templateMaker.updateTemplateMakerDropdownOptions();
+    entryForm.updateForm();   
+  } else {
+    viewer.renderGameData();
+  }
+
+  const editEntryFormWrapper = document.querySelectorAll(
+    ".edit-entry__form-wrapper"
+  );
+  editEntryFormWrapper[0].style.display = showCreateForm ? "block" : "none";
+
+  const viewerCardsWrapper = document.querySelectorAll(
+    ".viewer__cards-wrapper"
+  );
+  viewerCardsWrapper[0].style.display = showCreateForm ? "none" : "block";
+}

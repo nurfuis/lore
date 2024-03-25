@@ -87,14 +87,16 @@ nav .button {
 nav .button:hover {
   background-color: var(--button-hover-color);
 }
-.form-container,
-.viewer-container {
+.edit-entry__form-wrapper,
+.viewer__cards-wrapper {
   display: none;
   padding: 20px;
   border: 1px solid var(--secondary-color); /* Bright purple border */
   margin-top: 10px;
   width: 92%; /* Take up full width */
 }
+
+
 #app-container {
   display: flex; /* Enable flexbox layout */
   flex-direction: column; /* Stack elements vertically */
@@ -228,15 +230,15 @@ button:hover {
   margin: 1rem;
 }
 /* Close button styles */
-.close-modal {
+.modal_button--close {
   color: var(--text-color); /* White for readability */
   float: right;
   font-size: 30px;
   font-weight: bold;
   overflow: hidden;
 }
-.close-modal:hover,
-.close-modal:focus {
+.modal_button--close:hover,
+.modal_button--close:focus {
   color: var(--button-color); /* Bright purple on hover */
   cursor: pointer;
 }
@@ -301,7 +303,7 @@ button:hover {
   border-radius: 10px; /* Adjust roundness */
   border: none;
 }
-.welcome {
+.lore-welcome__wrapper {
   text-align: center;
   padding: 20px;
   color: var(--text-color); /* White for readability */
@@ -360,8 +362,8 @@ button:hover {
   padding: 1rem;
 }
 .lore-summary__entry-image-preview-wrapper {
-  width: 100%;
-  height: 100%;
+  /* width: 100%;
+  height: 100%; */
   grid-area: entry-image-wrapper;
 }
 .lore-summary__entry-image-preview {

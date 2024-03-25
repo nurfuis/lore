@@ -1,0 +1,19 @@
+TODO:
+  - Main:
+      - medium:
+          - Move startup required assets Backgrounds and icon to a new directory
+
+  - TemplateMaker:
+      - long:
+          - Fix up the delete feature.
+          - pre populate the first two fields with name and description.
+
+  - EntryForm:
+      - long:
+          - confirm overwrite:
+              - prompt using the confirmation modalBoth EntryForm and viewer
+              - components should set their own text for information and buttons.
+              - Rename "delete" button to "confirm" and update references.
+          - protoTypeUpdate:
+              - can we get it to set the image input? if overwriting an entry it loses its image
+              
