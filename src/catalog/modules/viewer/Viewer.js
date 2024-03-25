@@ -29,7 +29,6 @@ export class Viewer {
     informationToast[0].innerText = `Entry "${itemToDelete.name}" deleted successfully!`;
 
     // TODO remove the li element as opposed to reloading the entire module
-    this.renderGameData();
   }
 
   deleteEntry(itemToDelete, type) {
@@ -123,17 +122,15 @@ export class Viewer {
     return listParentElement;
   }
 
-  createCard(type) {
+  createCard(type, loreLibrary) {
     const card = document.createElement("div");
     card.classList.add("category-card");
 
-    const sectionHeader = this.createCardHeader(type, card);
+    const sectionHeader = this.createCardHeader(type, card, loreLibrary);
     card.appendChild(sectionHeader);
 
     const itemsContainer = createItemsContainer();
     card.appendChild(itemsContainer);
-
-    const loreLibrary = window.loreAPI.getInformationLoreLibrary("temp");
 
     const sortedKeys = Object.keys(loreLibrary[type]).sort();
 
@@ -149,9 +146,7 @@ export class Viewer {
     return card;
   }
 
-  createCardHeader(type, card) {
-    const loreLibrary = window.loreAPI.getInformationLoreLibrary("temp");
-
+  createCardHeader(type, card, loreLibrary) {
     const sectionHeader = document.createElement("h2");
 
     sectionHeader.textContent = `${type} (${
@@ -169,12 +164,11 @@ export class Viewer {
   renderGameData() {
     const viewerCards = document.querySelectorAll(".viewer__cards-wrapper");
     viewerCards[0].innerHTML = "";
-
     const loreLibrary = window.loreAPI.getInformationLoreLibrary("temp");
 
     for (const type in loreLibrary) {
       if (Object.keys(loreLibrary).length > 0) {
-        const card = this.createCard(type);
+        const card = this.createCard(type, loreLibrary);
 
         viewerCards[0].appendChild(card);
       }
