@@ -207,9 +207,11 @@ export class EntryForm {
       ".entry-form__image--input"
     );
     entryFormImageInput[0].value = "";
+    this.spriteKey = undefined;
   }
 
   setPreview(fileKey) {
+    this.spriteKey = fileKey;
     const imageSource = window.loreAPI.getPathSpritesPreview(fileKey);
 
     const entryFormImagePreview = document.querySelectorAll(
@@ -240,6 +242,8 @@ export class EntryForm {
 
     entryFormImagePreview[0].src = `${pathToSource}`;
     entryFormImagePreview[0].style.display = "block";
+
+    this.spriteKey = removeExtension(file.name);
 
     console.log("save:lore-image", file.name);
   }
@@ -352,8 +356,10 @@ export class EntryForm {
       ".entry-form__image--input"
     );
 
-    if (!!entryFormImageInput[0].value) {
-      const filePath = removeExtension(entryFormImageInput[0].value);
+    if (!!entryFormImageInput[0].value || this.spriteKey) {
+      const filePath = removeExtension(
+        entryFormImageInput[0].value || this.spriteKey
+      );
       const parts = filePath.split(/[\\/]/);
 
       newEntry["sprite"] = parts[parts.length - 1];
@@ -446,8 +452,8 @@ export class EntryForm {
         console.log(response);
 
         this.updateForm();
-        this.updatePrototypeDropdown();   
-             
+        this.updatePrototypeDropdown();
+
         const informationToast = document.querySelectorAll(
           ".lore-main__information-toast"
         );
@@ -466,13 +472,11 @@ export class EntryForm {
       );
       informationToast[0].innerText = response.message;
       console.log("Saved entry succesfully.");
-
     } else {
       const informationToast = document.querySelectorAll(
         ".lore-main__information-toast"
       );
       informationToast[0].innerText = response.message;
     }
-
   }
 }
