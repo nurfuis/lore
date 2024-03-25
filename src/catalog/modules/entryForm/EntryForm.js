@@ -12,7 +12,19 @@ export class EntryForm {
       ".lore-navigation__button--edit-entry"
     );
     navButtonEditEntry[0].style.display = "none";
-    navButtonEditEntry[0].addEventListener("click", () => toggleView(true));
+    navButtonEditEntry[0].addEventListener("click", () => {
+      const editEntryFormWrapper = document.querySelectorAll(
+        ".edit-entry__form-wrapper"
+      );
+      if (editEntryFormWrapper[0].style.display != "block") {
+        editEntryFormWrapper[0].style.display = "block";
+        this.updateForm();
+        const viewerCardsWrapper = document.querySelectorAll(
+          ".viewer__cards-wrapper"
+        );
+        viewerCardsWrapper[0].style.display = "none";
+      }
+    });
 
     // TEMPLATE SELECTOR
     const entryFormTemplateSelect = document.querySelectorAll(
