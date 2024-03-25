@@ -33,7 +33,7 @@ export class Viewer {
     const templateKey = type;
     const entryKey = itemToDelete.name;
 
-    window.loreAPI.catalogLoreEntryDelete({ templateKey, entryKey });
+    window.catalogHandlers.catalogLoreEntryDelete({ templateKey, entryKey });
 
     const informationToast = document.querySelectorAll(
       ".lore-main__information-toast"
@@ -111,7 +111,7 @@ export class Viewer {
 
     if (item.sprite) {
       const entryImagePeviewElement = document.createElement("img");
-      const imageSource = window.loreAPI.getPathSpritesPreview(item.sprite);
+      const imageSource = window.catalogHandlers.getPathSpritesPreview(item.sprite);
       entryImagePeviewElement.src = imageSource;
       entryImagePeviewElement.classList.add(
         "lore-summary__entry-image-preview"
@@ -176,7 +176,7 @@ export class Viewer {
   renderGameData() {
     const viewerCards = document.querySelectorAll(".viewer__cards-wrapper");
     viewerCards[0].innerHTML = "";
-    const loreLibrary = window.loreAPI.getInformationLoreLibrary("temp");
+    const loreLibrary = window.catalogHandlers.getInformationLoreLibrary("temp");
 
     for (const type in loreLibrary) {
       if (Object.keys(loreLibrary).length > 0) {
@@ -233,7 +233,7 @@ function updateDetailsModal(item) {
     modalEntryDetailsSprite[0].innerHTML = "";
 
     const spriteImage = document.createElement("img");
-    const imageSource = window.loreAPI.getPathSpritesPreview(item.sprite);
+    const imageSource = window.catalogHandlers.getPathSpritesPreview(item.sprite);
 
     spriteImage.src = imageSource;
     modalEntryDetailsSprite[0].appendChild(spriteImage);

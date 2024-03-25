@@ -55,7 +55,7 @@ const DEFAULT_WINDOW_OPTIONS = {
 app.on("ready", () => {
   const mainWindow = new BrowserWindow(DEFAULT_WINDOW_OPTIONS);
   configureWindow(mainWindow);
-  mainCatalog(mainWindow, projectPath, userMode);
+  const catalog = mainCatalog(mainWindow, projectPath, userMode);
 });
 
 app.on("window-all-closed", () => {
@@ -112,7 +112,7 @@ app.on("activate", () => {
 function configureWindow(window) {
   window.setMenuBarVisibility(false);
   window.loadURL(MAIN_WINDOW_WEBPACK_ENTRY);
-  // window.webContents.openDevTools();
+  window.webContents.openDevTools();
   window.once("ready-to-show", () => {
     window.show();
   });

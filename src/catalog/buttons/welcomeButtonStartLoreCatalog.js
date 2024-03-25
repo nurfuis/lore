@@ -14,7 +14,7 @@ export function welcomeButtonStartLoreCatalog() {
   );
 
   welcomeButtonStart[0].addEventListener("click", () => {
-    const isLoaded = loreAPI.loadCatalog();
+    const isLoaded = catalogHandlers.loadCatalog();
     console.log("Catalog is loaded...", isLoaded);
   });
 }

@@ -3,6 +3,6 @@ import { intitCloseModalButton } from "./renderer/intitCloseModalButton";
 intitCloseModalButton();
 
 // CATALOG //
-import { RendererCatalog, rendererCatalog } from "./catalog/rendererCatalog.js";
-
+import { RendererCatalog } from "./catalog/RendererCatalog.js";
 const catalog = new RendererCatalog();
+console.log(catalog)

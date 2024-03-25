@@ -70,7 +70,7 @@ export class TemplateMaker {
     // });
   }
   updateTemplateDropdownOptions() {
-    const templates = window.loreAPI.catalogGetTemplates();
+    const templates = window.catalogHandlers.catalogGetTemplates();
     if (templates) {
       const availableTemplates = Object.keys(templates);
 
@@ -202,7 +202,7 @@ export class TemplateMaker {
   populateTemplateMakerForm(templateMakerTemplateSelect) {
     const selectedTemplate = templateMakerTemplateSelect[0].value;
 
-    const templates = window.loreAPI.catalogGetTemplates();
+    const templates = window.catalogHandlers.catalogGetTemplates();
     const templateData = templates[selectedTemplate];
 
     const templateMakerFieldsWrapper = document.querySelectorAll(
@@ -392,7 +392,7 @@ export class TemplateMaker {
       // <-- a template of this name already exists
       // <-- figure out what to do ... prompt the user? overwrite?
     } else {
-      window.loreAPI.saveCatalogTemplate({
+      window.catalogHandlers.saveCatalogTemplate({
         templateKey,
         fields,
       });
@@ -420,7 +420,7 @@ export class TemplateMaker {
 
   //     // 3. Save updated gameData
   //     try {
-  //       window.loreAPI.saveTemplates(templates);
+  //       window.catalogHandlers.saveTemplates(templates);
   //       console.log(`Template "${templateName}" deleted successfully.`);
   //     } catch (error) {
   //       console.error(`Failed to delete template: ${error.message}`);

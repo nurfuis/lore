@@ -1,5 +1,5 @@
 //* EVENTS *//
-loreAPI.onSetPath((currentDirectory) => {
+catalogHandlers.onSetPath((currentDirectory) => {
   setDetailsProjectDirectory(currentDirectory);
   function setDetailsProjectDirectory(currentDirectory) {
     const detailsProjectDirectory = document.querySelectorAll(
