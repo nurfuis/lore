@@ -1,3 +1,4 @@
+import { toggleView } from "../../../renderer";
 import { removeExtension } from "../../../utils/removeExtension";
 import { Prompts } from "./promptGenerator/Prompts";
 import { promptTemplates } from "./promptGenerator/promptTemplates";
@@ -6,6 +7,12 @@ export class EntryForm {
   constructor() {
     const promptGenerator = new Prompts();
     promptGenerator.ready();
+    // NAV BUTTON
+    const navButtonEditEntry = document.querySelectorAll(
+      ".lore-navigation__button--edit-entry"
+    );
+    navButtonEditEntry[0].style.display = "none";
+    navButtonEditEntry[0].addEventListener("click", () => toggleView(true));
 
     // TEMPLATE SELECTOR
     const entryFormTemplateSelect = document.querySelectorAll(

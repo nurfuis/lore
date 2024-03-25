@@ -1,5 +1,14 @@
+import { toggleView } from "../../../renderer";
+
 export class Viewer {
   constructor() {
+    // Card Viewer
+    const navButtonCardViewer = document.querySelectorAll(
+      ".lore-navigation__button--viewer"
+    );
+    navButtonCardViewer[0].style.display = "none";
+    navButtonCardViewer[0].addEventListener("click", () => toggleView(false));
+
     const modal = document.querySelectorAll(".modal");
     window.addEventListener("click", function (event) {
       if (event.target === modal[3]) {

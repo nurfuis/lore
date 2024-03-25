@@ -2,6 +2,13 @@ export class TemplateMaker {
   constructor() {
     this.existingTemplateNames = new Set();
     this.isCreatingTemplate = false;
+
+    // Template Maker
+    const navButtonTemplateMaker = document.querySelectorAll(
+      ".lore-navigation__button--create-template"
+    );
+    navButtonTemplateMaker[0].style.display = "none";
+
     // esc to close template maker
     document.addEventListener("keydown", (event) => {
       if (event.key === "Escape") {
@@ -105,9 +112,6 @@ export class TemplateMaker {
       templateKeyInputField[0].focus();
     }
 
-
-
-
     const newField = document.createElement("div");
     newField.classList.add("template-field");
 
@@ -147,11 +151,6 @@ export class TemplateMaker {
     newField.appendChild(hr);
     templateMakerFieldsWrapper[0].appendChild(newField);
 
-    
-    
-    
-    
-    
     const descriptionField = document.createElement("div");
     descriptionField.classList.add("template-field");
 
@@ -521,6 +520,7 @@ function addOptionInput(fieldOptionsContainer) {
 
   fieldOptionsContainer.appendChild(optionInput);
 }
+
 // function removeTemplateEntry(templateName) {
 //   // 1. Remove from the set
 //   existingTemplateNames.delete(templateName);
