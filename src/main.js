@@ -12,7 +12,7 @@ const {
   _DIR,
   LORE_LIBRARY,
   LORE_LIBRARY_TEMP,
-} = require("./main/settings/directoryConfiguration");
+} = require("./catalog/directoryConfiguration");
 
 const { cycleBackgrounds } = require("./main/menu/cycleBackgrounds");
 const { toggleTheme } = require("./main/menu/toggleTheme");
@@ -55,9 +55,7 @@ const DEFAULT_WINDOW_OPTIONS = {
 
 app.on("ready", () => {
   const mainWindow = new BrowserWindow(DEFAULT_WINDOW_OPTIONS);
-
   createWindow(mainWindow);
-
   openLoreLibrary(mainWindow, root, userMode);
 });
 
