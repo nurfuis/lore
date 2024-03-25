@@ -1,4 +1,4 @@
-const { app, BrowserWindow, ipcMain, Menu, Notification } = require("electron");
+const { app, BrowserWindow, Menu, Notification } = require("electron");
 
 const fs = require("fs");
 const path = require("path");
@@ -17,9 +17,8 @@ const {
 const { cycleBackgrounds } = require("./main/menu/cycleBackgrounds");
 const { toggleTheme } = require("./main/menu/toggleTheme");
 
-const { Library } = require("./catalog/process/Library");
-const { CatalogAPI } = require("./catalog/process/CatalogAPI");
-const { Catalog } = require("./catalog/process/Catalog");
+const { openLoreLibrary } = require("./catalog/process/openLoreLibrary");
+const { themes } = require("./main/settings/themes");
 
 process.env["ELECTRON_DISABLE_SECURITY_WARNINGS"] = true;
 
@@ -47,6 +46,8 @@ const appIcon = path.join(root, APP_ICON);
 const DEFAULT_WINDOW_OPTIONS = {
   width: 900,
   height: 600,
+  backgroundColor: themes.earth.background,
+  show: false,
   icon: appIcon,
   webPreferences: {
     preload: MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY,
@@ -55,7 +56,7 @@ const DEFAULT_WINDOW_OPTIONS = {
 
 app.on("ready", () => {
   const mainWindow = new BrowserWindow(DEFAULT_WINDOW_OPTIONS);
-  createWindow(mainWindow);
+  configureWindow(mainWindow);
   openLoreLibrary(mainWindow, root, userMode);
 });
 
@@ -106,60 +107,31 @@ app.on("window-all-closed", () => {
 app.on("activate", () => {
   if (BrowserWindow.getAllWindows().length === 0) {
     const mainWindow = new BrowserWindow(DEFAULT_WINDOW_OPTIONS);
-    createWindow(mainWindow);
+    configureWindow(mainWindow);
   }
 });
 
-function openLoreLibrary(mainWindow, root, userMode) {
-  ipcMain.on("catalog:load", async (event) => {
-    const catalogIsLoaded = await loadCatalog(userMode, root, mainWindow);
-    event.returnValue = catalogIsLoaded;
-
-    console.log("Catalog is loaded...", catalogIsLoaded);
-  });
-
-  async function loadCatalog(userMode, root, mainWindow) {
-    console.log("Loading catalog...");
-
-    const library = new Library();
-
-    const information = await library.initializeProjectDirectories(root);
-
-    const catalog = new Catalog(information);
-
-    const catalogAPI = new CatalogAPI(userMode, root);
-    catalogAPI.module = catalog;
-
-    mainWindow.webContents.send("catalog:send-full-library", catalog);
-    mainWindow.webContents.send("catalog:send-library-path", root);
-    if (userMode === DEV) {
-      return information;
-    } else if (userMode === DIST) {
-      return true;
-    } else {
-      return false;
-    }
-  }
-}
-
-function createWindow(mainWindow) {
+function configureWindow(window) {
   const menu = Menu.buildFromTemplate([
     {
       label: "Cycle Backgrounds",
       click: () => {
-        cycleBackgrounds(mainWindow, root);
+        cycleBackgrounds(window, root);
       },
     },
     {
       label: "Toggle Theme",
       click: () => {
-        toggleTheme(mainWindow);
+        toggleTheme(window);
       },
     },
   ]);
   Menu.setApplicationMenu(menu);
 
-  mainWindow.setMenuBarVisibility(true);
-  mainWindow.loadURL(MAIN_WINDOW_WEBPACK_ENTRY);
-  mainWindow.webContents.openDevTools();
+  window.setMenuBarVisibility(true);
+  window.loadURL(MAIN_WINDOW_WEBPACK_ENTRY);
+  window.webContents.openDevTools();
+  window.once('ready-to-show', () => {
+    window.show()
+  })
 }
