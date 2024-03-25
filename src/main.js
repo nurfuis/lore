@@ -331,7 +331,7 @@ class Library {
         return undefined;
       }
     } catch (err) {
-      if (err.code === "ENOENT") {
+      if (err) {
         console.log("Last shutdown was good...");
         fileSet.temp.data = fileSet.main.data;
       } else {
@@ -455,12 +455,9 @@ class Catalog {
         this.getLoreEntryInformation(entryKey, templateKey, event);
       }
     );
-    ipcMain.on(
-      "save:lore-entry",
-      (event, { templateKey, newEntry }) => {
-        this.saveLoreEntry(newEntry, templateKey, event);
-      }
-    );
+    ipcMain.on("save:lore-entry", (event, { templateKey, newEntry, flags }) => {
+      this.saveLoreEntry(flags, newEntry, templateKey, event);
+    });
     ipcMain.on(
       "catalog:lore-entry-delete",
       (event, { templateKey, entryKey }) => {
@@ -650,39 +647,91 @@ class Catalog {
       event.returnValue = result;
     }
   }
-  saveLoreEntry(newEntry, templateKey, event) {
+  saveLoreEntry(flags, newEntry, templateKey, event) {
     const entryKey =
       newEntry?.name ||
       newEntry?.Name ||
       newEntry?.index ||
       newEntry?.Index ||
       newEntry?.key ||
-      newEntry?.Key; 
+      newEntry?.Key;
+
+    const entryKeyAlreadyExists =
+      this.information.lore.temp.data[templateKey][entryKey]?.valid || false;
+
+    console.log("save with flags", flags);
 
     if (!entryKey) {
-      event.returnValue = { status: "incomplete", message: "Entry name is required." };
-    } else if (this.information.lore.temp.data[templateKey][entryKey]) {
-      event.returnValue = { status: "conflict", message: "Entry with that name already exists. Do you want to overwrite it?" };
-
-
+      event.returnValue = {
+        status: "incomplete",
+        message: "Entry name is required.",
+      };
+    } else if (flags == "canOverwrite") {
+      console.log("overwrite triggered");
+      const version =
+        this.information.lore.temp.data[templateKey][entryKey]["version"] + 1;
+      newEntry["version"] = version;
+      this.information.lore.temp.data[templateKey][entryKey] = newEntry;
+      const filename = this.information.lore.temp.path;
+      fs.writeFile(
+        filename,
+        JSON.stringify(this.information.lore.temp.data),
+        (err) => {
+          if (err) {
+            console.error("Error overwriting lore:", err);
+            event.returnValue = {
+              status: "error",
+              message:
+                "Encountered an error while trying to ovrwrite changes to file.",
+            };
+          } else {
+            console.log("Lore overwritten to temp file successfully.");
+          }
+        }
+      );
+      event.returnValue = {
+        status: "overwritten",
+        message:
+          "Succesfully overwritten information for " +
+          templateKey +
+          ":" +
+          entryKey,
+      };
+    } else if (entryKeyAlreadyExists) {
+      event.returnValue = {
+        status: "conflict",
+        message:
+          "Entry with that name already exists. Do you want to overwrite it?",
+      };
+    } else if (entryKey && !entryKeyAlreadyExists) {
+      newEntry["version"] = 1;
+      this.information.lore.temp.data[templateKey][entryKey] = newEntry;
+      const filename = this.information.lore.temp.path;
+      fs.writeFile(
+        filename,
+        JSON.stringify(this.information.lore.temp.data),
+        (err) => {
+          if (err) {
+            console.error("Error saving lore:", err);
+            event.returnValue = {
+              status: "error",
+              message:
+                "Encountered an error while trying to overwrite changes to file.",
+            };
+          } else {
+            console.log("Lore saved to temp file successfully.");
+          }
+        }
+      );
+      event.returnValue = {
+        status: "resolved",
+        message:
+          "Succesfully saved information for " +
+          templateKey +
+          ":" +
+          entryKey,
+      };
     }
-
-    // this.information.lore.temp.data[templateKey][newEntry.name] = newEntry;
-
-    // event.returnValue = true;
-
-    // const filename = this.information.lore.temp.path;
-    // fs.writeFile(
-    //   filename,
-    //   JSON.stringify(this.information.lore.temp.data),
-    //   (err) => {
-    //     if (err) {
-    //       console.error("Error saving lore:", err);
-    //     } else {
-    //       console.log("Lore saved to temp file successfully.");
-    //     }
-    //   }
-    // );
   }
   removeLoreEntryInformation(entryKey, templateKey, event) {
     const result =

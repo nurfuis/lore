@@ -61,10 +61,11 @@ const loreAPI = {
     return response;
   },
 
-  saveInformationLoreEntry({ templateKey, newEntry }) {
+  saveInformationLoreEntry({ templateKey, newEntry, flags }) {
     const response = ipcRenderer.sendSync("save:lore-entry", {
       templateKey,
       newEntry,
+      flags,
     });
     return response;
   },
