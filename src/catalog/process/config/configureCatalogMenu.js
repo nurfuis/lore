@@ -1,6 +1,6 @@
 const { Menu } = require("electron");
-const { cycleBackgrounds } = require("../../main/menu/cycleBackgrounds");
-const { toggleTheme } = require("../../main/menu/toggleTheme");
+const { cycleBackgrounds } = require("../../../main/menu/cycleBackgrounds");
+const { toggleTheme } = require("../../../main/menu/toggleTheme");
 
 function configureCatalogMenu(window, projectPath) {
   const menu = Menu.buildFromTemplate([

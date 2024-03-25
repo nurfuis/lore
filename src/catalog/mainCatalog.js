@@ -1,9 +1,9 @@
 const { ipcMain } = require("electron");
 const { DEV, DIST } = require("../main/settings/appConfiguration");
 const { Library } = require("./process/Library");
-const { CatalogAPI } = require("./process/CatalogAPI");
+const { CatalogAPI } = require("./process/CatalogHandler");
 const { Catalog } = require("./process/Catalog");
-const { configureCatalogMenu } = require("./process/configureCatalogMenu");
+const { configureCatalogMenu } = require("./process/config/configureCatalogMenu");
 
 function mainCatalog(mainWindow, projectPath, userMode) {
   // make a listener to handle dialog request

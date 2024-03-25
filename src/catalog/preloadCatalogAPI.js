@@ -2,8 +2,7 @@ const { ipcRenderer } = require("electron");
 
 // add a handler for the file browser
 
-
-const catalogHandler = {
+const catalogAPI = {
   //* CALL AND RESPONSE *//
   loadCatalog() {
     const response = ipcRenderer.sendSync("catalog:load");
@@ -73,4 +72,4 @@ const catalogHandler = {
   saveLore: () => ipcRenderer.send("save:lore-information"),
   saveCatalogTemplate: (template) => ipcRenderer.send("catalog:save-template", template),
 };
-exports.catalogHandler = catalogHandler;
+exports.catalogAPI = catalogAPI;

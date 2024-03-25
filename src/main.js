@@ -12,7 +12,7 @@ const {
   _DIR,
   LORE_LIBRARY,
   LORE_LIBRARY_TEMP,
-} = require("./catalog/process/directoryConfiguration");
+} = require("./catalog/process/config/directoryConfiguration");
 
 const { themes } = require("./main/settings/themes");
 
@@ -55,7 +55,7 @@ const DEFAULT_WINDOW_OPTIONS = {
 app.on("ready", () => {
   const mainWindow = new BrowserWindow(DEFAULT_WINDOW_OPTIONS);
   configureWindow(mainWindow);
-  
+
   const catalog = mainCatalog(mainWindow, projectPath, userMode);
 });
 

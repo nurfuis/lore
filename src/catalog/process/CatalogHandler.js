@@ -1,6 +1,6 @@
 const { ipcMain } = require("electron");
 
-class CatalogAPI {
+class CatalogHandler {
   constructor(userMode, projectPath) {
     this.userMode = userMode;
     this.projectPath = projectPath;
@@ -50,4 +50,4 @@ class CatalogAPI {
     });
   }
 }
-exports.CatalogAPI = CatalogAPI;
+exports.CatalogAPI = CatalogHandler;

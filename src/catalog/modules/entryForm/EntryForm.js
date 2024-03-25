@@ -108,7 +108,7 @@ export class EntryForm {
       const templateKey = selectedTemplate;
       const entryKey = selectedEntry;
 
-      const loreEntry = window.catalogHandler.getInformationLoreEntry({
+      const loreEntry = window.catalogAPI.getInformationLoreEntry({
         templateKey,
         entryKey,
       });
@@ -196,7 +196,7 @@ export class EntryForm {
     if (selectedTemplate) {
       const templateKey = selectedTemplate;
       const allCatagoryEntries =
-        window.catalogHandler.getInformationLoreCatagory(templateKey);
+        window.catalogAPI.getInformationLoreCatagory(templateKey);
 
       const prototypeNames = Object.keys(allCatagoryEntries);
       if (prototypeNames) {
@@ -231,7 +231,7 @@ export class EntryForm {
 
   setPreview(fileKey) {
     this.spriteKey = fileKey;
-    const imageSource = window.catalogHandler.getPathSpritesPreview(fileKey);
+    const imageSource = window.catalogAPI.getPathSpritesPreview(fileKey);
 
     const entryFormImagePreview = document.querySelectorAll(
       ".entry-form__image--preview"
@@ -253,7 +253,7 @@ export class EntryForm {
       return;
     }
 
-    const pathToSource = catalogHandler.saveImage(file.path);
+    const pathToSource = catalogAPI.saveImage(file.path);
 
     const entryFormImagePreview = document.querySelectorAll(
       ".entry-form__image--preview"
@@ -301,7 +301,7 @@ export class EntryForm {
 
     if (!!selectedTemplate) {
       const templateFields =
-        window.catalogHandler.getInformationTemplateFields(selectedTemplate);
+        window.catalogAPI.getInformationTemplateFields(selectedTemplate);
 
       for (const fieldName in templateFields) {
         const fieldData = templateFields[fieldName];
@@ -391,7 +391,7 @@ export class EntryForm {
 
     const templateKey = entryFormTemplateSelect[0].value;
 
-    const response = window.catalogHandler.saveInformationLoreEntry({
+    const response = window.catalogAPI.saveInformationLoreEntry({
       templateKey,
       newEntry,
       flags: "none",
@@ -463,7 +463,7 @@ export class EntryForm {
       });
 
       overwriteButton.addEventListener("click", () => {
-        const response = window.catalogHandler.saveInformationLoreEntry({
+        const response = window.catalogAPI.saveInformationLoreEntry({
           templateKey,
           newEntry,
           flags: "canOverwrite",

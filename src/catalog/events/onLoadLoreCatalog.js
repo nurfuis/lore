@@ -1,4 +1,4 @@
-catalogHandler.onLoadCatalog((catalog) => {
+catalogAPI.onLoadCatalog((catalog) => {
   start(catalog);
   function start(catalog) {
     const welcomeBlock = document.querySelectorAll(".lore-welcome__wrapper");

@@ -45,7 +45,7 @@ export class Prompts {
       promptString += `Please fill in the missing details for a lore library entry in the ${selectedTemplateValue} category. You can expand or adjust details to create a more convincing lore while preserving the main details provided.; `;
 
       // iterate over the entry fields
-      const loreLibrary = window.catalogHandler.getInformationLoreLibrary("temp");
+      const loreLibrary = window.catalogAPI.getInformationLoreLibrary("temp");
 
       for (const key in loreLibrary[selectedTemplateValue][
         selectedPrototypeValue
@@ -56,7 +56,7 @@ export class Prompts {
             loreLibrary[selectedTemplateValue][selectedPrototypeValue][key];
 
           // Check for user provided prompt
-          const templateFields = window.catalogHandler.getInformationTemplateFields(
+          const templateFields = window.catalogAPI.getInformationTemplateFields(
             selectedTemplateValue
           );
 
