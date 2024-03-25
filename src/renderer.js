@@ -69,6 +69,28 @@ loreAPI.onLoadCatalog((catalog) => {
       ".lore-main__information-toast"
     );
     informationToast[0].innerText = "Select an option to begin...";
+    clearToastContent(3000);
+    function clearToastContent(delay) {
+      setTimeout(() => {
+        const toastContent = document.querySelectorAll(
+          ".lore-main__information-toast"
+        ); 
+        if (!toastContent[0]) return; // Exit if content element not found
+
+        const fadeOutTime = 1000; // Adjust fade-out duration in milliseconds (1 second)
+        let opacity = 1;
+
+        const fadeInterval = setInterval(() => {
+          opacity -= 0.1; // Decrease opacity by 10% each interval
+          toastContent[0].style.opacity = opacity;
+
+          if (opacity <= 0) {
+            clearInterval(fadeInterval);
+            toastContent[0].textContent = ""; // Clear content after fade-out
+          }
+        }, fadeOutTime / 10); // Adjust intervals for smoother fade (100 steps)
+      }, delay); // Execute after the specified delay
+    }
 
     const navButtonEditEntry = document.querySelectorAll(
       ".lore-navigation__button--edit-entry"
@@ -91,7 +113,7 @@ loreAPI.onLoadCatalog((catalog) => {
 function toggleView(showCreateForm) {
   if (showCreateForm) {
     templateMaker.updateTemplateMakerDropdownOptions();
-    entryForm.updateForm();   
+    entryForm.updateForm();
   } else {
     viewer.renderGameData();
   }
