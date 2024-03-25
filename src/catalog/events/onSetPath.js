@@ -1,5 +1,5 @@
 //* EVENTS *//
-catalogHandlers.onSetPath((currentDirectory) => {
+catalogHandler.onSetPath((currentDirectory) => {
   setDetailsProjectDirectory(currentDirectory);
   function setDetailsProjectDirectory(currentDirectory) {
     const detailsProjectDirectory = document.querySelectorAll(

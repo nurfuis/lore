@@ -55,6 +55,7 @@ const DEFAULT_WINDOW_OPTIONS = {
 app.on("ready", () => {
   const mainWindow = new BrowserWindow(DEFAULT_WINDOW_OPTIONS);
   configureWindow(mainWindow);
+  
   const catalog = mainCatalog(mainWindow, projectPath, userMode);
 });
 

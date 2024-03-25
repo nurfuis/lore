@@ -1,4 +1,4 @@
 const { contextBridge } = require("electron");
-const { catalogHandlers } = require("./catalog/preloadCatalog");
+const { catalogHandler } = require("./catalog/preloadCatalog");
 
-contextBridge.exposeInMainWorld("catalogHandlers", catalogHandlers);
+contextBridge.exposeInMainWorld("catalogHandler", catalogHandler);

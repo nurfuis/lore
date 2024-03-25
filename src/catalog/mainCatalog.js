@@ -6,6 +6,8 @@ const { Catalog } = require("./process/Catalog");
 const { configureCatalogMenu } = require("./process/configureCatalogMenu");
 
 function mainCatalog(mainWindow, projectPath, userMode) {
+  // make a listener to handle dialog request
+  
   ipcMain.on("catalog:load", async (event) => {
     const catalogIsLoaded = await loadCatalog(userMode, projectPath, mainWindow);
     
