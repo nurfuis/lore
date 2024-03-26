@@ -30,6 +30,10 @@ export class TemplateMaker {
     );
     navButtonCreateTemplate[0].addEventListener("click", () => {
       this.openTemplateMakerModal();
+      const templateName = document.querySelectorAll(
+        ".template-maker__input-field--template-key"
+      );
+      templateName[0].value = "";
     });
     // disable template modal tab-behavior by setting flag "isCreatingTemplate" false when closing
     const modalButtonClose = document.querySelectorAll(".modal_button--close");
@@ -337,7 +341,7 @@ export class TemplateMaker {
       ".template-maker__fields-wrapper"
     );
 
-    const fields = {}; // Initialize an empty object for fields
+    const newTemplate = {}; // Initialize an empty object for fields
     // 3. Parse fields from modal (iterate through generated fields)
     const fieldElements =
       templateMakerFieldsWrapper[0].querySelectorAll(".template-field");
@@ -367,7 +371,7 @@ export class TemplateMaker {
         });
       }
       if (options.length > 0) {
-        fields[fieldNameInput.value] = {
+        newTemplate[fieldNameInput.value] = {
           // Use field name as key in the fields object
           label: fieldNameInput.value, // Set label to same as field name (optional, can be customized)
           type: fieldTypeSelect.value,
@@ -375,7 +379,7 @@ export class TemplateMaker {
           prompt: fieldTypePrompt.value,
         };
       } else {
-        fields[fieldNameInput.value] = {
+        newTemplate[fieldNameInput.value] = {
           // Use field name as key in the fields object
           label: fieldNameInput.value, // Set label to same as field name (optional, can be customized)
           type: fieldTypeSelect.value,
@@ -385,19 +389,96 @@ export class TemplateMaker {
     });
 
     // // 4. Add fields to the templateData object
-    const templateKey = templateName.value;
-    console.log(this.existingTemplateNames.has());
-    if (this.existingTemplateNames.has(templateKey)) {
-      console.log("A template with this name already exists in the catalog.");
-      // <-- a template of this name already exists
-      // <-- figure out what to do ... prompt the user? overwrite?
-    } else {
-      window.catalogAPI.saveCatalogTemplate({
-        templateKey,
-        fields,
-      });
+    const templateKey = templateName.value || undefined;
+
+    const flags = "none";
+    const response = window.catalogAPI.saveTemplate({
+      templateKey,
+      newTemplate,
+      flags,
+    });
+
+    console.log(response);
+
+    const buttonsWrapper = document.querySelectorAll(".modal_buttons-wrapper");
+    function clearButtonsWrapper() {
+      if (buttonsWrapper && buttonsWrapper.length > 0) {
+        clearElementChildren(buttonsWrapper[0]);
+        function clearElementChildren(element) {
+          if (!element || !element.nodeType) {
+            return;
+          }
+
+          for (let i = element.children.length - 1; i >= 0; i--) {
+            element.removeChild(element.children[i]);
+          }
+        }
+      }
     }
-    // 5. Close the modal
+
+    const modalButtonClose = document.querySelectorAll(".modal_button--close");
+    modalButtonClose[4].addEventListener("click", clearButtonsWrapper);
+
+    if (response.status === "incomplete") {
+      const modal = document.querySelectorAll(".modal");
+      modal[4].style.display = "block";
+
+      const message = document.querySelectorAll(".modal__error-message");
+      message[0].innerText = response.message;
+
+      const acceptButton = document.createElement("button");
+      acceptButton.textContent = "OK";
+      acceptButton.classList.add("modal__error--ok");
+
+      buttonsWrapper[0].appendChild(acceptButton);
+
+      acceptButton.addEventListener("click", () => {
+        modal[4].style.display = "none";
+
+        buttonsWrapper[0].removeChild(acceptButton);
+      });
+      return;
+    } else if (response.status === "conflict") {
+      const modal = document.querySelectorAll(".modal");
+      modal[4].style.display = "block";
+
+      const message = document.querySelectorAll(".modal__error-message");
+      message[0].innerText = response.message;
+
+      const acceptButton = document.createElement("button");
+      acceptButton.textContent = "OK";
+      acceptButton.classList.add("modal__error--ok");
+
+      buttonsWrapper[0].appendChild(acceptButton);
+
+      acceptButton.addEventListener("click", () => {
+        modal[4].style.display = "none";
+
+        buttonsWrapper[0].removeChild(acceptButton);
+      });
+      return;
+    } else if (response.status === "resolved") {
+      const modal = document.querySelectorAll(".modal");
+      modal[4].style.display = "block";
+
+      const message = document.querySelectorAll(".modal__error-message");
+      message[0].innerText = response.message;
+
+      const acceptButton = document.createElement("button");
+      acceptButton.textContent = "OK";
+      acceptButton.classList.add("modal__error--ok");
+
+      buttonsWrapper[0].appendChild(acceptButton);
+
+      acceptButton.addEventListener("click", () => {
+        modal[4].style.display = "none";
+
+        buttonsWrapper[0].removeChild(acceptButton);
+      });
+      templateName.value = "";
+
+    }
+
     const modal = document.querySelectorAll(".modal");
     modal[1].style.display = "none";
     this.updateTemplateDropdownOptions();

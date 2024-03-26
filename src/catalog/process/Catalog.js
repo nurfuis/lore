@@ -177,30 +177,65 @@ class Catalog {
       // console.log("Requested recieved for undefined template...", templateKey);
     }
   }
-  saveTemplate(fields, templateKey, event) {
-    const templateData = this.information.templates.data;
+  saveTemplate(flags, newTemplate, templateKey, event) {
+    if (!templateKey) {
+      event.returnValue = {
+        status: "incomplete",
+        message: "Template name is required.",
+      };
+      return;
+    } else if (!!this.information.templates.data[templateKey]) {
+      event.returnValue = {
+        status: "conflict",
+        message: `A template with the key "${templateKey}" has already been entered.`,
+      };
+      return;
+    } else {
+      const templateData = this.information.templates.data;
+      templateData[templateKey] = newTemplate;
 
-    templateData[templateKey] = fields;
+      const loreInfo = this.information.lore.temp.data;
 
-    const loreInfo = this.information.lore.temp.data;
+      if (!loreInfo.hasOwnProperty(templateKey)) {
+        // check for Template in the lore library
+        // Create it if it doesn't exist
 
-    if (!loreInfo.hasOwnProperty(templateKey)) {
-      loreInfo[templateKey] = {};
-      console.log("Key added to lore library:", templateKey);
-      this.saveCatalogInformationToTemp();
-    }
+        // The templates.json and lib.json are coupled...
 
-    fs.writeFile(
-      this.information.templates.path,
-      JSON.stringify(templateData),
-      (err) => {
-        if (err) {
-          console.error("Error saving templates:");
-        } else {
-          console.log("Templates saved successfully!");
-        }
+        // If the catagory is not premade in the library the editor
+        // will throw an error. For now, we prevent that here.
+        // It may be prudent to do some sort of additional
+        // check and template catagory object creation in the
+        // save entry function.
+
+        // We make this check instead of simply overwriting to
+        // protect existing entries from overwrite for the time
+        // being. I may add some more detailed template handling
+        // logic down the line.
+
+        loreInfo[templateKey] = {};
+
+        console.log("Key added to lore library:", templateKey);
+
+        this.saveCatalogInformationToTemp();
       }
-    );
+
+      fs.writeFile(
+        this.information.templates.path,
+        JSON.stringify(templateData),
+        (err) => {
+          if (err) {
+            console.error("Error saving templates:");
+          } else {
+            console.log("Templates saved successfully!");
+          }
+        }
+      );
+      event.returnValue = {
+        status: "resolved",
+        message: `Template "${templateKey}" has been created.`,
+      };
+    }
   }
   // lore
   getLoreCatagory(templateKey, event) {
@@ -223,13 +258,15 @@ class Catalog {
     }
   }
   saveLoreEntry(flags, newEntry, templateKey, event) {
+    console.log("ENTRY INDEX:", Object.values(newEntry)[1]);
     const entryKey =
       newEntry?.name ||
       newEntry?.Name ||
       newEntry?.index ||
       newEntry?.Index ||
       newEntry?.key ||
-      newEntry?.Key;
+      newEntry?.Key ||
+      Object.values(newEntry)[1];
 
     const entryKeyAlreadyExists =
       this.information.lore.temp.data[templateKey][entryKey]?.valid || false;

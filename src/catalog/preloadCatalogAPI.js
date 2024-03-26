@@ -39,6 +39,14 @@ const catalogAPI = {
     const response = ipcRenderer.sendSync("catalog:get-templates");
     return response;
   },
+  saveTemplate({ templateKey, newTemplate, flags }) {
+    const response = ipcRenderer.sendSync("save:template", {
+      templateKey,
+      newTemplate,
+      flags,
+    });
+    return response;
+  },
   getInformationTemplateFields(templateKey) {
     // returns the individual fields of a selected template
     const response = ipcRenderer.sendSync(
