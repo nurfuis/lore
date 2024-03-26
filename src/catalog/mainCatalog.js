@@ -40,25 +40,25 @@ function mainCatalog(mainWindow, projectPath, userMode) {
 
     const library = new Library();
 
-    const useProjectPath = pathOverride || projectPath;
+    const userProjectPath = pathOverride || projectPath;
 
     const information = await library.initializeProjectDirectories(
-      useProjectPath
+      userProjectPath
     );
 
     const catalog = new Catalog(information);
 
-    const catalogAPI = new CatalogAPI(userMode, useProjectPath);
+    const catalogAPI = new CatalogAPI(userMode, userProjectPath);
 
     catalogAPI.module = catalog;
 
     mainWindow.webContents.send("catalog:send-full-library", catalog);
-    mainWindow.webContents.send("catalog:send-library-path", useProjectPath);
+    mainWindow.webContents.send("catalog:send-library-path", userProjectPath);
 
     // TODO untangle icon and backgrounds from data dir
     // the menu here uses the dafault directory for 
     // access to bg images
-    
+
     configureCatalogMenu(mainWindow, projectPath);
 
     if (userMode === DEV) {
