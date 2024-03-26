@@ -29,17 +29,17 @@ function getUserDataPath() {
   return result.USER_PATH;
 }
 // main
-ipcMain.handle("dialog-file-open", handleOpenDialog);
+// ipcMain.handle("dialog-file-open", handleOpenDialog);
 
-async function handleOpenDialog() {
-  const { canceled, filePaths } = await dialog.showOpenDialog({
-    properties: ["openDirectory"],
-  });
-  if (!canceled) {
-    console.log("dialog result", filePaths[0]);
-    return filePaths[0];
-  }
-}
+// async function handleOpenDialog() {
+//   const { canceled, filePaths } = await dialog.showOpenDialog({
+//     properties: ["openDirectory"],
+//   });
+//   if (!canceled) {
+//     console.log("dialog result", filePaths[0]);
+//     return filePaths[0];
+//   }
+// }
 function updateCurrentDirectory(filePath) {
   currentDirectory = filePath;
   const configFile = projectPath + "/config.json";
@@ -54,7 +54,7 @@ function updateCurrentDirectory(filePath) {
   });
 }
 // preloader
-function openFileDialog() {
-  const response = ipcRenderer.invoke("dialog-file-open");
-  return response;
-}
+// function openFileDialog() {
+//   const response = ipcRenderer.invoke("dialog-file-open");
+//   return response;
+// }

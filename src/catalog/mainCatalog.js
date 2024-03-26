@@ -1,16 +1,35 @@
-const { ipcMain } = require("electron");
+const { ipcMain, dialog } = require("electron");
 const { DEV, DIST } = require("../main/settings/appConfiguration");
 const { Library } = require("./process/Library");
 const { CatalogAPI } = require("./process/CatalogHandler");
 const { Catalog } = require("./process/Catalog");
-const { configureCatalogMenu } = require("./process/config/configureCatalogMenu");
+const {
+  configureCatalogMenu,
+} = require("./process/config/configureCatalogMenu");
+
+let pathOverride;
 
 function mainCatalog(mainWindow, projectPath, userMode) {
-  // make a listener to handle dialog request
-  
+  ipcMain.handle("dialog-file-open", handleOpenDialog);
+
+  async function handleOpenDialog() {
+    const { canceled, filePaths } = await dialog.showOpenDialog({
+      properties: ["openDirectory"],
+    });
+    if (!canceled) {
+      console.log("dialog result", filePaths[0]);
+      pathOverride = filePaths[0];
+      return filePaths[0];
+    }
+  }
+
   ipcMain.on("catalog:load", async (event) => {
-    const catalogIsLoaded = await loadCatalog(userMode, projectPath, mainWindow);
-    
+    const catalogIsLoaded = await loadCatalog(
+      userMode,
+      projectPath,
+      mainWindow
+    );
+
     event.returnValue = catalogIsLoaded;
 
     console.log("Catalog is loaded...", catalogIsLoaded);
@@ -21,17 +40,25 @@ function mainCatalog(mainWindow, projectPath, userMode) {
 
     const library = new Library();
 
-    const information = await library.initializeProjectDirectories(projectPath);
+    const useProjectPath = pathOverride || projectPath;
+
+    const information = await library.initializeProjectDirectories(
+      useProjectPath
+    );
 
     const catalog = new Catalog(information);
 
-    const catalogAPI = new CatalogAPI(userMode, projectPath);
-    
+    const catalogAPI = new CatalogAPI(userMode, useProjectPath);
+
     catalogAPI.module = catalog;
 
     mainWindow.webContents.send("catalog:send-full-library", catalog);
-    mainWindow.webContents.send("catalog:send-library-path", projectPath);
+    mainWindow.webContents.send("catalog:send-library-path", useProjectPath);
 
+    // TODO untangle icon and backgrounds from data dir
+    // the menu here uses the dafault directory for 
+    // access to bg images
+    
     configureCatalogMenu(mainWindow, projectPath);
 
     if (userMode === DEV) {

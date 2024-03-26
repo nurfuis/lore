@@ -1,12 +1,33 @@
+const { dialog } = require("electron");
+
 const fs = require("fs");
 const path = require("path");
 const { DEV, DIST } = require("../../main/settings/appConfiguration");
-const { SPRITES_KEY, PREVIEWS_KEY, _DIR, _ASSETS_DIR, _SPRITES_DIR } = require("./config/directoryConfiguration");
+const {
+  SPRITES_KEY,
+  PREVIEWS_KEY,
+  _DIR,
+  _ASSETS_DIR,
+  _SPRITES_DIR,
+} = require("./config/directoryConfiguration");
 const { removeExtension } = require("../../utils/removeExtension");
 
 class Catalog {
   constructor(catalogData) {
     this.information = catalogData;
+  }
+
+  handleFileOpen(event) {
+    console.log(event)
+    const { canceled, filePaths } = dialog.showOpenDialog({
+      properties: ["openDirectory"],
+    });
+    if (!canceled) {
+      event.returnValue = filePaths[0];
+    } else {
+      event.returnValue = filePaths[0];
+
+    }
   }
   getLoreLibrary(edition, event) {
     const result = this.information?.lore?.[edition].data ?? null;
@@ -20,7 +41,13 @@ class Catalog {
   // sprites
   saveLoreImage(event, filePath, information, userMode, projectPath) {
     saveImageData(event, filePath, information, userMode, projectPath);
-    async function saveImageData(event, sourceFilePath, information, userMode, projectPath) {
+    async function saveImageData(
+      event,
+      sourceFilePath,
+      information,
+      userMode,
+      projectPath
+    ) {
       console.log("Saving image data...");
 
       if (!(await isFileAccessible(sourceFilePath))) {
@@ -42,7 +69,9 @@ class Catalog {
         }
       }
 
-      if (!(await updateSpriteReferences(removeExtension(filename), filename))) {
+      if (
+        !(await updateSpriteReferences(removeExtension(filename), filename))
+      ) {
         return;
       }
 
@@ -173,7 +202,8 @@ class Catalog {
     }
   }
   getLoreEntryInformation(entryKey, templateKey, event) {
-    const result = this.information?.lore?.temp?.data?.[templateKey]?.[entryKey] ?? null;
+    const result =
+      this.information?.lore?.temp?.data?.[templateKey]?.[entryKey] ?? null;
 
     if (result?.valid) {
       event.returnValue = result;
@@ -183,14 +213,16 @@ class Catalog {
     }
   }
   saveLoreEntry(flags, newEntry, templateKey, event) {
-    const entryKey = newEntry?.name ||
+    const entryKey =
+      newEntry?.name ||
       newEntry?.Name ||
       newEntry?.index ||
       newEntry?.Index ||
       newEntry?.key ||
       newEntry?.Key;
 
-    const entryKeyAlreadyExists = this.information.lore.temp.data[templateKey][entryKey]?.valid || false;
+    const entryKeyAlreadyExists =
+      this.information.lore.temp.data[templateKey][entryKey]?.valid || false;
 
     console.log("save with flags", flags);
 
@@ -201,7 +233,8 @@ class Catalog {
       };
     } else if (flags == "canOverwrite") {
       console.log("overwrite triggered");
-      const version = this.information.lore.temp.data[templateKey][entryKey]["version"] + 1;
+      const version =
+        this.information.lore.temp.data[templateKey][entryKey]["version"] + 1;
       newEntry["version"] = version;
       this.information.lore.temp.data[templateKey][entryKey] = newEntry;
       const filename = this.information.lore.temp.path;
@@ -213,7 +246,8 @@ class Catalog {
             console.error("Error overwriting lore:", err);
             event.returnValue = {
               status: "error",
-              message: "Encountered an error while trying to ovrwrite changes to file.",
+              message:
+                "Encountered an error while trying to ovrwrite changes to file.",
             };
           } else {
             console.log("Lore overwritten to temp file successfully.");
@@ -222,7 +256,8 @@ class Catalog {
       );
       event.returnValue = {
         status: "overwritten",
-        message: "Succesfully overwritten information for " +
+        message:
+          "Succesfully overwritten information for " +
           templateKey +
           ":" +
           entryKey,
@@ -230,7 +265,8 @@ class Catalog {
     } else if (entryKeyAlreadyExists) {
       event.returnValue = {
         status: "conflict",
-        message: "Entry with that name already exists. Do you want to overwrite it?",
+        message:
+          "Entry with that name already exists. Do you want to overwrite it?",
       };
     } else if (entryKey && !entryKeyAlreadyExists) {
       newEntry["version"] = 1;
@@ -244,7 +280,8 @@ class Catalog {
             console.error("Error saving lore:", err);
             event.returnValue = {
               status: "error",
-              message: "Encountered an error while trying to overwrite changes to file.",
+              message:
+                "Encountered an error while trying to overwrite changes to file.",
             };
           } else {
             console.log("Lore saved to temp file successfully.");
@@ -253,12 +290,14 @@ class Catalog {
       );
       event.returnValue = {
         status: "resolved",
-        message: "Succesfully saved information for " + templateKey + ":" + entryKey,
+        message:
+          "Succesfully saved information for " + templateKey + ":" + entryKey,
       };
     }
   }
   removeLoreEntryInformation(entryKey, templateKey, event) {
-    const result = this.information?.lore?.temp?.data?.[templateKey]?.[entryKey] ?? null;
+    const result =
+      this.information?.lore?.temp?.data?.[templateKey]?.[entryKey] ?? null;
 
     if (result?.valid) {
       delete this.information.lore.temp.data[templateKey][entryKey];

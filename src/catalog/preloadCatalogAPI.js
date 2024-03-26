@@ -4,6 +4,10 @@ const { ipcRenderer } = require("electron");
 
 const catalogAPI = {
   //* CALL AND RESPONSE *//
+  openFileDialog() {
+    const response = ipcRenderer.invoke("dialog-file-open");
+    return response;
+  },
   loadCatalog() {
     const response = ipcRenderer.sendSync("catalog:load");
     return response;
@@ -64,12 +68,17 @@ const catalogAPI = {
     return response;
   },
   //* ONE WAY FROM MAIN *//
-  onLoadCatalog: (callback) => ipcRenderer.on("catalog:send-full-library", (_event, value) => callback(value)
-  ),
-  onSetPath: (callback) => ipcRenderer.on("catalog:send-library-path", (_event, value) => callback(value)
-  ),
+  onLoadCatalog: (callback) =>
+    ipcRenderer.on("catalog:send-full-library", (_event, value) =>
+      callback(value)
+    ),
+  onSetPath: (callback) =>
+    ipcRenderer.on("catalog:send-library-path", (_event, value) =>
+      callback(value)
+    ),
   //* ONE WAY TO MAIN *//
   saveLore: () => ipcRenderer.send("save:lore-information"),
-  saveCatalogTemplate: (template) => ipcRenderer.send("catalog:save-template", template),
+  saveCatalogTemplate: (template) =>
+    ipcRenderer.send("catalog:save-template", template),
 };
 exports.catalogAPI = catalogAPI;

@@ -61,7 +61,7 @@ app.on("ready", () => {
 
 app.on("window-all-closed", () => {
   try {
-    saveChanges({ reason: "exit" });
+    saveChanges({ reason: "save" });
     function saveChanges({ reason }) {
       const mainFile = path.join(projectPath, _DIR, LORE_LIBRARY);
       const tempFile = path.join(projectPath, _DIR, LORE_LIBRARY_TEMP);
