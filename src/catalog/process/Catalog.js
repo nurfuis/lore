@@ -18,7 +18,7 @@ class Catalog {
   }
 
   handleFileOpen(event) {
-    console.log(event)
+    console.log(event);
     const { canceled, filePaths } = dialog.showOpenDialog({
       properties: ["openDirectory"],
     });
@@ -26,7 +26,6 @@ class Catalog {
       event.returnValue = filePaths[0];
     } else {
       event.returnValue = filePaths[0];
-
     }
   }
   getLoreLibrary(edition, event) {
@@ -86,13 +85,21 @@ class Catalog {
         // data/assets/sprites directory to ensure the page doesn't reload due to webpack
         // noticing file changes. This approach might not be ideal for long-term
         // maintainability. Is there a preferred way to handle this scenario?
-        event.returnValue = path.join("../data/assets/sprites", filename);
+        event.returnValue = path.join(
+          "../",
+          _DIR,
+          _ASSETS_DIR,
+          _SPRITES_DIR,
+          filename
+        );
       } else if (userMode === DIST) {
         // In production mode, set the return value to the final path within the
         // data/assets/sprites directory relative to the application projectPath.
         event.returnValue = path.join(
           projectPath,
-          "/data/assets/sprites",
+          _DIR,
+          _ASSETS_DIR,
+          _SPRITES_DIR,
           filename
         );
       }
@@ -133,7 +140,10 @@ class Catalog {
   getSpritePreviewPath(fileKey, event, userMode, projectPath) {
     if (userMode === DEV) {
       const relativeFilePath = path.join(
-        "../data/assets/sprites",
+        "../",
+        _DIR,
+        _ASSETS_DIR,
+        _SPRITES_DIR,
         this.information.sprites.data.sprite[fileKey].preview
       );
       event.returnValue = relativeFilePath;

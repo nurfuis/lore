@@ -1,11 +1,4 @@
 {
-  "build": {
-    "asar": true,
-    "asarUnpack": [
-      "**/node_modules/sharp/**/*",
-      "**/node_modules/@img/**/*"
-    ]
-  },
   "name": "Lore",
   "productName": "lore",
   "version": "1.0.0",

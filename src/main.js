@@ -113,8 +113,12 @@ app.on("activate", () => {
 function configureWindow(window) {
   window.setMenuBarVisibility(false);
   window.loadURL(MAIN_WINDOW_WEBPACK_ENTRY);
-  window.webContents.openDevTools();
+
+  
   window.once("ready-to-show", () => {
     window.show();
+    if (userMode === DEV) {
+      window.webContents.openDevTools();
+    }
   });
 }

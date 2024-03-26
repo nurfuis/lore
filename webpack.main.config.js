@@ -17,10 +17,6 @@ module.exports = {
           from: 'data/assets/lore-library-icon-ai-1.png',
           to: 'data/assets',
         },
-        {
-          from: 'config.json',
-          to: 'config.json',
-        },
       ],
     }),
   ],

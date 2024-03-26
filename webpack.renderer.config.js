@@ -11,11 +11,6 @@ module.exports = {
   module: {
     rules,
   },
-  mode: "development",
-  devServer: {
-    hot: false,
-    inline: false,
-  },
   plugins: [
     new CopyPlugin({
       patterns: [
