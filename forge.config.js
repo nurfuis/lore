@@ -3,15 +3,14 @@ const { FuseV1Options, FuseVersion } = require("@electron/fuses");
 
 module.exports = {
   packagerConfig: {
-    asar: true,
-    icon: "./data/assets/lore-library-icon-ai-1"
+    icon: "./data/assets/lore-library-icon-ai-1",
   },
   rebuildConfig: {},
   makers: [
     {
       name: "@electron-forge/maker-squirrel",
       config: {
-        setupIcon: "./data/assets/lore-library-icon-ai-1.ico"
+        setupIcon: "./data/assets/lore-library-icon-ai-1.ico",
       },
     },
     {
