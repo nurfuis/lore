@@ -482,6 +482,8 @@ export class TemplateMaker {
     const modal = document.querySelectorAll(".modal");
     modal[1].style.display = "none";
     this.updateTemplateDropdownOptions();
+    window.scrollTo(0, 0)
+
   }
   //   deleteTemplate(templateName) {
   //     // 1. Confirm deletion with the user

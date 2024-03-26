@@ -7,7 +7,7 @@ export class EntryForm {
   constructor() {
     const promptGenerator = new Prompts();
     promptGenerator.ready();
-    
+
     const navButtonEditEntry = document.querySelectorAll(
       ".lore-navigation__button--edit-entry"
     );
@@ -34,7 +34,6 @@ export class EntryForm {
         );
         entryFormPrototypeSelect[0].value = "";
         entryFormPrototypeSelect[0].disabled = true;
-
       }
     });
 
@@ -502,6 +501,7 @@ export class EntryForm {
         ".lore-main__information-toast"
       );
       informationToast[0].innerText = response.message;
+      window.scrollTo(0, 0)
       console.log("Saved entry succesfully.");
     } else {
       const informationToast = document.querySelectorAll(

@@ -258,7 +258,6 @@ class Catalog {
     }
   }
   saveLoreEntry(flags, newEntry, templateKey, event) {
-    console.log("ENTRY INDEX:", Object.values(newEntry)[1]);
     const entryKey =
       newEntry?.name ||
       newEntry?.Name ||
@@ -338,7 +337,7 @@ class Catalog {
       event.returnValue = {
         status: "resolved",
         message:
-          "Succesfully saved information for " + templateKey + ":" + entryKey,
+          "Succesfully saved information for " + templateKey + ": " + entryKey,
       };
     }
   }

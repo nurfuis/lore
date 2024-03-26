@@ -28,6 +28,7 @@ catalogAPI.onLoadCatalog((catalog) => {
           if (opacity <= 0) {
             clearInterval(fadeInterval);
             toastContent[0].textContent = ""; // Clear content after fade-out
+            toastContent[0].style.opacity = 1;
           }
         }, fadeOutTime / 50); // Adjust intervals for smoother fade (100 steps)
       }, delay); // Execute after the specified delay
