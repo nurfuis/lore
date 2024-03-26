@@ -23,6 +23,18 @@ export class EntryForm {
           ".viewer__cards-wrapper"
         );
         viewerCardsWrapper[0].style.display = "none";
+
+        const entryFormTemplateSelect = document.querySelectorAll(
+          ".entry-form__template-select"
+        );
+        entryFormTemplateSelect[0].value = "";
+
+        const entryFormPrototypeSelect = document.querySelectorAll(
+          ".entry-form__prototype-select"
+        );
+        entryFormPrototypeSelect[0].value = "";
+        entryFormPrototypeSelect[0].disabled = true;
+
       }
     });
 

@@ -6,6 +6,7 @@ const { Catalog } = require("./process/Catalog");
 const {
   configureCatalogMenu,
 } = require("./process/config/configureCatalogMenu");
+const { cycleBackgrounds } = require("../main/menu/cycleBackgrounds");
 
 let pathOverride;
 
@@ -19,7 +20,10 @@ function mainCatalog(mainWindow, projectPath, userMode) {
     if (!canceled) {
       console.log("dialog result", filePaths[0]);
       pathOverride = filePaths[0];
+      mainWindow.webContents.send("catalog:send-library-path", filePaths[0]);
+
       return filePaths[0];
+      
     }
   }
 
@@ -54,7 +58,8 @@ function mainCatalog(mainWindow, projectPath, userMode) {
 
     mainWindow.webContents.send("catalog:send-full-library", catalog);
     mainWindow.webContents.send("catalog:send-library-path", userProjectPath);
-
+    
+    cycleBackgrounds(mainWindow, projectPath);
     // TODO untangle icon and backgrounds from data dir
     // the menu here uses the dafault directory for 
     // access to bg images

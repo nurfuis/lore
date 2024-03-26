@@ -6,7 +6,7 @@ export class Viewer {
       ".lore-navigation__button--viewer"
     );
     navButtonCardViewer[0].style.display = "none";
-    navButtonCardViewer[0].addEventListener("click", () =>{
+    navButtonCardViewer[0].addEventListener("click", () => {
       const cardViewerWrapper = document.querySelectorAll(
         ".viewer__cards-wrapper"
       );
@@ -138,8 +138,15 @@ export class Viewer {
     const card = document.createElement("div");
     card.classList.add("category-card");
 
+    const headerWrapper = document.createElement("div");
+    headerWrapper.classList.add("category-card__header-wrapper")
+    card.appendChild(headerWrapper);
+    headerWrapper.addEventListener("click", () => {
+      card.classList.toggle("expanded");
+    });
+
     const sectionHeader = this.createCardHeader(type, card, loreLibrary);
-    card.appendChild(sectionHeader);
+    headerWrapper.appendChild(sectionHeader);
 
     const itemsContainer = createItemsContainer();
     card.appendChild(itemsContainer);
@@ -160,15 +167,10 @@ export class Viewer {
 
   createCardHeader(type, card, loreLibrary) {
     const sectionHeader = document.createElement("h2");
-
     sectionHeader.textContent = `${type} (${
       Object.keys(loreLibrary[type]).length
     })`; // Add key count
     sectionHeader.classList.add("category-header");
-
-    sectionHeader.addEventListener("click", () => {
-      card.classList.toggle("expanded"); /* Add or remove expanded class */
-    });
 
     return sectionHeader;
   }
@@ -177,6 +179,10 @@ export class Viewer {
     const viewerCards = document.querySelectorAll(".viewer__cards-wrapper");
     viewerCards[0].innerHTML = "";
     const loreLibrary = window.catalogAPI.getInformationLoreLibrary("temp");
+
+    const sectionHeader = document.createElement("h1");
+    sectionHeader.innerText = "Lore Explorer";
+    viewerCards[0].appendChild(sectionHeader);
 
     for (const type in loreLibrary) {
       if (Object.keys(loreLibrary).length > 0) {

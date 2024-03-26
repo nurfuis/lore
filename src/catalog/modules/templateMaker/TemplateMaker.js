@@ -400,6 +400,7 @@ export class TemplateMaker {
     // 5. Close the modal
     const modal = document.querySelectorAll(".modal");
     modal[1].style.display = "none";
+    this.updateTemplateDropdownOptions();
   }
   //   deleteTemplate(templateName) {
   //     // 1. Confirm deletion with the user
