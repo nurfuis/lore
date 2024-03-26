@@ -127,19 +127,19 @@ export class TemplateMaker {
     newField.classList.add("template-field");
 
     const fieldNameLabel = document.createElement("label");
-    fieldNameLabel.textContent = "Field Name";
+    fieldNameLabel.textContent = "Entry Key";
     newField.appendChild(fieldNameLabel);
 
     const fieldNameInput = document.createElement("input");
     fieldNameInput.type = "text";
     fieldNameInput.name = "field-name";
     fieldNameInput.value = "name";
-    fieldNameInput.readOnly = true;
+    fieldNameInput.readOnly = false;
     newField.appendChild(fieldNameInput);
 
     const fieldTypeSelect = document.createElement("select");
     fieldTypeSelect.name = "field-type";
-    fieldTypeSelect.disabled = true;
+    fieldTypeSelect.disabled = false;
     newField.appendChild(fieldTypeSelect);
 
     const fieldPromptLabel = document.createElement("label");
@@ -173,12 +173,12 @@ export class TemplateMaker {
     descriptionFieldNameInput.type = "text";
     descriptionFieldNameInput.name = "field-name";
     descriptionFieldNameInput.value = "description";
-    descriptionFieldNameInput.readOnly = true;
+    descriptionFieldNameInput.readOnly = false;
     descriptionField.appendChild(descriptionFieldNameInput);
 
     const descriptionFieldTypeSelect = document.createElement("select");
     descriptionFieldTypeSelect.name = "field-type";
-    descriptionFieldTypeSelect.disabled = true;
+    descriptionFieldTypeSelect.disabled = false;
     descriptionField.appendChild(descriptionFieldTypeSelect);
 
     const descriptionFieldPromptLabel = document.createElement("label");

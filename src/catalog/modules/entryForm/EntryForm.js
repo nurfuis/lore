@@ -471,6 +471,7 @@ export class EntryForm {
         modal[4].style.display = "none";
         buttonsWrapper[0].removeChild(cancelButton);
         buttonsWrapper[0].removeChild(overwriteButton);
+        window.scrollTo(0, 0);
       });
 
       overwriteButton.addEventListener("click", () => {
@@ -501,7 +502,7 @@ export class EntryForm {
         ".lore-main__information-toast"
       );
       informationToast[0].innerText = response.message;
-      window.scrollTo(0, 0)
+      window.scrollTo(0, 0);
       console.log("Saved entry succesfully.");
     } else {
       const informationToast = document.querySelectorAll(

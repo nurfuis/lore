@@ -138,41 +138,47 @@ export class Viewer {
   createCard(type, loreLibrary) {
     const card = document.createElement("div");
     card.classList.add("category-card");
-    // const canvas = document.createElement("canvas");
-    // canvas.classList.add("category-card__canvas")
-    // card.appendChild(canvas)
 
     const headerWrapper = document.createElement("div");
-
     headerWrapper.classList.add("category-card__header-wrapper");
     card.appendChild(headerWrapper);
 
     const numberOfEntries = Object.keys(loreLibrary[type]).length;
     if (numberOfEntries > 0) {
       const headerWrapperBackgroundImage = loreLibrary[type];
+
       const imageIndex = Object.values(headerWrapperBackgroundImage)[0].sprite;
-      const imageSource = window.catalogAPI.getPathSpritesPreview(imageIndex);
-      console.log(imageSource);
-      function fixImagePath(imagePath) {
-        return imagePath.replace(/\\/g, "/");
+
+      let fixedImagePath;
+
+      if (!!imageIndex) {
+        const imageSource = window.catalogAPI.getPathSpritesPreview(imageIndex);
+        function fixImagePath(imagePath) {
+          return imagePath.replace(/\\/g, "/");
+        }
+        fixedImagePath = fixImagePath(imageSource);
+        card.style.backgroundImage = `linear-gradient(rgba(218, 218, 223,0.3), rgba(67, 67, 67,0.9)), url("${fixedImagePath}")`;
       }
-      const fixedImagePath = fixImagePath(imageSource);
-      card.style.backgroundImage = `linear-gradient(rgba(218, 218, 223, 0.8), rgba(67, 67, 67, 0.8)), url("${fixedImagePath}")`;
+
       headerWrapper.classList.add("can-expand");
       headerWrapper.addEventListener("click", () => {
         if (card.classList.contains("expanded")) {
           headerWrapper.classList.toggle("expanded");
           card.classList.toggle("expanded");
-          card.style.backgroundImage = `linear-gradient(rgba(218, 218, 223, 0.8), rgba(67, 67, 67, 0.8)), url("${fixedImagePath}")`;
+
+          if (!!fixedImagePath) {
+            card.style.backgroundImage = `linear-gradient(rgba(218, 218, 223,0.3), rgba(67, 67, 67,0.9)), url("${fixedImagePath}")`;
+          }
         } else {
           headerWrapper.classList.toggle("expanded");
           card.classList.toggle("expanded");
-          card.style.backgroundImage = "linear-gradient(rgba(218, 218, 223, 0.2), rgba(67, 67, 67, 0.2))";
+          card.style.backgroundImage =
+            "linear-gradient(rgba(218, 218, 223, 0.2), rgba(67, 67, 67, 0.2))";
         }
       });
     } else if (numberOfEntries === 0) {
       headerWrapper.classList.add("can-delete");
-      headerWrapper.style.opacity = 0.8;
+      headerWrapper.style.opacity =0.7;
 
       headerWrapper.addEventListener("click", () => {
         // TODO!!!
