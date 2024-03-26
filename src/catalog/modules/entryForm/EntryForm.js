@@ -416,11 +416,11 @@ export class EntryForm {
     }
 
     const modalButtonClose = document.querySelectorAll(".modal_button--close");
-    modalButtonClose[5].addEventListener("click", clearButtonsWrapper);
+    modalButtonClose[4].addEventListener("click", clearButtonsWrapper);
 
     if (response.status === "incomplete") {
       const modal = document.querySelectorAll(".modal");
-      modal[5].style.display = "block";
+      modal[4].style.display = "block";
 
       const message = document.querySelectorAll(".modal__error-message");
       message[0].innerText = response.message;
@@ -432,13 +432,13 @@ export class EntryForm {
       buttonsWrapper[0].appendChild(acceptButton);
 
       acceptButton.addEventListener("click", () => {
-        modal[5].style.display = "none";
+        modal[4].style.display = "none";
 
         buttonsWrapper[0].removeChild(acceptButton);
       });
     } else if (response.status === "conflict") {
       const modal = document.querySelectorAll(".modal");
-      modal[5].style.display = "block";
+      modal[4].style.display = "block";
 
       const message = document.querySelectorAll(".modal__error-message");
       message[0].innerText = response.message;
@@ -457,7 +457,7 @@ export class EntryForm {
 
       // Add event listeners
       cancelButton.addEventListener("click", () => {
-        modal[5].style.display = "none";
+        modal[4].style.display = "none";
         buttonsWrapper[0].removeChild(cancelButton);
         buttonsWrapper[0].removeChild(overwriteButton);
       });
@@ -478,7 +478,7 @@ export class EntryForm {
         );
         informationToast[0].innerText = response.message;
 
-        modal[5].style.display = "none";
+        modal[4].style.display = "none";
         buttonsWrapper[0].removeChild(cancelButton);
         buttonsWrapper[0].removeChild(overwriteButton);
       });
