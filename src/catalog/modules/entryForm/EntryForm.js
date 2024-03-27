@@ -83,7 +83,7 @@ export class EntryForm {
       ".entry-form__image-button--clear"
     );
     entryFormImageClear[0].addEventListener("click", (event) => {
-      console.log(event)
+      console.log(event);
       event.preventDefault();
       this.clearImagePreview();
     });
@@ -226,7 +226,7 @@ export class EntryForm {
         prototypeNames.forEach((prototypeName) => {
           const option = document.createElement("option");
           option.value = prototypeName;
-          option.text = prototypeName;
+          option.text = prototypeName.slice(0, 24) + (prototypeName.length > 24 ? "..." : "");
           entryFormPrototypeSelect[0].appendChild(option);
         });
         this.enablePrototypeDropdown();

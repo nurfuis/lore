@@ -35,17 +35,25 @@
           <div class="full-width">
             <h1>Entry Form</h1>
             <form class="entry-form">
-              <label for="entry-form__template-select">Template</label>
+              <div class="entry-form__row">
+                <div class="entry-form__column">
+                  <label for="entry-form__template-select">Type</label>
+                  <select class="entry-form__template-select">
+                    <option value="">-- Select Template --</option>
+                  </select>
+                  <label for="entry-form__prototype-select">Entry</label>
+                  <select class="entry-form__prototype-select" disabled>
+                    <option value="">-- Select Entry (Optional) --</option>
+                  </select>
+                </div>
+                <div class="entry-form__column">
+                  <label>Image</label>
 
-              <select class="entry-form__template-select">
-                <option value="">-- Select Template --</option>
-              </select>
-
-              <label for="entry-form__prototype-select">Entry</label>
-
-              <select class="entry-form__prototype-select" disabled>
-                <option value="">-- Select Entry (Optional) --</option>
-              </select>
+                  <div class="entry-form__image-wrapper">
+                    <img src="" class="entry-form__image--preview" />
+                  </div>
+                </div>
+              </div>
               <hr />
 
               <div class="entry-form__commands-wrapper">
@@ -61,10 +69,6 @@
               </div>
             </form>
             <form class="entry-form entry-form__image-element">
-              <div class="full-width">
-                <img src="" class="entry-form__image--preview" />
-              </div>
-
               <div class="entry-form__image">
                 <label for="image-input">Upload Image</label>
                 <input

@@ -67,6 +67,11 @@ well because dev is bad and feels bad =(
   src: url("../data/assets/css/Open_Sans/static/OpenSans-Light.ttf")
     format("truetype");
 }
+@font-face {
+  font-family: "Open Sans-ExtraBold";
+  src: url("../data/assets/css/Open_Sans/static/OpenSans-ExtraBold.ttf")
+    format("truetype");
+}
 ::-webkit-scrollbar {
   width: 8px;
   height: 8px;
@@ -130,13 +135,14 @@ label {
   color: var(--text-color); /* White for readability */
   font-family: "Open Sans-Light";
   font-size: large;
+  user-select: none;
 }
 label:after {
   content: ":"; /* Add colon after label text */
   margin-left: 0.5em; /* Separate colon from label text */
+  user-select: none;
 }
 span {
-  max-width: 280px;
   overflow: auto;
 }
 hr {
@@ -156,11 +162,13 @@ select {
   font-family: Kode;
 }
 input {
-  width: 400px;
+  max-width: 480px;
+  width: 90%;
 }
 textarea {
-  width: 400px;
-  height: 80px;
+  max-width: 480px;
+  width: 90%;
+  min-height: 120px;
 }
 button {
   background-color: var(--button-color); /* Bright purple from theme */
@@ -236,6 +244,16 @@ img {
   flex-grow: 1;
   padding: 6rem;
 }
+.entry-form__row {
+  display: flex;
+}
+
+.entry-form__column {
+  flex: 1;
+  padding: 1rem;
+  flex-direction: column;
+  align-items: center;
+}
 
 .entry-form {
   flex-grow: 1;
@@ -256,11 +274,21 @@ img {
   border-radius: 5px;
   box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
 }
+.entry-form__image-wrapper {
+  border: 1px solid var(--secondary-color);
+  border-radius: 10px;
+  align-items: center;
+  background-color: rgb(255, 255, 255, 0.7);
+  box-shadow: inset 1px 1px 1px rgba(87, 87, 87, 0.3);
+}
 .entry-form__image--preview {
   display: none;
-  width: 90%; /* Set image to fill available width */
-  object-fit: cover; /* Scale image to fit container, maintaining aspect ratio */
-  max-width: 156px;
+  width: 90%;
+  object-fit: cover;
+  margin-left: auto;
+  margin-right: auto;
+  margin-top: 1rem;
+  margin-bottom: 2rem;
 }
 .entry-form__commands-wrapper {
   text-align: center;
@@ -272,6 +300,8 @@ img {
   border: 1px solid var(--secondary-color); /* Optional: Red border for emphasis */
   text-shadow: 0px 1px 1px rgba(0, 0, 0, 0.1);
   width: 100%;
+  height: 3rem;
+  font-family: "Open Sans-ExtraBold";
 }
 .entry-form__commands-button--generate-prompt {
   color: var(--button-text-color); /* White text for readability */
@@ -283,10 +313,12 @@ img {
 .prompt {
   display: block;
   padding: 0.5rem;
-  font-size: 0.8rem; /* Reduce font size slightly */
-  color: #999; /* Use a lighter gray color */
+  font-size: small; /* Reduce font size slightly */
+  color: var(--secondary-color);
   margin-bottom: 0.5rem; /* Add some margin for better spacing */
-  font-style: italic; /* Add italics for a more suggestive tone */
+  font-family: "Merriweather-italics";
+  user-select: none;
+  width: 80%;
 }
 
 .viewer__cards-wrapper ul {
@@ -294,12 +326,13 @@ img {
   padding: 0;
 }
 .viewer__cards-wrapper li {
-  margin-bottom: 0.5rem;
   color: var(--text-color); /* White for readability */
   background-color: rgba(0, 0, 0, 0.4); /* Black w/ opacity */
   /* Light background for better contrast */
   border-bottom: 1px solid var(--secondary-color); /* Bright purple border */
   width: 100%;
+  margin-bottom: 2rem;
+
 }
 .viewer__cards-wrapper button {
   background-color: var(--button-color); /* Bright purple from theme */

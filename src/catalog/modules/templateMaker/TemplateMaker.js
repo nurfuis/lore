@@ -85,7 +85,7 @@ export class TemplateMaker {
       templateMakerTemplateSelect[0].innerHTML = "";
 
       const newOptionEntry = document.createElement("option");
-      newOptionEntry.textContent = "-- Select Entry --";
+      newOptionEntry.textContent = "-- Select Type --";
       newOptionEntry.value = "";
 
       const newOptionTemplate = document.createElement("option");
