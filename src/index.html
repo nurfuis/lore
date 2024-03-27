@@ -34,57 +34,66 @@
         <div>
           <div class="full-width">
             <h1>Entry Form</h1>
+            <form class="entry-form">
+              <label for="entry-form__template-select">Template</label>
 
-            <select class="entry-form__template-select">
-              <option value="">-- Select Template --</option>
-            </select>
+              <select class="entry-form__template-select">
+                <option value="">-- Select Template --</option>
+              </select>
 
-            <select class="entry-form__prototype-select" disabled>
-              <option value="">-- Select Entry (Optional) --</option>
-            </select>
+              <label for="entry-form__prototype-select">Entry</label>
 
-            <div class="entry-form__commands-wrapper">
-              <button class="entry-form__commands-button--clear" type="reset">
-                Clear Form
-              </button>
-              <button
-                type="button"
-                class="entry-form__commands-button--generate-prompt"
-              >
-                Generate Prompt
-              </button>
-            </div>
+              <select class="entry-form__prototype-select" disabled>
+                <option value="">-- Select Entry (Optional) --</option>
+              </select>
+              <hr />
 
-            <div class="full-width">
-              <img src="" class="entry-form__image--preview" />
-            </div>
+              <div class="entry-form__commands-wrapper">
+                <button class="entry-form__commands-button--clear" type="reset">
+                  Clear Form
+                </button>
+                <button
+                  type="button"
+                  class="entry-form__commands-button--generate-prompt"
+                >
+                  Generate Prompt
+                </button>
+              </div>
+            </form>
+            <form class="entry-form entry-form__image-element">
+              <div class="full-width">
+                <img src="" class="entry-form__image--preview" />
+              </div>
 
-            <div class="entry-form__image">
-              <label for="image-input">Upload Image</label>
-              <input
-                type="file"
-                id="image-input"
-                class="entry-form__image--input"
-                accept="image/*"
-              />
-              <button class="entry-form__image-button--clear">
-                Clear Image
-              </button>
-            </div>
-
+              <div class="entry-form__image">
+                <label for="image-input">Upload Image</label>
+                <input
+                  type="file"
+                  id="image-input"
+                  class="entry-form__image--input"
+                  accept="image/*"
+                />
+                <hr />
+                <div>
+                  <button class="entry-form__image-button--clear">
+                    Clear Image
+                  </button>
+                </div>
+              </div>
+            </form>
+            <form class="entry-form__form-element"></form>
             <div>
-              <form class="entry-form__form-element"></form>
+              <button type="submit" class="entry-form__save-button">
+                Save Entry
+              </button>
             </div>
-            <button type="submit" class="entry-form__save-button">
-              Save Entry
-            </button>
           </div>
         </div>
       </div>
 
       <div class="viewer__cards-wrapper"></div>
     </div>
-    
+
     <div class="modal">
       <div class="modal-content">
         <span class="modal_button--close">&times;</span>
@@ -95,8 +104,8 @@
       </div>
     </div>
 
-    <div class="modal">
-      <div class="modal-content">
+    <div class="modal template-maker">
+      <div class="modal-content template-maker-content">
         <span class="modal_button--close">&times;</span>
 
         <h2>Template Maker</h2>

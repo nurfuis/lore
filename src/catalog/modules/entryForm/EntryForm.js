@@ -1,5 +1,5 @@
-import { toggleView } from "../../../renderer";
 import { removeExtension } from "../../../utils/removeExtension";
+import { setToastText } from "../../../utils/setToastText";
 import { Prompts } from "./promptGenerator/Prompts";
 import { promptTemplates } from "./promptGenerator/promptTemplates";
 
@@ -289,7 +289,9 @@ export class EntryForm {
     const entryFormSaveAll = document.querySelectorAll(
       ".entry-form__save-button"
     );
-
+    const entryFormImageElement = document.querySelectorAll(
+      ".entry-form__image-element"
+    );
     const entryFormImageInput = document.querySelectorAll(".entry-form__image");
 
     const entryFormCommandButtonClear = document.querySelectorAll(
@@ -299,6 +301,7 @@ export class EntryForm {
     const elementsToShow = [
       entryFormElement[0],
       entryFormSaveAll[0],
+      entryFormImageElement[0],
       entryFormImageInput[0],
       entryFormCommandButtonClear[0],
     ];
@@ -354,11 +357,11 @@ export class EntryForm {
         }
 
         // assemble the elements
-        const br = document.createElement("br");
+        const hr = document.createElement("hr");
         entryFormElement[0].appendChild(label);
         entryFormElement[0].appendChild(promptSpan);
         entryFormElement[0].appendChild(inputElement);
-        entryFormElement[0].appendChild(br);
+        entryFormElement[0].appendChild(hr);
       }
       elementsToShow.forEach((element) => (element.style.display = "block")); // Show elements
       elementsToHide.forEach((element) => (element.style.display = "none")); // Show elements
@@ -444,8 +447,8 @@ export class EntryForm {
 
       acceptButton.addEventListener("click", () => {
         modal[4].style.display = "none";
-
         buttonsWrapper[0].removeChild(acceptButton);
+        setToastText(response.message, 4000);
       });
     } else if (response.status === "conflict") {
       const modal = document.querySelectorAll(".modal");
@@ -471,7 +474,6 @@ export class EntryForm {
         modal[4].style.display = "none";
         buttonsWrapper[0].removeChild(cancelButton);
         buttonsWrapper[0].removeChild(overwriteButton);
-        window.scrollTo(0, 0);
       });
 
       overwriteButton.addEventListener("click", () => {
@@ -485,10 +487,7 @@ export class EntryForm {
         this.updateForm();
         this.updatePrototypeDropdown();
 
-        const informationToast = document.querySelectorAll(
-          ".lore-main__information-toast"
-        );
-        informationToast[0].innerText = response.message;
+        setToastText(response.message, 4000);
 
         modal[4].style.display = "none";
         buttonsWrapper[0].removeChild(cancelButton);
@@ -498,17 +497,11 @@ export class EntryForm {
       this.updateForm();
       this.updatePrototypeDropdown();
 
-      const informationToast = document.querySelectorAll(
-        ".lore-main__information-toast"
-      );
-      informationToast[0].innerText = response.message;
-      window.scrollTo(0, 0);
+      setToastText(response.message, 4000);
+
       console.log("Saved entry succesfully.");
     } else {
-      const informationToast = document.querySelectorAll(
-        ".lore-main__information-toast"
-      );
-      informationToast[0].innerText = response.message;
+      setToastText(response.message, 4000);
     }
   }
 }

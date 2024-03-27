@@ -1,4 +1,5 @@
 import { toggleView } from "../../../renderer";
+import { setToastText } from "../../../utils/setToastText";
 
 export class Viewer {
   constructor() {
@@ -35,11 +36,8 @@ export class Viewer {
 
     window.catalogAPI.catalogLoreEntryDelete({ templateKey, entryKey });
 
-    const informationToast = document.querySelectorAll(
-      ".lore-main__information-toast"
-    );
-    informationToast[0].innerText = `Entry "${itemToDelete.name}" deleted successfully!`;
-
+    const details = `Entry "${itemToDelete.name}" deleted successfully!`;
+    setToastText(details, 4000);
     // TODO remove the li element as opposed to reloading the entire module
   }
 
@@ -220,17 +218,13 @@ export class Viewer {
           });
           console.log(response);
 
-          const informationToast = document.querySelectorAll(
-            ".lore-main__information-toast"
-          );
-          informationToast[0].innerText = response.message; // <-- change?
+          setToastText(response.message, 4000);
 
           modal[4].style.display = "none";
           buttonsWrapper[0].removeChild(cancelButton);
           buttonsWrapper[0].removeChild(deleteTemplateButton);
 
           this.renderGameData();
-
         });
       });
       const buttonsWrapper = document.querySelectorAll(
