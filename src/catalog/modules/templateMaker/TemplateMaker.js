@@ -68,40 +68,49 @@ export class TemplateMaker {
     navButtonEditEntry[0].addEventListener("click", () => {
       this.updateTemplateDropdownOptions();
     });
-
-    // uiElements.deleteTemplateButton.addEventListener("click", () => {
-    //   deleteTemplate(selectedTemplate);
-    // });
   }
   updateTemplateDropdownOptions() {
     const templates = window.catalogAPI.catalogGetTemplates();
     if (templates) {
       const availableTemplates = Object.keys(templates);
 
+      const entryFormTemplateSelect = document.querySelectorAll(
+        ".entry-form__template-select"
+      );
+      entryFormTemplateSelect[0].innerHTML = "";
+
+      const templateMakerTemplateSelect = document.querySelectorAll(
+        ".template-maker__select--template"
+      );
+      templateMakerTemplateSelect[0].innerHTML = "";
+
+      const newOptionEntry = document.createElement("option");
+      newOptionEntry.textContent = "-- Select Entry --";
+      newOptionEntry.value = "";
+
+      const newOptionTemplate = document.createElement("option");
+      newOptionTemplate.textContent = "-- Select Entry (Optional) --";
+      newOptionTemplate.value = "";
+
+      entryFormTemplateSelect[0].appendChild(newOptionEntry);
+      templateMakerTemplateSelect[0].appendChild(newOptionTemplate);
+
       // Filter out existing templates and append only new ones
-      availableTemplates
-        .filter((templateName) => !this.existingTemplateNames.has(templateName))
-        .forEach((templateName) => {
-          const entryOption = document.createElement("option");
-          entryOption.value = templateName;
-          entryOption.text = templateName;
+      for (const templateName of availableTemplates) {
+        const entryOption = document.createElement("option");
+        entryOption.value = templateName;
+        entryOption.text = templateName;
 
-          const entryFormTemplateSelect = document.querySelectorAll(
-            ".entry-form__template-select"
-          );
-          entryFormTemplateSelect[0].appendChild(entryOption);
+        entryFormTemplateSelect[0].appendChild(entryOption);
 
-          const templateOption = document.createElement("option");
-          templateOption.value = templateName;
-          templateOption.text = templateName;
+        const templateOption = document.createElement("option");
+        templateOption.value = templateName;
+        templateOption.text = templateName;
 
-          const templateMakerTemplateSelect = document.querySelectorAll(
-            ".template-maker__select--template"
-          );
-          templateMakerTemplateSelect[0].appendChild(templateOption);
+        templateMakerTemplateSelect[0].appendChild(templateOption);
 
-          this.existingTemplateNames.add(templateName); // Add new template to the set
-        });
+        this.existingTemplateNames.add(templateName);
+      }
     }
   }
   openTemplateMakerModal() {
@@ -458,6 +467,13 @@ export class TemplateMaker {
       });
       return;
     } else if (response.status === "resolved") {
+      const cardViewerWrapper = document.querySelectorAll(
+        ".viewer__cards-wrapper"
+      );
+      if (cardViewerWrapper[0].style.display != "none") {
+        cardViewerWrapper[0].style.display = "none";
+      }
+
       const modal = document.querySelectorAll(".modal");
       modal[4].style.display = "block";
 
@@ -476,50 +492,14 @@ export class TemplateMaker {
         buttonsWrapper[0].removeChild(acceptButton);
       });
       templateName.value = "";
-
     }
 
     const modal = document.querySelectorAll(".modal");
     modal[1].style.display = "none";
     this.updateTemplateDropdownOptions();
-    window.scrollTo(0, 0)
-
+    window.scrollTo(0, 0);
   }
-  //   deleteTemplate(templateName) {
-  //     // 1. Confirm deletion with the user
-  //     if (!templateName) return;
-  //     if (
-  //       !confirm(
-  //         `Are you sure you want to delete the template "${templateName}"? This action cannot be undone.`
-  //       )
-  //     ) {
-  //       return; // Exit function if user cancels
-  //     }
-
-  //     // 2. Remove template data from entryForm.loreLib
-  //     delete templates[templateName];
-
-  //     // Keep the orphans
-  //     // delete entryForm.loreLib[templateName];
-
-  //     // 3. Save updated gameData
-  //     try {
-  //       window.catalogAPI.saveTemplates(templates);
-  //       console.log(`Template "${templateName}" deleted successfully.`);
-  //     } catch (error) {
-  //       console.error(`Failed to delete template: ${error.message}`);
-  //       // Add user-friendly error handling (e.g., display an error message)
-  //     }
-  //     // 4. (Optional) Update template options in templateSelect (implementation depends on your logic)
-  //     removeTemplateEntry(templateName);
-  //     uiElements.deleteTemplateButton.style.display = "none";
-
-  //     entryForm.updateForm();
-  //     updateOptions();
-  //     uiElements.createTemplateModal.style.display = "none";
-  //   }
 }
-
 function createNewField() {
   const newField = document.createElement("div");
   newField.classList.add("template-field");
@@ -611,32 +591,3 @@ function addOptionInput(fieldOptionsContainer) {
 
   fieldOptionsContainer.appendChild(optionInput);
 }
-
-// function removeTemplateEntry(templateName) {
-//   // 1. Remove from the set
-//   existingTemplateNames.delete(templateName);
-
-//   // 2. Remove from the dropdown
-//   const templateOption = uiElements.templateSelect.querySelector(
-//     `option[value="${templateName}"]`
-//   );
-//   if (templateOption) {
-//     uiElements.templateSelect.removeChild(templateOption);
-//   }
-//   // 3. If no templates remain, select none
-//   if (uiElements.templateSelect.options.length === 0) {
-//     selectedTemplate = undefined; // Reset selected template
-//   }
-
-//   // 4. Remove from the template creator dropdown
-//   const createTemplateOption = uiElements.templateDropdown.querySelector(
-//     `option[value="${templateName}"]`
-//   );
-//   if (createTemplateOption) {
-//     uiElements.templateDropdown.removeChild(createTemplateOption);
-//   }
-//   // 5. If no templates remain, select none
-//   if (uiElements.templateDropdown.options.length === 0) {
-//     selectedTemplate = undefined; // Reset selected template
-//   }
-// }

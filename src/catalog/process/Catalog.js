@@ -237,6 +237,42 @@ class Catalog {
       };
     }
   }
+  deleteTemplate(flags, templateKey, event) {
+    if (this.information.lore.temp.data.hasOwnProperty(templateKey)) {
+      delete this.information.lore.temp.data[templateKey];
+
+      console.log("Key removed from lore library:", templateKey);
+
+      this.saveCatalogInformationToTemp();
+    }
+
+    if (!!this.information.templates.data[templateKey]) {
+      delete this.information.templates.data[templateKey];
+      
+      fs.writeFile(
+        this.information.templates.path,
+        JSON.stringify(this.information.templates.data),
+        (err) => {
+          if (err) {
+            console.error("Error saving templates:");
+          } else {
+            console.log("Template removed successfully!");
+          }
+        }
+      );
+      
+
+      event.returnValue = {
+        status: "resolved",
+        message: `A template with the key "${templateKey}" has been removed.`,
+      };
+    } else {
+      event.returnValue = {
+        status: "error",
+        message: `A template with the key "${templateKey}" cannot be located.`,
+      };
+    }
+  }
   // lore
   getLoreCatagory(templateKey, event) {
     const result = this.information?.lore?.main?.data?.[templateKey] ?? null;

@@ -414,6 +414,9 @@ img {
 .modal__entry-details--sprite img {
   max-width: 50%;
 }
+.modal__button--destructive {
+  font-family: Open Sans-SemiBold;
+}
 
 .option-inputs {
   display: flex; /* Arrange options horizontally */

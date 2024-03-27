@@ -47,6 +47,13 @@ const catalogAPI = {
     });
     return response;
   },
+  deleteTemplate({ templateKey, flags }) {
+    const response = ipcRenderer.sendSync("delete:template", {
+      templateKey,
+      flags,
+    });
+    return response;
+  },
   getInformationTemplateFields(templateKey) {
     // returns the individual fields of a selected template
     const response = ipcRenderer.sendSync(
@@ -84,6 +91,9 @@ const catalogAPI = {
     ipcRenderer.on("catalog:send-library-path", (_event, value) =>
       callback(value)
     ),
+  onReloadTemplates: (callback) =>
+    ipcRenderer.on("reload:templates", (_event, value) => callback(value)),
+
   //* ONE WAY TO MAIN *//
   saveLore: () => ipcRenderer.send("save:lore-information"),
   saveCatalogTemplate: (template) =>

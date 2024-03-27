@@ -178,12 +178,83 @@ export class Viewer {
       });
     } else if (numberOfEntries === 0) {
       headerWrapper.classList.add("can-delete");
-      headerWrapper.style.opacity =0.7;
+      headerWrapper.style.opacity = 0.7;
 
       headerWrapper.addEventListener("click", () => {
-        // TODO!!!
-        // do delete stuff
+        const templateKey = type;
+        const modal = document.querySelectorAll(".modal");
+        modal[4].style.display = "block";
+
+        const message = document.querySelectorAll(".modal__error-message");
+        message[0].innerText =
+          "Are you sure you want to delete the template: " + templateKey;
+
+        const cancelButton = document.createElement("button");
+        cancelButton.textContent = "Cancel";
+        cancelButton.classList.add("modal__button");
+
+        const deleteTemplateButton = document.createElement("button");
+        deleteTemplateButton.textContent = "Delete";
+        deleteTemplateButton.classList.add("modal__button");
+        deleteTemplateButton.classList.add("modal__button--destructive");
+
+        const buttonsWrapper = document.querySelectorAll(
+          ".modal_buttons-wrapper"
+        );
+
+        buttonsWrapper[0].appendChild(cancelButton);
+        buttonsWrapper[0].appendChild(deleteTemplateButton);
+
+        // Add event listeners
+        cancelButton.addEventListener("click", () => {
+          modal[4].style.display = "none";
+          buttonsWrapper[0].removeChild(cancelButton);
+          buttonsWrapper[0].removeChild(deleteTemplateButton);
+          window.scrollTo(0, 0);
+        });
+
+        deleteTemplateButton.addEventListener("click", () => {
+          const response = window.catalogAPI.deleteTemplate({
+            templateKey,
+            flags: "canOverwrite",
+          });
+          console.log(response);
+
+          const informationToast = document.querySelectorAll(
+            ".lore-main__information-toast"
+          );
+          informationToast[0].innerText = response.message; // <-- change?
+
+          modal[4].style.display = "none";
+          buttonsWrapper[0].removeChild(cancelButton);
+          buttonsWrapper[0].removeChild(deleteTemplateButton);
+
+          this.renderGameData();
+
+        });
       });
+      const buttonsWrapper = document.querySelectorAll(
+        ".modal_buttons-wrapper"
+      );
+      function clearButtonsWrapper() {
+        if (buttonsWrapper && buttonsWrapper.length > 0) {
+          clearElementChildren(buttonsWrapper[0]); // Clear children of the first buttons wrapper
+          function clearElementChildren(element) {
+            if (!element || !element.nodeType) {
+              return;
+            }
+
+            for (let i = element.children.length - 1; i >= 0; i--) {
+              element.removeChild(element.children[i]);
+            }
+          }
+        }
+      }
+
+      const modalButtonClose = document.querySelectorAll(
+        ".modal_button--close"
+      );
+      modalButtonClose[4].addEventListener("click", clearButtonsWrapper);
     }
 
     const sectionHeader = this.createCardHeader(type, card, loreLibrary);

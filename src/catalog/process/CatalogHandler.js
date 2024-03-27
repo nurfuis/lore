@@ -32,8 +32,15 @@ class CatalogHandler {
       this.module.getTemplates(event);
     });
 
-    ipcMain.on("save:template", (event, { templateKey, newTemplate, flags }) => {
-      this.module.saveTemplate(flags, newTemplate, templateKey, event);
+    ipcMain.on(
+      "save:template",
+      (event, { templateKey, newTemplate, flags }) => {
+        this.module.saveTemplate(flags, newTemplate, templateKey, event);
+      }
+    );
+
+    ipcMain.on("delete:template", (event, { templateKey, flags }) => {
+      this.module.deleteTemplate(flags, templateKey, event);
     });
 
     ipcMain.on("information:template-fields", (event, templateKey) => {
