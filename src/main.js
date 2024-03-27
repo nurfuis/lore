@@ -113,7 +113,6 @@ app.on("activate", () => {
 function configureWindow(window) {
   window.setMenuBarVisibility(false);
   window.loadURL(MAIN_WINDOW_WEBPACK_ENTRY);
-
   
   window.once("ready-to-show", () => {
     window.show();

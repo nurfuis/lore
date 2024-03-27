@@ -8,27 +8,35 @@ export class EntryForm {
     const promptGenerator = new Prompts();
     promptGenerator.ready();
 
+    // A Button to dislay the entry form
     const navButtonEditEntry = document.querySelectorAll(
       ".lore-navigation__button--edit-entry"
     );
+    // hide initially
     navButtonEditEntry[0].style.display = "none";
+    // add button behavior
     navButtonEditEntry[0].addEventListener("click", () => {
       const editEntryFormWrapper = document.querySelectorAll(
         ".edit-entry__form-wrapper"
       );
+      // Check if the entry form wrapper is visible
       if (editEntryFormWrapper[0].style.display != "block") {
+        // it is not, so make it visible
         editEntryFormWrapper[0].style.display = "block";
+        // and update the form
         this.updateForm();
+        // Then the entry form display toggles the explorer to be hidden
         const viewerCardsWrapper = document.querySelectorAll(
           ".viewer__cards-wrapper"
         );
         viewerCardsWrapper[0].style.display = "none";
-
+        // The template selector is reset to the default position
         const entryFormTemplateSelect = document.querySelectorAll(
           ".entry-form__template-select"
         );
         entryFormTemplateSelect[0].value = "";
-
+        // The entry selector is reset to the default position
+        // and disabled (until a template is selected)
         const entryFormPrototypeSelect = document.querySelectorAll(
           ".entry-form__prototype-select"
         );
@@ -74,7 +82,9 @@ export class EntryForm {
     const entryFormImageClear = document.querySelectorAll(
       ".entry-form__image-button--clear"
     );
-    entryFormImageClear[0].addEventListener("click", () => {
+    entryFormImageClear[0].addEventListener("click", (event) => {
+      console.log(event)
+      event.preventDefault();
       this.clearImagePreview();
     });
 
@@ -230,7 +240,6 @@ export class EntryForm {
     const entryFormImagePreview = document.querySelectorAll(
       ".entry-form__image--preview"
     );
-    entryFormImagePreview[0].src = "";
     entryFormImagePreview[0].style.display = "none";
 
     const entryFormImageInput = document.querySelectorAll(
