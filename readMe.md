@@ -14,9 +14,13 @@ Future Updates:
 The library is constantly evolving, so keep an eye out for these upcoming features (if you care):
 
 Multiple Images: Because a single image just isn't enough for some folks. Include all the angles you want.
+
 Data Catalog Export: Tired of manually transferring your data? We get it. Soon you'll be able to export your entire library as a handy zip file.
+
 Audio & Animation Integration: Spice things up with some sound effects or short animations (assuming your game engine supports it).
+
 Game Development Tools: Integration tools for game development are planned. These might (hopefully) save you some time wrangling your lore assets into your game.
+
 Again, these features are on the horizon, but we can't guarantee an exact arrival date.
 
 New electron project:
