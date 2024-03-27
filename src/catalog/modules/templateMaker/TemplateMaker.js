@@ -89,7 +89,7 @@ export class TemplateMaker {
       newOptionEntry.value = "";
 
       const newOptionTemplate = document.createElement("option");
-      newOptionTemplate.textContent = "-- Select Entry (Optional) --";
+      newOptionTemplate.textContent = "-- Inherit From (Optional) --";
       newOptionTemplate.value = "";
 
       entryFormTemplateSelect[0].appendChild(newOptionEntry);

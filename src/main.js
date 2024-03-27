@@ -22,7 +22,7 @@ process.env["ELECTRON_DISABLE_SECURITY_WARNINGS"] = true;
 
 app.setAppUserModelId("Lore");
 
-const userMode = DIST;
+const userMode = DEV;
 
 const projectPath = getProjectPath(userMode);
 
