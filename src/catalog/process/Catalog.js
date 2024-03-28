@@ -377,7 +377,15 @@ class Catalog {
       };
     }
   }
-  removeLoreEntryInformation(entryKey, templateKey, event) {
+  removeLoreEntryInformation(entry, templateKey, event) {
+    const entryKey =
+      entry?.name ||
+      entry?.Name ||
+      entry?.index ||
+      entry?.Index ||
+      entry?.key ||
+      entry?.Key ||
+      Object.values(entry)[1];
     const result =
       this.information?.lore?.temp?.data?.[templateKey]?.[entryKey] ?? null;
 

@@ -61,8 +61,8 @@ class CatalogHandler {
     });
     ipcMain.on(
       "catalog:lore-entry-delete",
-      (event, { templateKey, entryKey }) => {
-        this.module.removeLoreEntryInformation(entryKey, templateKey, event);
+      (event, { templateKey, entry }) => {
+        this.module.removeLoreEntryInformation(entry, templateKey, event);
       }
     );
     ipcMain.on("save:lore-information", (event) => {

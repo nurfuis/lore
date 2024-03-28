@@ -27,10 +27,10 @@ const catalogAPI = {
     });
     return response;
   },
-  catalogLoreEntryDelete({ templateKey, entryKey }) {
+  catalogLoreEntryDelete({ templateKey, entry }) {
     const response = ipcRenderer.sendSync("catalog:lore-entry-delete", {
       templateKey,
-      entryKey,
+      entry,
     });
     return response;
   },

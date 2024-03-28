@@ -51,11 +51,7 @@ well because dev is bad and feels bad =(
   src: url("../data/assets/css/Kode_Mono/static/KodeMono-Medium.ttf")
     format("truetype");
 }
-@font-face {
-  font-family: "Kode-Regular";
-  src: url("../data/assets/css/Kode_Mono/static/KodeMono-Bold.ttf")
-    format("truetype");
-}
+
 @font-face {
   font-family: "Open Sans";
   src: url("../data/assets/css/Open_Sans/static/OpenSans-Regular.ttf")
@@ -528,11 +524,7 @@ img {
 .template-field {
   padding: 0 1rem 0 1rem;
 }
-.template-field__input--read-only {
-  font-family: "Kode-Regular";
 
-  background-color: var(--background-color);
-}
 .template-maker__field-wrapper {
   width: 100%;
 }

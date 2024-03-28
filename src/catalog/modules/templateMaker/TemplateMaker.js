@@ -442,7 +442,8 @@ function prepopulateForm() {
   // index key guidance
   const span = document.createElement("span");
   span.classList.add("prompt");
-  span.innerText = "A name is required for all entries.";
+  span.innerText =
+    'Provide a unique reference which is required for each entry. It is reccomended to use "name."';
   newField.appendChild(span);
 
   // index key input
@@ -451,9 +452,9 @@ function prepopulateForm() {
   fieldNameInput.type = "text";
   fieldNameInput.name = "field-name";
   fieldNameInput.value = "name";
-  fieldNameInput.readOnly = true;
+  fieldNameInput.readOnly = false;
   newField.appendChild(fieldNameInput);
-  fieldNameInput.disabled = true;
+  fieldNameInput.disabled = false;
 
   // index key input type
   // wrapper
@@ -487,7 +488,7 @@ function prepopulateForm() {
   const span0 = document.createElement("span");
   span0.classList.add("prompt");
   span0.innerText =
-    "What guidelines should be followed when choosing a name for entries of this type?";
+    "Describe any guidelines which should be followed when choosing a name for entries of this type.";
   newField.appendChild(span0);
 
   // prompt input
@@ -501,7 +502,7 @@ function prepopulateForm() {
 
   templateMakerFieldsWrapper[0].appendChild(newField);
 
-  // Description wrapper
+  // // Description wrapper
   const descriptionField = document.createElement("div");
   descriptionField.classList.add("template-field");
   // description label
@@ -519,8 +520,8 @@ function prepopulateForm() {
   descriptionFieldNameInput.type = "text";
   descriptionFieldNameInput.name = "field-name";
   descriptionFieldNameInput.value = "description";
-  descriptionFieldNameInput.readOnly = true;
-  descriptionFieldNameInput.disabled = true;
+  descriptionFieldNameInput.readOnly = false;
+  descriptionFieldNameInput.disabled = false;
   descriptionField.appendChild(descriptionFieldNameInput);
 
   const descriptionFieldSelectorWrapper = document.createElement("div");
@@ -557,7 +558,7 @@ function prepopulateForm() {
   const span2 = document.createElement("span");
   span2.classList.add("prompt");
   span2.innerText =
-    "Which properties should be included when preparing a brief description for entries of this type?";
+    "Which properties should be included when composing a brief description for entries of this type?";
   descriptionField.appendChild(span2);
   // description input
   const descriptionFieldPrompt = document.createElement("textarea"); // Placeholder for the prompt
@@ -617,8 +618,7 @@ function createNewField() {
 
   const span1 = document.createElement("span");
   span1.classList.add("prompt");
-  span1.innerText =
-    "Provide concise instructions on how to fill the input.";
+  span1.innerText = "Provide concise instructions on how to fill the input.";
   newField.appendChild(span1);
 
   const fieldPrompt = document.createElement("textarea"); // Placeholder for the prompt

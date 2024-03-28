@@ -1,4 +1,3 @@
-import { toggleView } from "../../../renderer";
 import { setToastText } from "../../../utils/setToastText";
 
 export class Viewer {
@@ -32,11 +31,11 @@ export class Viewer {
 
   deleteConfirmed(itemToDelete, type) {
     const templateKey = type;
-    const entryKey = itemToDelete.name;
+    const entry = itemToDelete;
 
-    window.catalogAPI.catalogLoreEntryDelete({ templateKey, entryKey });
+    const response = window.catalogAPI.catalogLoreEntryDelete({ templateKey, entry });
 
-    const details = `Entry "${itemToDelete.name}" deleted successfully!`;
+    const details = response;
     setToastText(details, 4000);
     // TODO remove the li element as opposed to reloading the entire module
   }
