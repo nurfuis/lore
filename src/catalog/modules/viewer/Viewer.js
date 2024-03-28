@@ -14,10 +14,10 @@ export class Viewer {
       if (cardViewerWrapper[0].style.display != "block") {
         cardViewerWrapper[0].style.display = "block";
         this.renderGameData();
-        const viewerCardsWrapper = document.querySelectorAll(
+        const entryFormWrapper = document.querySelectorAll(
           ".edit-entry__form-wrapper"
         );
-        viewerCardsWrapper[0].style.display = "none";
+        entryFormWrapper[0].style.display = "none";
       }
     });
 
@@ -34,8 +34,8 @@ export class Viewer {
     const entry = itemToDelete;
 
     const response = window.catalogAPI.catalogLoreEntryDelete({ templateKey, entry });
-
-    const details = response;
+    console.log(response)
+    const details = response?.message || "Entry removed.";
     setToastText(details, 4000);
     // TODO remove the li element as opposed to reloading the entire module
   }

@@ -22,9 +22,12 @@ export class EntryForm {
       // Check if the entry form wrapper is visible
       if (editEntryFormWrapper[0].style.display != "block") {
         // it is not, so make it visible
+        this.updateForm();
+        this.updatePrototypeDropdown();    
+            
         editEntryFormWrapper[0].style.display = "block";
         // and update the form
-        this.updateForm();
+
         // Then the entry form display toggles the explorer to be hidden
         const viewerCardsWrapper = document.querySelectorAll(
           ".viewer__cards-wrapper"
@@ -186,7 +189,7 @@ export class EntryForm {
 
     const defaultOption = document.createElement("option");
     defaultOption.value = "";
-    defaultOption.text = "-- Select Entry (Optional) --";
+    defaultOption.text = "- Select Entry (Optional) -";
     entryFormPrototypeSelect[0].appendChild(defaultOption);
     entryFormPrototypeSelect[0].disabled = true;
   }
@@ -226,7 +229,9 @@ export class EntryForm {
         prototypeNames.forEach((prototypeName) => {
           const option = document.createElement("option");
           option.value = prototypeName;
-          option.text = prototypeName.slice(0, 24) + (prototypeName.length > 24 ? "..." : "");
+          option.text =
+            prototypeName.slice(0, 24) +
+            (prototypeName.length > 24 ? "..." : "");
           entryFormPrototypeSelect[0].appendChild(option);
         });
         this.enablePrototypeDropdown();

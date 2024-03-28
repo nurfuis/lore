@@ -248,7 +248,7 @@ class Catalog {
 
     if (!!this.information.templates.data[templateKey]) {
       delete this.information.templates.data[templateKey];
-      
+
       fs.writeFile(
         this.information.templates.path,
         JSON.stringify(this.information.templates.data),
@@ -260,7 +260,6 @@ class Catalog {
           }
         }
       );
-      
 
       event.returnValue = {
         status: "resolved",
@@ -391,7 +390,6 @@ class Catalog {
 
     if (result?.valid) {
       delete this.information.lore.temp.data[templateKey][entryKey];
-      event.returnValue = result;
       const filename = this.information.lore.temp.path;
       fs.writeFile(
         filename,
@@ -401,6 +399,10 @@ class Catalog {
             console.error("Error saving lore:", err);
           } else {
             console.log("Lore entry deleted succesfully.");
+            event.returnValue = {
+              status: "resolved",
+              message: `${entryKey} was removed succesfully.`,
+            };
           }
         }
       );
