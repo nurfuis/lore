@@ -18,12 +18,12 @@ export class TemplateMaker {
       }
     });
     // tab creates new field when using template maker
-    document.addEventListener("keydown", (event) => {
-      if (event.key === "Tab" && this.isCreatingTemplate) {
-        event.preventDefault();
-        this.addNewFieldToFormEvent();
-      }
-    });
+    // document.addEventListener("keydown", (event) => {
+    //   if (event.key === "Tab" && this.isCreatingTemplate) {
+    //     event.preventDefault();
+    //     this.addNewFieldToFormEvent();
+    //   }
+    // });
     // open template maker
     const navButtonCreateTemplate = document.querySelectorAll(
       ".lore-navigation__button--create-template"
@@ -201,6 +201,10 @@ export class TemplateMaker {
 
       if (selectedType === "select") {
         // Create a new div for option buttons
+        const span = document.createElement("span");
+        span.classList.add("prompt");
+        span.innerText = "Add multiple options to make a dropdown.";
+        fieldOptionsContainer.appendChild(span);
         const optionButtonContainer = document.createElement("div");
         optionButtonContainer.classList.add("option-button-container"); // Add a class for styling
 
@@ -277,7 +281,7 @@ export class TemplateMaker {
         "select[name='field-type']"
       );
       const fieldTypePrompt = fieldElement.querySelector(
-        "input[name='field-prompt']"
+        "textarea[name='field-prompt']"
       );
 
       const options = []; // Initialize an empty options array for select fields
@@ -426,35 +430,48 @@ function prepopulateForm() {
   if (templateKeyInputField[0]) {
     templateKeyInputField[0].focus();
   }
-
+  // Index Key wrapper
   const newField = document.createElement("div");
   newField.classList.add("template-field");
 
+  // Index key label
   const fieldNameLabel = document.createElement("label");
-  fieldNameLabel.textContent = "Entry Key";
+  fieldNameLabel.textContent = "Index Key";
   newField.appendChild(fieldNameLabel);
 
+  // index key guidance
+  const span = document.createElement("span");
+  span.classList.add("prompt");
+  span.innerText = "A name is required for all entries.";
+  newField.appendChild(span);
+
+  // index key input
   const fieldNameInput = document.createElement("input");
+  fieldNameInput.classList.add("template-field__input--read-only");
   fieldNameInput.type = "text";
   fieldNameInput.name = "field-name";
   fieldNameInput.value = "name";
   fieldNameInput.readOnly = true;
   newField.appendChild(fieldNameInput);
+  fieldNameInput.disabled = true;
 
+  // index key input type
+  // wrapper
+  const fieldSelectorWrapper = document.createElement("div");
+  fieldSelectorWrapper.classList.add("template-maker__field-wrapper");
+  newField.appendChild(fieldSelectorWrapper);
+
+  // input type selector label
+  const fieldSelectorLabel = document.createElement("label");
+  fieldSelectorLabel.textContent = "Input Type";
+  fieldSelectorWrapper.appendChild(fieldSelectorLabel);
+
+  // dropdown
   const fieldTypeSelect = document.createElement("select");
   fieldTypeSelect.name = "field-type";
   fieldTypeSelect.disabled = true;
-  newField.appendChild(fieldTypeSelect);
-
-  const fieldPromptLabel = document.createElement("label");
-  fieldPromptLabel.textContent = "Field Prompt";
-  newField.appendChild(fieldPromptLabel);
-
-  const fieldPrompt = document.createElement("input"); // Placeholder for the prompt
-  fieldPrompt.classList.add("field-prompt"); // Add a class for styling
-  fieldPrompt.name = "field-prompt";
-  newField.appendChild(fieldPrompt);
-
+  fieldSelectorWrapper.appendChild(fieldTypeSelect);
+  // dropdown options
   const fieldTypes = ["text", "textarea", "select"];
   fieldTypes.forEach((type) => {
     const option = document.createElement("option");
@@ -462,38 +479,67 @@ function prepopulateForm() {
     option.textContent = type;
     fieldTypeSelect.appendChild(option);
   });
+  // prompt label
+  const fieldPromptLabel = document.createElement("label");
+  fieldPromptLabel.textContent = "Input Guidance";
+  newField.appendChild(fieldPromptLabel);
+  // prompt guidance
+  const span0 = document.createElement("span");
+  span0.classList.add("prompt");
+  span0.innerText =
+    "What guidelines should be followed when choosing a name for entries of this type?";
+  newField.appendChild(span0);
+
+  // prompt input
+  const fieldPrompt = document.createElement("textarea"); // Placeholder for the prompt
+  fieldPrompt.classList.add("field-prompt"); // Add a class for styling
+  fieldPrompt.name = "field-prompt";
+  newField.appendChild(fieldPrompt);
+
   const hr = document.createElement("hr");
   newField.appendChild(hr);
+
   templateMakerFieldsWrapper[0].appendChild(newField);
 
+  // Description wrapper
   const descriptionField = document.createElement("div");
   descriptionField.classList.add("template-field");
-
+  // description label
   const descriptionFieldNameLabel = document.createElement("label");
-  descriptionFieldNameLabel.textContent = "Field Name:";
+  descriptionFieldNameLabel.textContent = "Description:";
   descriptionField.appendChild(descriptionFieldNameLabel);
-
+  // info
+  const span1 = document.createElement("span");
+  span1.classList.add("prompt");
+  span1.innerText = "A description field is added to all entries.";
+  descriptionField.appendChild(span1);
+  // description input
   const descriptionFieldNameInput = document.createElement("input");
+  descriptionFieldNameInput.classList.add("template-field__input--read-only");
   descriptionFieldNameInput.type = "text";
   descriptionFieldNameInput.name = "field-name";
   descriptionFieldNameInput.value = "description";
   descriptionFieldNameInput.readOnly = true;
+  descriptionFieldNameInput.disabled = true;
   descriptionField.appendChild(descriptionFieldNameInput);
 
+  const descriptionFieldSelectorWrapper = document.createElement("div");
+  descriptionFieldSelectorWrapper.classList.add(
+    "template-maker__field-wrapper"
+  );
+  descriptionField.appendChild(descriptionFieldSelectorWrapper);
+
+  // input type selector label
+  const descriptionFieldSelectorLabel = document.createElement("label");
+  descriptionFieldSelectorLabel.textContent = "Input Type";
+  descriptionFieldSelectorWrapper.appendChild(descriptionFieldSelectorLabel);
+
+  // description input type dropdown
   const descriptionFieldTypeSelect = document.createElement("select");
   descriptionFieldTypeSelect.name = "field-type";
   descriptionFieldTypeSelect.disabled = true;
   descriptionField.appendChild(descriptionFieldTypeSelect);
-
-  const descriptionFieldPromptLabel = document.createElement("label");
-  descriptionFieldPromptLabel.textContent = "Field Prompt:";
-  descriptionField.appendChild(descriptionFieldPromptLabel);
-
-  const descriptionFieldPrompt = document.createElement("input"); // Placeholder for the prompt
-  descriptionFieldPrompt.classList.add("field-prompt"); // Add a class for styling
-  descriptionFieldPrompt.name = "field-prompt";
-  descriptionField.appendChild(descriptionFieldPrompt);
-
+  // description input type dropdown options
   const descriptionFieldTypes = ["text", "textarea", "select"];
   descriptionFieldTypes.forEach((type) => {
     const option = document.createElement("option");
@@ -502,6 +548,22 @@ function prepopulateForm() {
     descriptionFieldTypeSelect.appendChild(option);
   });
   descriptionFieldTypeSelect.value = "textarea";
+
+  // description label
+  const descriptionFieldPromptLabel = document.createElement("label");
+  descriptionFieldPromptLabel.textContent = "Input Guidance:";
+  descriptionField.appendChild(descriptionFieldPromptLabel);
+  // description guidance
+  const span2 = document.createElement("span");
+  span2.classList.add("prompt");
+  span2.innerText =
+    "Which properties should be included when preparing a brief description for entries of this type?";
+  descriptionField.appendChild(span2);
+  // description input
+  const descriptionFieldPrompt = document.createElement("textarea"); // Placeholder for the prompt
+  descriptionFieldPrompt.classList.add("field-prompt"); // Add a class for styling
+  descriptionFieldPrompt.name = "field-prompt";
+  descriptionField.appendChild(descriptionFieldPrompt);
 
   const descriptionHr = document.createElement("hr");
   descriptionField.appendChild(descriptionHr);
@@ -513,8 +575,13 @@ function createNewField() {
   newField.classList.add("template-field");
 
   const fieldNameLabel = document.createElement("label");
-  fieldNameLabel.textContent = "Field Name:";
+  fieldNameLabel.textContent = "Field Label:";
   newField.appendChild(fieldNameLabel);
+
+  const span = document.createElement("span");
+  span.classList.add("prompt");
+  span.innerText = "Choose a descriptive name for the input.";
+  newField.appendChild(span);
 
   const fieldNameInput = document.createElement("input");
   fieldNameInput.type = "text";
@@ -522,18 +589,19 @@ function createNewField() {
   fieldNameInput.required = true;
   newField.appendChild(fieldNameInput);
 
+  // wrapper
+  const fieldSelectorWrapper = document.createElement("div");
+  fieldSelectorWrapper.classList.add("template-maker__field-wrapper");
+  newField.appendChild(fieldSelectorWrapper);
+
+  // input type selector label
+  const fieldSelectorLabel = document.createElement("label");
+  fieldSelectorLabel.textContent = "Input Type";
+  fieldSelectorWrapper.appendChild(fieldSelectorLabel);
+
   const fieldTypeSelect = document.createElement("select");
   fieldTypeSelect.name = "field-type";
-  newField.appendChild(fieldTypeSelect);
-
-  const fieldPromptLabel = document.createElement("label");
-  fieldPromptLabel.textContent = "Field Prompt:";
-  newField.appendChild(fieldPromptLabel);
-
-  const fieldPrompt = document.createElement("input"); // Placeholder for the prompt
-  fieldPrompt.classList.add("field-prompt"); // Add a class for styling
-  fieldPrompt.name = "field-prompt";
-  newField.appendChild(fieldPrompt);
+  fieldSelectorWrapper.appendChild(fieldTypeSelect);
 
   const fieldTypes = ["text", "textarea", "select"];
   fieldTypes.forEach((type) => {
@@ -543,9 +611,41 @@ function createNewField() {
     fieldTypeSelect.appendChild(option);
   });
 
+  const fieldPromptLabel = document.createElement("label");
+  fieldPromptLabel.textContent = "Input Guidance:";
+  newField.appendChild(fieldPromptLabel);
+
+  const span1 = document.createElement("span");
+  span1.classList.add("prompt");
+  span1.innerText =
+    "Provide concise instructions on how to fill the input.";
+  newField.appendChild(span1);
+
+  const fieldPrompt = document.createElement("textarea"); // Placeholder for the prompt
+  fieldPrompt.classList.add("field-prompt"); // Add a class for styling
+  fieldPrompt.name = "field-prompt";
+  newField.appendChild(fieldPrompt);
+
   const fieldOptionsContainer = document.createElement("div");
   fieldOptionsContainer.classList.add("field-options");
-  newField.appendChild(fieldOptionsContainer);
+  fieldSelectorWrapper.appendChild(fieldOptionsContainer);
+
+  // // Add "Insert Field" button
+  // const insertFieldButton = document.createElement("button");
+  // insertFieldButton.textContent = "Insert Field";
+  // insertFieldButton.classList.add("insert-field-button");
+  // insertFieldButton.addEventListener("click", function () {
+  //   const newField = createNewField(); // Create a new field
+  //   const templateMakerFieldsWrapper = document.querySelectorAll(
+  //     ".template-maker__fields-wrapper"
+  //   );
+  //   templateMakerFieldsWrapper[0].insertBefore(
+  //     newField,
+  //     this.parentElement.nextSibling
+  //   ); // Insert it after this field
+  // });
+
+  // newField.appendChild(insertFieldButton);
 
   // Add a "Remove Field" button
   const removeFieldButton = document.createElement("button");
@@ -559,23 +659,6 @@ function createNewField() {
     templateMakerFieldsWrapper[0].removeChild(fieldToRemove);
   });
   newField.appendChild(removeFieldButton);
-
-  // Add "Insert Field" button
-  const insertFieldButton = document.createElement("button");
-  insertFieldButton.textContent = "Insert Field";
-  insertFieldButton.classList.add("insert-field-button");
-  insertFieldButton.addEventListener("click", function () {
-    const newField = createNewField(); // Create a new field
-    const templateMakerFieldsWrapper = document.querySelectorAll(
-      ".template-maker__fields-wrapper"
-    );
-    templateMakerFieldsWrapper[0].insertBefore(
-      newField,
-      this.parentElement.nextSibling
-    ); // Insert it after this field
-  });
-
-  newField.appendChild(insertFieldButton);
 
   const hr = document.createElement("hr");
   newField.appendChild(hr);

@@ -1,7 +1,7 @@
 :root {
   --primary-color-earth: rgb(165, 42, 42);
   --secondary-color-earth: rgb(189, 183, 107);
-  --background-color-earth: #38a3a5;
+  --background-color-earth: rgb(56, 163, 165, 0.7);
   --text-color-earth: #fff;
   --button-color-earth: #808080;
   --button-hover-color-earth: #691f1f;
@@ -11,7 +11,7 @@
 
   --primary-color-fey: #90e0e0;
   --secondary-color-fey: #c2c2f0;
-  --background-color-fey: #282a35;
+  --background-color-fey: rgb(40, 42, 53, 0.7);
   --text-color-fey: #fff;
   --button-color-fey: #a020f0;
   --button-hover-color-fey: #801aa0;
@@ -36,7 +36,6 @@ Colors need to be set in main/settings/themes.js as
 well because dev is bad and feels bad =(
   
 */
-
 @font-face {
   font-family: "Merriweather";
   src: url("../data/assets/css/Merriweather/Merriweather-Regular.ttf")
@@ -50,6 +49,11 @@ well because dev is bad and feels bad =(
 @font-face {
   font-family: "Kode";
   src: url("../data/assets/css/Kode_Mono/static/KodeMono-Medium.ttf")
+    format("truetype");
+}
+@font-face {
+  font-family: "Kode-Regular";
+  src: url("../data/assets/css/Kode_Mono/static/KodeMono-Bold.ttf")
     format("truetype");
 }
 @font-face {
@@ -95,7 +99,7 @@ h3 {
   user-select: none;
 }
 h1 {
-  text-shadow: 0px 3px 3px rgba(0, 0, 0, 0.2);
+  text-shadow: 0px 2px 2px rgba(0, 0, 0, 0.2);
 }
 body {
   font-family: "Open Sans", sans-serif;
@@ -132,14 +136,14 @@ label {
   display: block;
   margin: 1rem 0rem 1rem 0rem;
   font-variant: small-caps;
-  color: var(--text-color); /* White for readability */
+  color: var(--text-color);
   font-family: "Open Sans-Light";
   font-size: large;
   user-select: none;
 }
 label:after {
-  content: ":"; /* Add colon after label text */
-  margin-left: 0.5em; /* Separate colon from label text */
+  content: ":";
+  margin-left: 0.5em;
   user-select: none;
 }
 span {
@@ -147,16 +151,15 @@ span {
 }
 hr {
   border: 1px dashed var(--secondary-color);
-
-  margin: 0 1rem 0 1rem;
+  margin: 2rem 1rem 2rem 1rem;
 }
 input,
 textarea,
 select {
-  background-color: #303040; /* Darker background for better contrast */
-  color: var(--text-color); /* White for readability */
+  background-color: #303040;
+  color: var(--text-color);
   padding: 0.5rem;
-  border: 1px solid var(--secondary-color); /* Bright purple border */
+  border: 1px solid var(--secondary-color);
   border-radius: 3px;
   margin-bottom: 2.25rem;
   font-family: Kode;
@@ -171,8 +174,8 @@ textarea {
   min-height: 120px;
 }
 button {
-  background-color: var(--button-color); /* Bright purple from theme */
-  color: var(--button-text-color); /* White button text */
+  background-color: var(--button-color);
+  color: var(--button-text-color);
   padding: 0.75rem 1rem;
   border: none;
   border-radius: 5px;
@@ -185,9 +188,8 @@ button {
   font-family: Open Sans-SemiBold;
 }
 button:hover {
-  background-color: var(--button-hover-color); /* Darker purple on hover */
-  color: var(--highlight-color); /* Yellow highlight for contrast */
-  /* Optional: Keep the text shadow for added depth */
+  background-color: var(--button-hover-color);
+  color: var(--highlight-color);
   text-shadow: 0px 1px 1px rgba(0, 0, 0, 0.1);
 }
 img {
@@ -239,8 +241,8 @@ img {
 .edit-entry__form-wrapper,
 .viewer__cards-wrapper {
   display: none;
-  border: 1px solid var(--secondary-color); /* Bright purple border */
-  width: 100%; /* Take up full width */
+  border: 1px solid var(--secondary-color);
+  width: 100%;
   flex-grow: 1;
   padding: 6rem;
 }
@@ -259,7 +261,7 @@ img {
   flex-grow: 1;
   flex-direction: column;
   gap: 1rem;
-  background-color: var(--form-background); /* Darker purple from theme */
+  background-color: var(--form-background);
   padding: 1rem 1rem 1rem 1rem;
   border-radius: 5px;
   box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
@@ -269,7 +271,7 @@ img {
   flex-grow: 1;
   flex-direction: column;
   gap: 1rem;
-  background-color: var(--form-background); /* Darker purple from theme */
+  background-color: var(--form-background);
   padding: 1rem;
   border-radius: 5px;
   box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
@@ -295,27 +297,27 @@ img {
   display: flex;
 }
 .entry-form__save-button {
-  color: var(--button-text-color); /* White text for readability */
+  color: var(--button-text-color);
   display: none;
-  border: 1px solid var(--secondary-color); /* Optional: Red border for emphasis */
+  border: 1px solid var(--secondary-color);
   text-shadow: 0px 1px 1px rgba(0, 0, 0, 0.1);
   width: 100%;
   height: 3rem;
   font-family: "Open Sans-ExtraBold";
 }
 .entry-form__commands-button--generate-prompt {
-  color: var(--button-text-color); /* White text for readability */
+  color: var(--button-text-color);
   display: none;
-  border: 1px solid var(--secondary-color); /* Optional: Red border for emphasis */
+  border: 1px solid var(--secondary-color);
   text-shadow: 0px 1px 1px rgba(0, 0, 0, 0.1);
   display: none;
 }
 .prompt {
   display: block;
   padding: 0.5rem;
-  font-size: small; /* Reduce font size slightly */
+  font-size: small;
   color: var(--secondary-color);
-  margin-bottom: 0.5rem; /* Add some margin for better spacing */
+  margin-bottom: 0.5rem;
   font-family: "Merriweather-italics";
   user-select: none;
   width: 80%;
@@ -326,16 +328,14 @@ img {
   padding: 0;
 }
 .viewer__cards-wrapper li {
-  color: var(--text-color); /* White for readability */
-  background-color: rgba(0, 0, 0, 0.4); /* Black w/ opacity */
-  /* Light background for better contrast */
-  border-bottom: 1px solid var(--secondary-color); /* Bright purple border */
+  color: var(--text-color);
+  background-color: rgba(0, 0, 0, 0.4);
+  border-bottom: 1px solid var(--secondary-color);
   width: 100%;
   margin-bottom: 2rem;
-
 }
 .viewer__cards-wrapper button {
-  background-color: var(--button-color); /* Bright purple from theme */
+  background-color: var(--button-color);
   margin-right: 1rem;
 }
 .category-header {
@@ -346,12 +346,15 @@ img {
   cursor: pointer;
 }
 .category-content {
-  max-height: 0; /* Initially hidden */
+  max-height: 0;
   overflow: hidden;
-  transition: max-height 0.3s ease-out; /* Smooth animation */
+  transition: max-height 0.3s ease-out;
+}
+.category-card:hover {
+  border: none;
 }
 .category-card {
-  border: 1px solid #ddd; /* Lighter border as requested */
+  border: 1px solid #ddd;
   margin-bottom: 15px;
   padding: 10px;
   display: flex;
@@ -364,11 +367,18 @@ img {
     rgba(67, 67, 67, 0.2)
   );
 }
+.category-card__header-wrapper.can-expand:hover {
+  background-image: url("../data/assets/arrow-down-hover.png");
+  text-decoration: underline;
+}
 .category-card__header-wrapper.can-expand {
   background-image: url("../data/assets/arrow-down.png");
   background-repeat: no-repeat;
   background-position: top right;
   background-size: 48px;
+}
+.category-card__header-wrapper.expanded:hover {
+  background-image: url("../data/assets/arrow-up-hover.png");
 }
 .category-card__header-wrapper.expanded {
   background-image: url("../data/assets/arrow-up.png");
@@ -423,17 +433,17 @@ img {
 }
 
 .modal {
-  display: none; /* Initially hidden */
-  position: fixed; /* Stay in place */
-  z-index: 1; /* Sit on top */
+  display: none;
+  position: fixed;
+  z-index: 1;
   left: 0;
   top: 0;
   width: 100%;
   height: 100%;
-  overflow: auto; /* Enable scroll if needed */
-  background-color: rgba(0, 0, 0, 0.4); /* Black w/ opacity */
-  filter: blur(0px); /* Initially no blur */
-  backdrop-filter: blur(2px) saturate(1.2); /* Slight blur and color enhancement */
+  overflow: auto;
+  background-color: rgba(0, 0, 0, 0.4);
+  filter: blur(0px);
+  backdrop-filter: blur(2px) saturate(1.2);
   transition: filter 0.3s ease-in-out;
 }
 .modal-content {
@@ -447,16 +457,16 @@ img {
   box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
 }
 .modal ul {
-  background-color: rgba(0, 0, 0, 0.2); /* Semi-transparent dark background */
-  padding: 15px; /* Add some padding for better separation */
-  border: 1px solid var(--secondary-color); /* Optional: Red border for emphasis */
+  background-color: rgba(0, 0, 0, 0.2);
+  padding: 15px;
+  border: 1px solid var(--secondary-color);
   list-style-type: square;
 }
 .modal-content li {
   margin: 1rem;
 }
 .modal_button--close {
-  color: var(--text-color); /* White for readability */
+  color: var(--text-color);
   float: right;
   font-size: 30px;
   font-weight: bold;
@@ -465,7 +475,7 @@ img {
 }
 .modal_button--close:hover,
 .modal_button--close:focus {
-  color: var(--button-color); /* Bright purple on hover */
+  color: var(--button-color);
   cursor: pointer;
 }
 
@@ -482,9 +492,9 @@ img {
   border-bottom: 1px solid var(--secondary-color);
 }
 .template-maker {
-  background-color: rgba(0, 0, 0, 0.7);
+  background-color: var(--background-color);
   filter: blur(0px);
-  backdrop-filter: blur(3px) saturate(1.3); /* Slight blur and color enhancement */
+  backdrop-filter: blur(3px) saturate(1.2);
   transition: filter 1s ease-in-out;
 }
 .template-maker-content {
@@ -492,21 +502,50 @@ img {
   max-width: 600px;
   overflow: auto;
 }
-.template-maker-content hr {
-  margin: 3rem;
-}
+
 .option-inputs {
-  display: flex; /* Arrange options horizontally */
-  flex-wrap: wrap; /* Allow options to wrap to multiple lines if needed */
-  margin-top: 10px; /* Add some margin for spacing */
+  display: flex;
+  flex-wrap: wrap;
+  margin-top: 10px;
 }
 .option-input {
-  margin-right: 10px; /* Add some margin between option inputs */
-  padding: 5px; /* Add padding for better user interaction */
-  border: 1px solid var(--secondary-color); /* Bright purple border */
-  border-radius: 3px; /* Add rounded corners for a more polished look */
+  margin-right: 10px;
+  padding: 5px;
+  border: 1px solid var(--secondary-color);
+  border-radius: 3px;
 }
 .remove-field-button {
+  background-color: var(--button-color);
+}
+.option-button-container {
+  border: 1px solid var(--secondary-color);
+  border-radius: 10px;
+  padding: 0 2rem 0 2rem;
   margin-bottom: 2rem;
-  background-color: var(--button-color); /* Bright purple from theme */
+  background-color: var(--background-color);
+  box-shadow: inset 1px 1px 1px rgba(87, 87, 87, 0.3);
+}
+.template-field {
+  padding: 0 1rem 0 1rem;
+}
+.template-field__input--read-only {
+  font-family: "Kode-Regular";
+
+  background-color: var(--background-color);
+}
+.template-maker__field-wrapper {
+  width: 100%;
+}
+.template-maker__button--add-field {
+  width: 100%;
+}
+
+.template-maker__button--save-form {
+  width: 100%;
+  color: var(--button-text-color);
+  border: 1px solid var(--secondary-color);
+  text-shadow: 0px 1px 1px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  height: 3rem;
+  font-family: "Open Sans-ExtraBold";
 }

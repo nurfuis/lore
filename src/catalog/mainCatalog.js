@@ -11,24 +11,28 @@ const { cycleBackgrounds } = require("../main/menu/cycleBackgrounds");
 let pathOverride;
 
 function mainCatalog(mainWindow, projectPath, userMode) {
-  ipcMain.handle("dialog-file-open", handleOpenDialog);
+  let catalogIsLoaded;
 
+  ipcMain.handle("dialog-file-open", handleOpenDialog);
   async function handleOpenDialog() {
     const { canceled, filePaths } = await dialog.showOpenDialog({
       properties: ["openDirectory"],
     });
-    if (!canceled) {
+    if (!canceled && !catalogIsLoaded) {
       console.log("dialog result", filePaths[0]);
       pathOverride = filePaths[0];
       mainWindow.webContents.send("catalog:send-library-path", filePaths[0]);
 
       return filePaths[0];
       
+    } else {
+      return { response: "Catalog already loaded: " + catalogIsLoaded }
     }
   }
 
   ipcMain.on("catalog:load", async (event) => {
-    const catalogIsLoaded = await loadCatalog(
+    
+    catalogIsLoaded = await loadCatalog(
       userMode,
       projectPath,
       mainWindow
@@ -67,7 +71,7 @@ function mainCatalog(mainWindow, projectPath, userMode) {
     configureCatalogMenu(mainWindow, projectPath);
 
     if (userMode === DEV) {
-      return information;
+      return true;
     } else if (userMode === DIST) {
       return true;
     } else {

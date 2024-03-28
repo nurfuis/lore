@@ -119,7 +119,11 @@
         </select>
 
         <form>
-          <label for="template-name">Template Key</label>
+          <label for="template-name">Template Name</label>
+          <span class="prompt"
+            >Template names should be clear and informative, accurately
+            reflecting the content the template represents.</span
+          >
           <input
             type="text"
             id="template-name"
@@ -132,14 +136,18 @@
         <hr />
 
         <div class="template-maker__fields-wrapper"></div>
-
-        <button type="button" class="template-maker__button--add-field">
-          Add Field
-        </button>
-
-        <button type="button" class="template-maker__button--save-form">
-          Save Template
-        </button>
+        <div class="template-maker__buttons-wrapper entry-form__column">
+          <div class="entry-form__row">
+            <button type="button" class="template-maker__button--add-field">
+              Add Field
+            </button>
+          </div>
+          <div class="entry-form__row">
+            <button type="button" class="template-maker__button--save-form">
+              Save Template
+            </button>
+          </div>
+        </div>
       </div>
     </div>
 
