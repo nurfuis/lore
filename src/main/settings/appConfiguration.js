@@ -1,4 +1,4 @@
-const APP_ICON = "/data/assets/lore-library-icon-ai-1.png";
+const APP_ICON = "/data/assets/icon.png";
 exports.APP_ICON = APP_ICON;
 const DEV = "development";
 exports.DEV = DEV;

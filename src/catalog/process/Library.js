@@ -45,8 +45,8 @@ class Library {
     );
     console.log("Initialized sprites directory", spritesDirectory);
 
-    const previewsPath = this.tryMakeDirectory(spritesDirectory, _PREVIEWS_DIR);
-    console.log("Initialized previews directory", previewsPath);
+    // const previewsPath = this.tryMakeDirectory(spritesDirectory, _PREVIEWS_DIR);
+    // console.log("Initialized previews directory", previewsPath);
 
     // Directories are ready, load the project data
     const loreFiles = await this.readProjectData(projectDataDirectory);

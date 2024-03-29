@@ -14,7 +14,7 @@ module.exports = {
     new CopyPlugin({
       patterns: [
         {
-          from: 'data/assets/lore-library-icon-ai-1.png',
+          from: 'data/assets/icon.png',
           to: 'data/assets',
         },
       ],
