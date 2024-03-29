@@ -1,4 +1,4 @@
-const { app, BrowserWindow, Notification } = require("electron");
+const { app, BrowserWindow, Notification, Menu } = require("electron");
 
 const fs = require("fs");
 const path = require("path");
@@ -19,6 +19,7 @@ const { themes } = require("./main/settings/themes");
 const { mainCatalog } = require("./catalog/mainCatalog");
 
 process.env["ELECTRON_DISABLE_SECURITY_WARNINGS"] = true;
+Menu.setApplicationMenu(null);
 
 app.setAppUserModelId("Lore");
 
@@ -47,6 +48,7 @@ const DEFAULT_WINDOW_OPTIONS = {
   backgroundColor: themes.earth.background,
   show: false,
   icon: appIcon,
+  titleBarStyle: "hidden",
   webPreferences: {
     preload: MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY,
   },
@@ -113,7 +115,7 @@ app.on("activate", () => {
 function configureWindow(window) {
   window.setMenuBarVisibility(false);
   window.loadURL(MAIN_WINDOW_WEBPACK_ENTRY);
-  
+
   window.once("ready-to-show", () => {
     window.show();
     if (userMode === DEV) {

@@ -33,8 +33,11 @@ export class Viewer {
     const templateKey = type;
     const entry = itemToDelete;
 
-    const response = window.catalogAPI.catalogLoreEntryDelete({ templateKey, entry });
-    console.log(response)
+    const response = window.catalogAPI.catalogLoreEntryDelete({
+      templateKey,
+      entry,
+    });
+    console.log(response);
     const details = response?.message || "Entry removed.";
     setToastText(details, 4000);
     // TODO remove the li element as opposed to reloading the entire module
@@ -95,12 +98,14 @@ export class Viewer {
     if (nameValue) {
       previewText += `Name: ${nameValue}\n`;
     }
-    if (versionValue) {
-      previewText += `Version: ${versionValue}\n`;
-    }
+
     if (descriptionValue) {
       previewText += `Description: ${descriptionValue}\n`;
     }
+
+    // if (versionValue) {
+    //   previewText += `Version: ${versionValue}\n`;
+    // }
 
     const entryItemPreview = document.createElement("p");
     entryItemPreview.classList.add("lore-summary__entry-text");
@@ -207,12 +212,12 @@ export class Viewer {
           modal[4].style.display = "none";
           buttonsWrapper[0].removeChild(cancelButton);
           buttonsWrapper[0].removeChild(deleteTemplateButton);
-          window.scrollTo(0, 0);
         });
 
         deleteTemplateButton.addEventListener("click", () => {
           const response = window.catalogAPI.deleteTemplate({
             templateKey,
+
             flags: "canOverwrite",
           });
           console.log(response);
@@ -314,52 +319,73 @@ function createDetailsButton(item) {
   return detailsButton;
 }
 function updateDetailsModal(item) {
-  const modalEntryDetailsHeading = document.querySelectorAll(
-    ".modal__entry-details--heading"
-  );
-  modalEntryDetailsHeading[0].textContent = item.name;
+  const modal = document.querySelectorAll(".modal");
+  const modalWrapper = document.querySelectorAll(".modal-content__wrapper");
+  modalWrapper[0].innerHTML = "";
 
-  const modalEntryDetailsDescription = document.querySelectorAll(
-    ".modal__entry-details--description"
-  );
+  const modalEntryDetailsHeading = document.createElement("h2");
+  modalEntryDetailsHeading.classList.add("modal__entry-details--heading");
+  modalEntryDetailsHeading.textContent = item.name;
+  modalWrapper[0].appendChild(modalEntryDetailsHeading);
 
-  modalEntryDetailsDescription[0].textContent =
-    item.description || "No description available";
-
-  const detailsList = createEntryList(item);
-
-  const existingEntries = modalEntryDetailsDescription[0].nextElementSibling;
-
-  const modalEntryDetailsSprite = document.querySelectorAll(
-    ".modal__entry-details--sprite"
-  );
-
-  if (existingEntries && existingEntries.tagName === "UL") {
-    existingEntries.remove();
-    modalEntryDetailsSprite[0].innerHTML = "";
-  }
+  const hr = document.createElement("hr");
+  modalWrapper[0].appendChild(hr);
 
   if (item.sprite) {
-    modalEntryDetailsSprite[0].innerHTML = "";
+    const modalEntryDetailsSpriteWrapper = document.createElement("div");
+    modalEntryDetailsSpriteWrapper.classList.add(
+      "modal__entry-details--sprite"
+    );
+    modalWrapper[0].appendChild(modalEntryDetailsSpriteWrapper);
+
+    const modalEntryDetailsSpriteFrame = document.createElement("div");
+    modalEntryDetailsSpriteFrame.classList.add("modal__entry-sprite-frame");
+    modalEntryDetailsSpriteWrapper.appendChild(modalEntryDetailsSpriteFrame);
 
     const spriteImage = document.createElement("img");
     const imageSource = window.catalogAPI.getPathSpritesPreview(item.sprite);
 
     spriteImage.src = imageSource;
-    modalEntryDetailsSprite[0].appendChild(spriteImage);
+    modalEntryDetailsSpriteFrame.appendChild(spriteImage);
   }
 
-  modalEntryDetailsDescription[0].parentElement.appendChild(detailsList);
+  const span = document.createElement("span");
+  span.innerText = `Version : ${item.version}`;
+  span.classList.add("prompt");
+  modalWrapper[0].appendChild(span);
 
-  const modal = document.querySelectorAll(".modal");
+  const detailsList = createEntryList(item);
+  modalWrapper[0].appendChild(detailsList);
+
   modal[3].style.display = "block";
 }
 function createEntryList(item) {
   const detailsList = document.createElement("ul");
   for (const entry in item) {
-    const entryItem = document.createElement("li");
-    entryItem.textContent = `${entry}: ${item[entry]}`;
-    detailsList.appendChild(entryItem);
+    if (
+      entry != "valid" &&
+      entry != "version" &&
+      entry != "sprite" &&
+      !!item[entry]
+    ) {
+      const entryItem = document.createElement("li");
+
+      const entryItemWrapper = document.createElement("div");
+      entryItemWrapper.classList.add("modal-details__entry-item-wrapper");
+      entryItem.appendChild(entryItemWrapper);
+
+      const entryItemHeader = document.createElement("h3");
+      entryItemHeader.innerText = `${entry}:`;
+      entryItemWrapper.appendChild(entryItemHeader);
+
+      const entryItemDetails = document.createElement("p");
+      entryItemDetails.textContent = `${item[entry]}`;
+      entryItemWrapper.appendChild(entryItemDetails);
+
+      const hr = document.createElement("hr");
+      entryItemWrapper.appendChild(hr);
+      detailsList.appendChild(entryItem);
+    }
   }
   return detailsList;
 }

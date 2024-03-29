@@ -66,10 +66,21 @@ export class TemplateMaker {
       ".lore-navigation__button--edit-entry"
     );
     navButtonEditEntry[0].addEventListener("click", () => {
-      this.updateTemplateDropdownOptions();
+      this.updateEntryFormDropdownsMenus();
     });
   }
-  updateTemplateDropdownOptions() {
+  openTemplateMakerModal() {
+    this.updateTemplateDropdownOptions();
+
+    const modal = document.querySelectorAll(".modal");
+    modal[1].style.display = "block";
+
+    this.isCreatingTemplate = true;
+
+    prepopulateForm();
+  }
+
+  updateEntryFormDropdownsMenus() {
     const templates = window.catalogAPI.catalogGetTemplates();
     if (templates) {
       const availableTemplates = Object.keys(templates);
@@ -77,31 +88,72 @@ export class TemplateMaker {
       const entryFormTemplateSelect = document.querySelectorAll(
         ".entry-form__template-select"
       );
+
+      // clear entry form templates dropdown
       entryFormTemplateSelect[0].innerHTML = "";
+
+      const entryFormPrototypeSelect = document.querySelectorAll(
+        ".entry-form__prototype-select"
+      );
+
+      // reset the entry dropdown
+      entryFormPrototypeSelect[0].value = "";
+      entryFormPrototypeSelect[0].disabled = true;
+
+      // make a default empty option and add it
+      const newOptionEntry = document.createElement("option");
+      newOptionEntry.textContent = "- Select Type -";
+      newOptionEntry.value = "";
+      entryFormTemplateSelect[0].appendChild(newOptionEntry);
+      // append the templates as options
+      for (const templateName of availableTemplates) {
+        const entryOption = document.createElement("option");
+        entryOption.value = templateName;
+        entryOption.text = templateName;
+        entryFormTemplateSelect[0].appendChild(entryOption);
+        this.existingTemplateNames.add(templateName); // dep
+      }
+    }
+  }
+
+  updateTemplateDropdownOptions() {
+    const templates = window.catalogAPI.catalogGetTemplates();
+    if (templates) {
+      const availableTemplates = Object.keys(templates);
+
+      // const entryFormTemplateSelect = document.querySelectorAll(
+      //   ".entry-form__template-select"
+      // );
+      // entryFormTemplateSelect[0].innerHTML = "";
+
+      // const entryFormPrototypeSelect = document.querySelectorAll(
+      //   ".entry-form__prototype-select"
+      // );
+      // entryFormPrototypeSelect[0].value = "";
+      // entryFormPrototypeSelect[0].disabled = true;
 
       const templateMakerTemplateSelect = document.querySelectorAll(
         ".template-maker__select--template"
       );
       templateMakerTemplateSelect[0].innerHTML = "";
 
-      const newOptionEntry = document.createElement("option");
-      newOptionEntry.textContent = "- Select Type -";
-      newOptionEntry.value = "";
+      // const newOptionEntry = document.createElement("option");
+      // newOptionEntry.textContent = "- Select Type -";
+      // newOptionEntry.value = "";
 
-      const newOptionTemplate = document.createElement("option");
-      newOptionTemplate.textContent = "- Inherit From (Optional) -";
-      newOptionTemplate.value = "";
+      const newTemplateOption = document.createElement("option");
+      newTemplateOption.textContent = "- Inherit From (Optional) -";
+      newTemplateOption.value = "";
 
-      entryFormTemplateSelect[0].appendChild(newOptionEntry);
-      templateMakerTemplateSelect[0].appendChild(newOptionTemplate);
+      // entryFormTemplateSelect[0].appendChild(newOptionEntry);
+      templateMakerTemplateSelect[0].appendChild(newTemplateOption);
 
-      // Filter out existing templates and append only new ones
       for (const templateName of availableTemplates) {
-        const entryOption = document.createElement("option");
-        entryOption.value = templateName;
-        entryOption.text = templateName;
+        // const entryOption = document.createElement("option");
+        // entryOption.value = templateName;
+        // entryOption.text = templateName;
 
-        entryFormTemplateSelect[0].appendChild(entryOption);
+        // entryFormTemplateSelect[0].appendChild(entryOption);
 
         const templateOption = document.createElement("option");
         templateOption.value = templateName;
@@ -113,15 +165,7 @@ export class TemplateMaker {
       }
     }
   }
-  openTemplateMakerModal() {
-    this.updateTemplateDropdownOptions();
-    const modal = document.querySelectorAll(".modal");
-    modal[1].style.display = "block";
 
-    this.isCreatingTemplate = true;
-
-    prepopulateForm();
-  }
   populateTemplateMakerForm(templateMakerTemplateSelect) {
     const selectedTemplate = templateMakerTemplateSelect[0].value;
 
@@ -140,7 +184,7 @@ export class TemplateMaker {
     const formContainer = templateMakerFieldsWrapper[0];
 
     // Iterate through the template data
-
+    console.log(templateData);
     for (const fieldName in templateData) {
       const fieldData = templateData[fieldName];
 
@@ -192,6 +236,12 @@ export class TemplateMaker {
       }
 
       formContainer.appendChild(newField);
+
+      if (!!fieldData.prompt) {
+        const fieldPrompt = newField.querySelector(".field-prompt");
+        fieldPrompt.value = fieldData.prompt;
+        console.log(fieldData.prompt);
+      }
     }
   }
   handleFormFieldTypeSelectorChange(fieldTypeSelect, fieldOptionsContainer) {
@@ -414,7 +464,9 @@ export class TemplateMaker {
 
     const modal = document.querySelectorAll(".modal");
     modal[1].style.display = "none";
+
     this.updateTemplateDropdownOptions();
+    this.updateEntryFormDropdownsMenus();
     window.scrollTo(0, 0);
   }
 }
@@ -565,12 +617,24 @@ function prepopulateForm() {
   descriptionFieldPrompt.classList.add("field-prompt"); // Add a class for styling
   descriptionFieldPrompt.name = "field-prompt";
   descriptionField.appendChild(descriptionFieldPrompt);
+  
+  const removeFieldButton = document.createElement("button");
+  removeFieldButton.textContent = "Remove Field";
+  removeFieldButton.classList.add("remove-field-button"); // Add a class for styling
+  removeFieldButton.addEventListener("click", function () {
+    const fieldToRemove = this.parentElement; // Get the field element containing this button
+    const templateMakerFieldsWrapper = document.querySelectorAll(
+      ".template-maker__fields-wrapper"
+    );
+    templateMakerFieldsWrapper[0].removeChild(fieldToRemove);
+  });
+  descriptionField.appendChild(removeFieldButton);
+
 
   const descriptionHr = document.createElement("hr");
   descriptionField.appendChild(descriptionHr);
   templateMakerFieldsWrapper[0].appendChild(descriptionField);
 }
-
 function createNewField() {
   const newField = document.createElement("div");
   newField.classList.add("template-field");

@@ -24,5 +24,11 @@ catalogAPI.onLoadCatalog((catalog) => {
       ".lore-navigation__button--viewer"
     );
     navButtonViewer[0].style.display = "";
+
+    const hiddenElements = document.querySelectorAll(".hidden");
+
+    for (const element of hiddenElements) {
+      element.classList.remove("hidden");
+    }
   }
 });

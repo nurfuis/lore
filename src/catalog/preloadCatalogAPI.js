@@ -95,6 +95,7 @@ const catalogAPI = {
     ipcRenderer.on("reload:templates", (_event, value) => callback(value)),
 
   //* ONE WAY TO MAIN *//
+
   saveLore: () => ipcRenderer.send("save:lore-information"),
   saveCatalogTemplate: (template) =>
     ipcRenderer.send("catalog:save-template", template),

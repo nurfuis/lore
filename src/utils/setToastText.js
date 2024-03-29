@@ -13,7 +13,7 @@ export function setToastText(toastDetails, delay) {
   setTimeout(() => {
     if (!toastContent[0]) return; // Exit if content element not found
 
-    const fadeOutTime = 1200; // Adjust fade-out duration in milliseconds (1 second)
+    const fadeOutTime = 3000; // Adjust fade-out duration in milliseconds (1 second)
     let opacity = 1;
 
     const fadeInterval = setInterval(() => {

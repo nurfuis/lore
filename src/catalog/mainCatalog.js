@@ -24,19 +24,13 @@ function mainCatalog(mainWindow, projectPath, userMode) {
       mainWindow.webContents.send("catalog:send-library-path", filePaths[0]);
 
       return filePaths[0];
-      
     } else {
-      return { response: "Catalog already loaded: " + catalogIsLoaded }
+      return { response: "Catalog already loaded: " + catalogIsLoaded };
     }
   }
 
   ipcMain.on("catalog:load", async (event) => {
-    
-    catalogIsLoaded = await loadCatalog(
-      userMode,
-      projectPath,
-      mainWindow
-    );
+    catalogIsLoaded = await loadCatalog(userMode, projectPath, mainWindow);
 
     event.returnValue = catalogIsLoaded;
 
@@ -62,10 +56,11 @@ function mainCatalog(mainWindow, projectPath, userMode) {
 
     mainWindow.webContents.send("catalog:send-full-library", catalog);
     mainWindow.webContents.send("catalog:send-library-path", userProjectPath);
-    
+
+
     cycleBackgrounds(mainWindow, projectPath);
     // TODO untangle icon and backgrounds from data dir
-    // the menu here uses the dafault directory for 
+    // the menu here uses the dafault directory for
     // access to bg images
 
     configureCatalogMenu(mainWindow, projectPath);

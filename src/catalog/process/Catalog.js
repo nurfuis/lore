@@ -274,11 +274,13 @@ class Catalog {
   }
   // lore
   getLoreCatagory(templateKey, event) {
-    const result = this.information?.lore?.main?.data?.[templateKey] ?? null;
-    if (result) {
+    const result =
+      this.information?.lore?.main?.data?.[templateKey] ?? undefined;
+    if (!!result) {
       event.returnValue = result;
     } else {
-      event.returnValue = result;
+      console.log({ valid: false });
+      event.returnValue = { valid: false };
     }
   }
   getLoreEntryInformation(entryKey, templateKey, event) {
@@ -289,7 +291,7 @@ class Catalog {
       event.returnValue = result;
       // console.log("Replying to information:lore-data-entry ...", result);
     } else {
-      event.returnValue = result;
+      event.returnValue = { valid: false };
     }
   }
   saveLoreEntry(flags, newEntry, templateKey, event) {

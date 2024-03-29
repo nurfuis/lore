@@ -1,4 +1,4 @@
-const { Menu } = require("electron");
+const { Menu, ipcMain } = require("electron");
 const { cycleBackgrounds } = require("../../../main/menu/cycleBackgrounds");
 const { toggleTheme } = require("../../../main/menu/toggleTheme");
 
@@ -17,7 +17,16 @@ function configureCatalogMenu(window, projectPath) {
       },
     },
   ]);
-  Menu.setApplicationMenu(menu);
-  window.setMenuBarVisibility(true);
+  // window.titleBarStyle = "hidden";
+
+  // Menu.setApplicationMenu(menu);
+  // window.setMenuBarVisibility(true);
+  ipcMain.on("menu:toggle-theme", () => {
+    toggleTheme(window);
+  });
+
+  ipcMain.on("menu:cycle-background", () => {
+    cycleBackgrounds(window, projectPath);
+  });
 }
 exports.configureCatalogMenu = configureCatalogMenu;

@@ -22,9 +22,6 @@ export class EntryForm {
       // Check if the entry form wrapper is visible
       if (editEntryFormWrapper[0].style.display != "block") {
         // it is not, so make it visible
-        this.updateForm();
-        this.updatePrototypeDropdown();    
-            
         editEntryFormWrapper[0].style.display = "block";
         // and update the form
 
@@ -40,11 +37,15 @@ export class EntryForm {
         entryFormTemplateSelect[0].value = "";
         // The entry selector is reset to the default position
         // and disabled (until a template is selected)
+
         const entryFormPrototypeSelect = document.querySelectorAll(
           ".entry-form__prototype-select"
         );
         entryFormPrototypeSelect[0].value = "";
         entryFormPrototypeSelect[0].disabled = true;
+
+        this.updateForm();
+        this.updatePrototypeDropdown();
       }
     });
 
@@ -99,7 +100,6 @@ export class EntryForm {
       this.saveEntry();
     });
   }
-
   clearEntryForm() {
     const entryFormTemplateSelect = document.querySelectorAll(
       ".entry-form__template-select"
@@ -114,7 +114,70 @@ export class EntryForm {
     this.updateForm();
     this.updatePrototypeDropdown();
   }
+  clearImagePreview() {
+    const entryFormImagePreview = document.querySelectorAll(
+      ".entry-form__image--preview"
+    );
+    entryFormImagePreview[0].style.display = "none";
 
+    const entryFormImageInput = document.querySelectorAll(
+      ".entry-form__image--input"
+    );
+    entryFormImageInput[0].value = "";
+    this.spriteKey = undefined;
+  }
+  setPreview(fileKey) {
+    this.spriteKey = fileKey;
+    const imageSource = window.catalogAPI.getPathSpritesPreview(fileKey);
+
+    const entryFormImagePreview = document.querySelectorAll(
+      ".entry-form__image--preview"
+    );
+
+    entryFormImagePreview[0].src = imageSource;
+
+    entryFormImagePreview[0].style.display = "block";
+  }
+  async updateImagePreview(event) {
+    const file = event.target.files[0];
+    if (!file) {
+      return;
+    }
+
+    if (!file.type.startsWith("image/")) {
+      console.error("Please select an image file.");
+      return;
+    }
+
+    const pathToSource = catalogAPI.saveImage(file.path);
+
+    const entryFormImagePreview = document.querySelectorAll(
+      ".entry-form__image--preview"
+    );
+
+    entryFormImagePreview[0].src = `${pathToSource}`;
+    entryFormImagePreview[0].style.display = "block";
+
+    this.spriteKey = removeExtension(file.name);
+
+    console.log("save:lore-image", file.name);
+  }
+  enablePrototypeDropdown() {
+    try {
+      const entryFormPrototypeSelect = document.querySelectorAll(
+        ".entry-form__prototype-select"
+      );
+      if (entryFormPrototypeSelect[0].options.length > 1) {
+        entryFormPrototypeSelect[0].disabled = false;
+      } else {
+        console.info("No prototypes available for this template.");
+        entryFormPrototypeSelect[0].disabled = true;
+      }
+    } catch (error) {
+      console.error("Error enabling prototype dropdown:", error);
+      entryFormPrototypeSelect[0].disabled = true;
+    }
+  }
   handlePrototypeSelect(event) {
     // avtive entry
     const selectedEntry = event.target.value;
@@ -162,24 +225,6 @@ export class EntryForm {
       }
     }
   }
-
-  enablePrototypeDropdown() {
-    try {
-      const entryFormPrototypeSelect = document.querySelectorAll(
-        ".entry-form__prototype-select"
-      );
-      if (entryFormPrototypeSelect[0].options.length > 1) {
-        entryFormPrototypeSelect[0].disabled = false;
-      } else {
-        console.info("No prototypes available for this template.");
-        entryFormPrototypeSelect[0].disabled = true;
-      }
-    } catch (error) {
-      console.error("Error enabling prototype dropdown:", error);
-      entryFormPrototypeSelect[0].disabled = true;
-    }
-  }
-
   resetPrototypeDropdown() {
     const entryFormPrototypeSelect = document.querySelectorAll(
       ".entry-form__prototype-select"
@@ -193,7 +238,6 @@ export class EntryForm {
     entryFormPrototypeSelect[0].appendChild(defaultOption);
     entryFormPrototypeSelect[0].disabled = true;
   }
-
   updatePrototypeDropdown() {
     const entryFormPrototypeSelect = document.querySelectorAll(
       ".entry-form__prototype-select"
@@ -210,7 +254,7 @@ export class EntryForm {
 
     const defaultOption = document.createElement("option");
     defaultOption.value = "";
-    defaultOption.text = "-- Select Entry (Optional) --";
+    defaultOption.text = "- Select Entry (Optional) -";
     entryFormPrototypeSelect[0].appendChild(defaultOption);
 
     const entryFormTemplateSelect = document.querySelectorAll(
@@ -219,11 +263,12 @@ export class EntryForm {
     const selectedTemplate = entryFormTemplateSelect[0].value;
     if (selectedTemplate) {
       const templateKey = selectedTemplate;
+
       const allCatagoryEntries =
         window.catalogAPI.getInformationLoreCatagory(templateKey);
 
       const prototypeNames = Object.keys(allCatagoryEntries);
-      if (prototypeNames) {
+      if (!!prototypeNames) {
         prototypeNames.sort();
 
         prototypeNames.forEach((prototypeName) => {
@@ -240,58 +285,6 @@ export class EntryForm {
       }
     }
   }
-
-  clearImagePreview() {
-    const entryFormImagePreview = document.querySelectorAll(
-      ".entry-form__image--preview"
-    );
-    entryFormImagePreview[0].style.display = "none";
-
-    const entryFormImageInput = document.querySelectorAll(
-      ".entry-form__image--input"
-    );
-    entryFormImageInput[0].value = "";
-    this.spriteKey = undefined;
-  }
-
-  setPreview(fileKey) {
-    this.spriteKey = fileKey;
-    const imageSource = window.catalogAPI.getPathSpritesPreview(fileKey);
-
-    const entryFormImagePreview = document.querySelectorAll(
-      ".entry-form__image--preview"
-    );
-
-    entryFormImagePreview[0].src = imageSource;
-
-    entryFormImagePreview[0].style.display = "block";
-  }
-
-  async updateImagePreview(event) {
-    const file = event.target.files[0];
-    if (!file) {
-      return;
-    }
-
-    if (!file.type.startsWith("image/")) {
-      console.error("Please select an image file.");
-      return;
-    }
-
-    const pathToSource = catalogAPI.saveImage(file.path);
-
-    const entryFormImagePreview = document.querySelectorAll(
-      ".entry-form__image--preview"
-    );
-
-    entryFormImagePreview[0].src = `${pathToSource}`;
-    entryFormImagePreview[0].style.display = "block";
-
-    this.spriteKey = removeExtension(file.name);
-
-    console.log("save:lore-image", file.name);
-  }
-
   updateForm() {
     this.clearImagePreview();
 
@@ -385,7 +378,6 @@ export class EntryForm {
       this.resetPrototypeDropdown();
     }
   }
-
   saveEntry() {
     const newEntry = {};
     newEntry["valid"] = true;

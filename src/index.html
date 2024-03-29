@@ -6,20 +6,31 @@
   </head>
 
   <body>
-    <div class="lore-app__details">
-      <div class="details__icon"></div>
-      <div><h4 class="details__project-directory"></h4></div>
-    </div>
+    <div class="main-menu-bar"></div>
 
-    <nav class="lore-app__navigation">
-      <button class="button lore-navigation__button--edit-entry">
-        Edit Entry</button
-      ><button class="button lore-navigation__button--create-template">
-        Create Template</button
-      ><button class="button lore-navigation__button--viewer">
-        Explore Lore
-      </button>
-    </nav>
+    <div class="lore-app__details">
+      <div class="details__top-left">
+        <div class="main-menu__button--cycle-background hidden"></div>
+        <div class="main-menu__button--toggle-theme hidden"></div>
+      </div>
+      <div class="details__top-right">
+        <div class="main-menu__button--save"></div>
+      </div>
+      <div class="details__icon"></div>
+      <div class="details__project-directory hidden"><h4></h4></div>
+
+      <nav class="lore-app__navigation hidden">
+        <button class="button lore-navigation__button--edit-entry">
+          Edit Entry</button
+        ><button class="button lore-navigation__button--create-template">
+          Create Template</button
+        ><button class="button lore-navigation__button--viewer">
+          Explore Lore
+        </button>
+      </nav>
+
+      <p class="lore-main__information-toast hidden"></p>
+    </div>
 
     <div class="lore-welcome__wrapper">
       <h1>Welcome!</h1>
@@ -28,8 +39,6 @@
     </div>
 
     <div class="app-container">
-      <p class="lore-main__information-toast"></p>
-
       <div class="edit-entry__form-wrapper">
         <div>
           <div class="full-width">
@@ -166,11 +175,9 @@
     </div>
 
     <div class="modal">
-      <div class="modal-content">
+      <div class="modal-content modal-details">
         <span class="modal_button--close">&times;</span>
-        <h2 class="modal__entry-details--heading"></h2>
-        <div class="modal__entry-details--sprite"></div>
-        <p class="modal__entry-details--description"></p>
+        <div class="modal-content__wrapper"></div>
       </div>
     </div>
 
