@@ -106,7 +106,7 @@ body {
   background-size: cover;
   background-attachment: fixed;
   color: var(--text-color);
-  margin: 0 1rem 1rem 1rem;
+  margin: 0 0 1rem 0;
   justify-content: center;
   align-items: center;
 }
@@ -211,16 +211,23 @@ img {
   user-select: none;
 }
 .main-menu-bar {
+  height: 24px;
+  border-radius: 5x;
+  background-image: linear-gradient(rgb(200, 200, 200, 0.4), rgb(0, 0, 0, 0.2));
+}
+.main-menu-bar:hover {
   -webkit-app-region: drag;
   height: 24px;
 }
-
 .details__top-left {
   grid-area: details-top-left;
   height: 48px;
+  padding: 0.25rem;
 }
 .details__top-right {
   height: 48px;
+  padding: 0.25rem;
+  grid-area: details-top-right;
 }
 .main-menu__button--cycle-background {
   background-color: rgb(255, 255, 255, 0);
@@ -294,17 +301,20 @@ img {
   font-family: "Merriweather-italics";
   grid-area: details-path;
   text-align: center;
+  margin-bottom: 1rem;
+  user-select: text;
 }
 .lore-app__navigation {
   grid-area: lore-app-nav;
 }
 .lore-main__information-toast {
-  color: var(--highlight-color);
+  color: var(--text-color);
   height: 2rem;
   user-select: none;
   grid-area: lore-main-toast;
   padding: 1rem;
   text-align: center;
+  font-family: "Merriweather-italics";
 }
 .hidden {
   display: none;

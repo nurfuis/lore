@@ -1,4 +1,4 @@
-const { app, BrowserWindow, Notification, Menu } = require("electron");
+const { app, BrowserWindow, Notification, Menu, ipcMain } = require("electron");
 
 const fs = require("fs");
 const path = require("path");
@@ -62,6 +62,25 @@ app.on("ready", () => {
 });
 
 app.on("window-all-closed", () => {
+  saveAndQuit();
+
+  if (process.platform !== "darwin") {
+    app.quit();
+  }
+});
+
+app.on("activate", () => {
+  if (BrowserWindow.getAllWindows().length === 0) {
+    const mainWindow = new BrowserWindow(DEFAULT_WINDOW_OPTIONS);
+    configureWindow(mainWindow);
+  }
+});
+
+ipcMain.on("menu:save-and-quit", () => {
+  saveAndQuit();
+});
+
+function saveAndQuit() {
   try {
     saveChanges({ reason: "save" });
     function saveChanges({ reason }) {
@@ -100,17 +119,11 @@ app.on("window-all-closed", () => {
   } catch (error) {
     console.error("No data to write. Goodbye.");
   }
+  app.quit();
   if (process.platform !== "darwin") {
     app.quit();
   }
-});
-
-app.on("activate", () => {
-  if (BrowserWindow.getAllWindows().length === 0) {
-    const mainWindow = new BrowserWindow(DEFAULT_WINDOW_OPTIONS);
-    configureWindow(mainWindow);
-  }
-});
+}
 
 function configureWindow(window) {
   window.setMenuBarVisibility(false);

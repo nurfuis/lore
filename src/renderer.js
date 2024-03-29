@@ -10,13 +10,17 @@ const cycleBackgroundButton = document.querySelectorAll(
   ".main-menu__button--cycle-background"
 );
 cycleBackgroundButton[0].addEventListener("click", () => {
-  console.log("fire on the mountain");
   window.menuAPI.cycleBackground();
 });
 const toggleThemeButton = document.querySelectorAll(
   ".main-menu__button--toggle-theme"
 );
 toggleThemeButton[0].addEventListener("click", () => {
-  console.log("fire on the mountain");
   window.menuAPI.toggleTheme();
+});
+const saveAndQuitButton = document.querySelectorAll(
+  ".main-menu__button--save"
+);
+saveAndQuitButton[0].addEventListener("click", () => {
+  window.menuAPI.saveAndQuit();
 });
