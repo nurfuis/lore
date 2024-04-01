@@ -149,7 +149,7 @@ class Library {
         const newLibrary = {};
         fileSet.main.data = this.fillMissingLoreEntries(
           newLibrary,
-          templates.data.template
+          templates.data
         );
         console.log("main.data:", fileSet.main.data);
         fs.writeFile(

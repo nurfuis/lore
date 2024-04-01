@@ -12,7 +12,5 @@ export class RendererCatalog {
     this.viewer = new Viewer();
     welcomeButtonOpenFileDialog();
     welcomeButtonStartLoreCatalog();
-
-
   }
 }
