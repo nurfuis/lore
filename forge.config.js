@@ -1,17 +1,18 @@
 const { FusesPlugin } = require("@electron-forge/plugin-fuses");
 const { FuseV1Options, FuseVersion } = require("@electron/fuses");
+const CopyPlugin = require("copy-webpack-plugin");
 
 module.exports = {
   packagerConfig: {
     asar: true,
-    icon: "./data/assets/icon"
+    icon: "./data/assets/icon",
   },
   rebuildConfig: {},
   makers: [
     {
       name: "@electron-forge/maker-squirrel",
       config: {
-        setupIcon: "./data/assets/icon.ico"
+        setupIcon: "./data/assets/icon.ico",
       },
     },
     {
@@ -35,6 +36,16 @@ module.exports = {
     {
       name: "@electron-forge/plugin-webpack",
       config: {
+        plugins: [
+          new CopyPlugin({
+            patterns: [
+              {
+                from: "data/assets/icon.png",
+                to: "data/assets",
+              },
+            ],
+          }),
+        ],
         mainConfig: "./webpack.main.config.js",
         renderer: {
           config: "./webpack.renderer.config.js",
@@ -51,6 +62,7 @@ module.exports = {
         },
       },
     },
+
     // Fuses are used to enable/disable various Electron functionality
     // at package time, before code signing the application
     new FusesPlugin({

@@ -51,7 +51,6 @@ well because dev is bad and feels bad =(
   src: url("../data/assets/css/Kode_Mono/static/KodeMono-Medium.ttf")
     format("truetype");
 }
-
 @font-face {
   font-family: "Open Sans";
   src: url("../data/assets/css/Open_Sans/static/OpenSans-Regular.ttf")
@@ -677,4 +676,46 @@ img {
   padding: 1rem 1rem 2rem 1rem;
   max-width: 256px;
   margin: 2rem;
+}
+.background0 {
+  background-image: url("../data/assets/images/backgrounds/lore-library-tile-0.png");
+}
+.background1 {
+  background-image: url("../data/assets/images/backgrounds/lore-library-tile-1.png");
+}
+.background2 {
+  background-image: url("../data/assets/images/backgrounds/lore-library-tile-2.png");
+}
+.background3 {
+  background-image: url("../data/assets/images/backgrounds/lore-library-tile-3.png");
+}
+.background4 {
+  background-image: url("../data/assets/images/backgrounds/lore-library-tile-4.png");
+}
+.background5 {
+  background-image: url("../data/assets/images/backgrounds/lore-library-tile-5.png");
+}
+.background6 {
+  background-image: url("../data/assets/images/backgrounds/lore-library-tile-6.png");
+}
+.background7 {
+  background-image: url("../data/assets/images/backgrounds/lore-library-tile-7.png");
+}
+.background8 {
+  background-image: url("../data/assets/images/backgrounds/lore-library-tile-8.png");
+}
+.background9 {
+  background-image: url("../data/assets/images/backgrounds/lore-library-tile-9.png");
+}
+.background10 {
+  background-image: url("../data/assets/images/backgrounds/lore-library-tile-10.png");
+}
+.background11 {
+  background-image: url("../data/assets/images/backgrounds/lore-library-tile-11.png");
+}
+.background12 {
+  background-image: url("../data/assets/images/backgrounds/lore-library-tile-12.png");
+}
+.background13 {
+  background-image: url("../data/assets/images/backgrounds/lore-library-tile-13.png");
 }
