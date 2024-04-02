@@ -325,7 +325,14 @@ function updateDetailsModal(item) {
 
   const modalEntryDetailsHeading = document.createElement("h2");
   modalEntryDetailsHeading.classList.add("modal__entry-details--heading");
-  modalEntryDetailsHeading.textContent = item.name;
+  modalEntryDetailsHeading.textContent =
+    item?.name ||
+    item?.Name ||
+    item?.index ||
+    item?.Index ||
+    item?.key ||
+    item?.Key ||
+    Object.values(item)[1];
   modalWrapper[0].appendChild(modalEntryDetailsHeading);
 
   const hr = document.createElement("hr");

@@ -494,8 +494,7 @@ function prepopulateForm() {
   // index key guidance
   const span = document.createElement("span");
   span.classList.add("prompt");
-  span.innerText =
-    'Provide a unique reference which is required for each entry. It is reccomended to use "name."';
+  span.innerText = "Name a unique identifier for each entry in your template";
   newField.appendChild(span);
 
   // index key input
@@ -564,7 +563,8 @@ function prepopulateForm() {
   // info
   const span1 = document.createElement("span");
   span1.classList.add("prompt");
-  span1.innerText = "A description field is added to all entries.";
+  span1.innerText =
+    "A description field is recommended for all template entries.";
   descriptionField.appendChild(span1);
   // description input
   const descriptionFieldNameInput = document.createElement("input");
@@ -617,7 +617,7 @@ function prepopulateForm() {
   descriptionFieldPrompt.classList.add("field-prompt"); // Add a class for styling
   descriptionFieldPrompt.name = "field-prompt";
   descriptionField.appendChild(descriptionFieldPrompt);
-  
+
   const removeFieldButton = document.createElement("button");
   removeFieldButton.textContent = "Remove Field";
   removeFieldButton.classList.add("remove-field-button"); // Add a class for styling
@@ -629,7 +629,6 @@ function prepopulateForm() {
     templateMakerFieldsWrapper[0].removeChild(fieldToRemove);
   });
   descriptionField.appendChild(removeFieldButton);
-
 
   const descriptionHr = document.createElement("hr");
   descriptionField.appendChild(descriptionHr);
