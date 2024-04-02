@@ -38,7 +38,6 @@ function cycleBackgrounds(mainWindow) {
 
     const currentBackground = backgroundImages[currentBackgroundIndex];
     let script = `document.body.classList.remove('${removeBackground}');`;
-    console.log(script)
     script += `document.body.classList.add('${currentBackground}');`;
     mainWindow.webContents.executeJavaScript(script);
   }

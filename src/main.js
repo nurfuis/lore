@@ -1,3 +1,4 @@
+import "./main.css";
 const { app, BrowserWindow, Notification, Menu, ipcMain } = require("electron");
 
 const fs = require("fs");
@@ -6,7 +7,7 @@ const path = require("path");
 if (require("electron-squirrel-startup")) {
   app.quit();
 }
-const { APP_ICON, DEV, DIST } = require("./main/settings/appConfiguration");
+const { DEV, DIST } = require("./main/settings/appConfiguration");
 
 const {
   _DIR,
@@ -20,10 +21,9 @@ const { mainCatalog } = require("./catalog/mainCatalog");
 
 process.env["ELECTRON_DISABLE_SECURITY_WARNINGS"] = true;
 Menu.setApplicationMenu(null);
-
 app.setAppUserModelId("Lore");
 
-const userMode = DEV;
+const userMode = DIST;
 
 const projectPath = getProjectPath(userMode);
 
@@ -39,8 +39,9 @@ function getProjectPath(userMode) {
     app.quit();
   }
 }
+const appIcon = path.join(__dirname, "7986bebb473f94fb3559.png");
 
-const appIcon = path.join(projectPath, APP_ICON);
+console.log(path.join(__dirname, "icon.png"));
 
 const DEFAULT_WINDOW_OPTIONS = {
   width: 900,
@@ -96,6 +97,8 @@ function saveAndQuit() {
 
         showSavedNotification();
         function showSavedNotification() {
+          app.setAppUserModelId("Lore");
+
           new Notification({
             title: "Changes Saved",
             body: "Your lore data has been successfully saved.",
@@ -107,6 +110,8 @@ function saveAndQuit() {
         if (reason == "save") {
           showNoDataSavedNotification();
           function showNoDataSavedNotification() {
+            app.setAppUserModelId("Lore");
+
             new Notification({
               title: "No Changes Detected",
               body: "There were no changes to save in your lore data.",
