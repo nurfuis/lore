@@ -34,7 +34,7 @@ class Library {
     console.log("Initialized backup directory:", backupDirectory);
 
     const assetsDirectory = this.tryMakeDirectory(
-      projectDataDirectory,
+      userAppDataPath,
       _ASSETS_DIR
     );
     console.log("Initialized assets directory:", assetsDirectory);

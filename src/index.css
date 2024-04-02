@@ -38,37 +38,37 @@ well because dev is bad and feels bad =(
 */
 @font-face {
   font-family: "Merriweather";
-  src: url("../data/assets/css/Merriweather/Merriweather-Regular.ttf")
+  src: url("../assets/css/Merriweather/Merriweather-Regular.ttf")
     format("truetype");
 }
 @font-face {
   font-family: "Merriweather-italics";
-  src: url("../data/assets/css/Merriweather/Merriweather-LightItalic.ttf")
+  src: url("../assets/css/Merriweather/Merriweather-LightItalic.ttf")
     format("truetype");
 }
 @font-face {
   font-family: "Kode";
-  src: url("../data/assets/css/Kode_Mono/static/KodeMono-Medium.ttf")
+  src: url("../assets/css/Kode_Mono/static/KodeMono-Medium.ttf")
     format("truetype");
 }
 @font-face {
   font-family: "Open Sans";
-  src: url("../data/assets/css/Open_Sans/static/OpenSans-Regular.ttf")
+  src: url("../assets/css/Open_Sans/static/OpenSans-Regular.ttf")
     format("truetype");
 }
 @font-face {
   font-family: "Open Sans-SemiBold";
-  src: url("../data/assets/css/Open_Sans/static/OpenSans-SemiBold.ttf")
+  src: url("../assets/css/Open_Sans/static/OpenSans-SemiBold.ttf")
     format("truetype");
 }
 @font-face {
   font-family: "Open Sans-Light";
-  src: url("../data/assets/css/Open_Sans/static/OpenSans-Light.ttf")
+  src: url("../assets/css/Open_Sans/static/OpenSans-Light.ttf")
     format("truetype");
 }
 @font-face {
   font-family: "Open Sans-ExtraBold";
-  src: url("../data/assets/css/Open_Sans/static/OpenSans-ExtraBold.ttf")
+  src: url("../assets/css/Open_Sans/static/OpenSans-ExtraBold.ttf")
     format("truetype");
 }
 ::-webkit-scrollbar {
@@ -99,7 +99,7 @@ h1 {
 body {
   font-family: "Open Sans", sans-serif;
   background-color: var(--background-color);
-  background-image: url("../data/assets/splash-screen.png");
+  background-image: url("../assets/splash-screen.png");
   background-repeat: repeat;
   background-position: center;
   background-size: cover;
@@ -230,7 +230,7 @@ img {
 }
 .main-menu__button--cycle-background {
   background-color: rgb(255, 255, 255, 0);
-  background-image: url("../data/assets/settings-gear.png");
+  background-image: url("../assets/settings-gear.png");
   background-position: center;
   background-size: 48px;
   background-repeat: no-repeat;
@@ -244,11 +244,11 @@ img {
 .main-menu__button--cycle-background:hover {
   background-color: rgb(255, 255, 255, 0.1);
   border-radius: 10px;
-  background-image: url("../data/assets/settings-gear-hover.png");
+  background-image: url("../assets/settings-gear-hover.png");
 }
 .main-menu__button--toggle-theme {
   background-color: rgb(255, 255, 255, 0);
-  background-image: url("../data/assets/light-icon.png");
+  background-image: url("../assets/light-icon.png");
   background-position: center;
   background-size: 48px;
   background-repeat: no-repeat;
@@ -262,11 +262,11 @@ img {
 .main-menu__button--toggle-theme:hover {
   background-color: rgb(255, 255, 255, 0.1);
   border-radius: 10px;
-  background-image: url("../data/assets/light-icon-hover.png");
+  background-image: url("../assets/light-icon-hover.png");
 }
 .main-menu__button--save {
   background-color: rgb(255, 255, 255, 0);
-  background-image: url("../data/assets/save.png");
+  background-image: url("../assets/save.png");
   background-position: center;
   background-size: 48px;
   background-repeat: no-repeat;
@@ -280,14 +280,14 @@ img {
 .main-menu__button--save:hover {
   background-color: rgb(255, 255, 255, 0.1);
   border-radius: 10px;
-  background-image: url("../data/assets/save-hover.png");
+  background-image: url("../assets/save-hover.png");
 }
 .details__top-right {
   grid-area: details-top-right;
   text-align: right;
 }
 .details__icon {
-  background-image: url(../data/assets/icon.png);
+  background-image: url(../assets/icon.png);
   width: 128px;
   height: 128px;
   background-size: cover;
@@ -465,30 +465,30 @@ img {
   );
 }
 .category-card__header-wrapper.can-expand:hover {
-  background-image: url("../data/assets/arrow-down-hover.png");
+  background-image: url("../assets/arrow-down-hover.png");
   text-decoration: underline;
 }
 .category-card__header-wrapper.can-expand {
-  background-image: url("../data/assets/arrow-down.png");
+  background-image: url("../assets/arrow-down.png");
   background-repeat: no-repeat;
   background-position: top right;
   background-size: 48px;
 }
 .category-card__header-wrapper.expanded:hover {
-  background-image: url("../data/assets/arrow-up-hover.png");
+  background-image: url("../assets/arrow-up-hover.png");
 }
 .category-card__header-wrapper.expanded {
-  background-image: url("../data/assets/arrow-up.png");
+  background-image: url("../assets/arrow-up.png");
   background-repeat: no-repeat;
   background-position: top right;
   background-size: 48px;
 }
 .category-card__header-wrapper.can-delete:hover {
-  background-image: url("../data/assets/delete-hover.png");
+  background-image: url("../assets/delete-hover.png");
   text-decoration: underline;
 }
 .category-card__header-wrapper.can-delete {
-  background-image: url("../data/assets/delete.png");
+  background-image: url("../assets/delete.png");
   background-repeat: no-repeat;
   background-position: top right;
   background-size: 48px;
@@ -678,44 +678,44 @@ img {
   margin: 2rem;
 }
 .background0 {
-  background-image: url("../data/assets/images/backgrounds/lore-library-tile-0.png");
+  background-image: url("../assets/images/backgrounds/lore-library-tile-0.png");
 }
 .background1 {
-  background-image: url("../data/assets/images/backgrounds/lore-library-tile-1.png");
+  background-image: url("../assets/images/backgrounds/lore-library-tile-1.png");
 }
 .background2 {
-  background-image: url("../data/assets/images/backgrounds/lore-library-tile-2.png");
+  background-image: url("../assets/images/backgrounds/lore-library-tile-2.png");
 }
 .background3 {
-  background-image: url("../data/assets/images/backgrounds/lore-library-tile-3.png");
+  background-image: url("../assets/images/backgrounds/lore-library-tile-3.png");
 }
 .background4 {
-  background-image: url("../data/assets/images/backgrounds/lore-library-tile-4.png");
+  background-image: url("../assets/images/backgrounds/lore-library-tile-4.png");
 }
 .background5 {
-  background-image: url("../data/assets/images/backgrounds/lore-library-tile-5.png");
+  background-image: url("../assets/images/backgrounds/lore-library-tile-5.png");
 }
 .background6 {
-  background-image: url("../data/assets/images/backgrounds/lore-library-tile-6.png");
+  background-image: url("../assets/images/backgrounds/lore-library-tile-6.png");
 }
 .background7 {
-  background-image: url("../data/assets/images/backgrounds/lore-library-tile-7.png");
+  background-image: url("../assets/images/backgrounds/lore-library-tile-7.png");
 }
 .background8 {
-  background-image: url("../data/assets/images/backgrounds/lore-library-tile-8.png");
+  background-image: url("../assets/images/backgrounds/lore-library-tile-8.png");
 }
 .background9 {
-  background-image: url("../data/assets/images/backgrounds/lore-library-tile-9.png");
+  background-image: url("../assets/images/backgrounds/lore-library-tile-9.png");
 }
 .background10 {
-  background-image: url("../data/assets/images/backgrounds/lore-library-tile-10.png");
+  background-image: url("../assets/images/backgrounds/lore-library-tile-10.png");
 }
 .background11 {
-  background-image: url("../data/assets/images/backgrounds/lore-library-tile-11.png");
+  background-image: url("../assets/images/backgrounds/lore-library-tile-11.png");
 }
 .background12 {
-  background-image: url("../data/assets/images/backgrounds/lore-library-tile-12.png");
+  background-image: url("../assets/images/backgrounds/lore-library-tile-12.png");
 }
 .background13 {
-  background-image: url("../data/assets/images/backgrounds/lore-library-tile-13.png");
+  background-image: url("../assets/images/backgrounds/lore-library-tile-13.png");
 }

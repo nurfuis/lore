@@ -87,7 +87,6 @@ class Catalog {
         // maintainability. Is there a preferred way to handle this scenario?
         event.returnValue = path.join(
           "../",
-          _DIR,
           _ASSETS_DIR,
           _SPRITES_DIR,
           filename
@@ -97,7 +96,6 @@ class Catalog {
         // data/assets/sprites directory relative to the application projectPath.
         event.returnValue = path.join(
           projectPath,
-          _DIR,
           _ASSETS_DIR,
           _SPRITES_DIR,
           filename
@@ -141,7 +139,6 @@ class Catalog {
     if (userMode === DEV) {
       const relativeFilePath = path.join(
         "../",
-        _DIR,
         _ASSETS_DIR,
         _SPRITES_DIR,
         this.information.sprites.data.sprite[fileKey].preview
@@ -150,7 +147,6 @@ class Catalog {
     } else if (userMode === DIST) {
       const filePath = path.join(
         projectPath,
-        _DIR,
         _ASSETS_DIR,
         _SPRITES_DIR,
         this.information.sprites.data.sprite[fileKey].preview

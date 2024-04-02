@@ -5,14 +5,14 @@ const CopyPlugin = require("copy-webpack-plugin");
 module.exports = {
   packagerConfig: {
     asar: true,
-    icon: "./data/assets/icon",
+    icon: "./assets/icon",
   },
   rebuildConfig: {},
   makers: [
     {
       name: "@electron-forge/maker-squirrel",
       config: {
-        setupIcon: "./data/assets/icon.ico",
+        setupIcon: "./assets/icon.ico",
       },
     },
     {

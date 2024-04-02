@@ -9,6 +9,7 @@ lerna-debug.log*
 # ignore data while developing
 data
 catalog
+assets
 config.json
 src/.vscode
 .vscode

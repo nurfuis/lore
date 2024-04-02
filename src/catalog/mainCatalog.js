@@ -1,4 +1,4 @@
-const { ipcMain, dialog } = require("electron");
+const { ipcMain, dialog, app } = require("electron");
 const { DEV, DIST } = require("../main/settings/appConfiguration");
 const { Library } = require("./process/Library");
 const { CatalogAPI } = require("./process/CatalogHandler");
@@ -7,6 +7,8 @@ const {
   configureCatalogMenu,
 } = require("./process/config/configureCatalogMenu");
 const { cycleBackgrounds } = require("../main/menu/cycleBackgrounds");
+const path = require("path");
+const fs = require("fs");
 
 let pathOverride;
 
@@ -44,6 +46,8 @@ function mainCatalog(mainWindow, projectPath, userMode) {
 
     const userProjectPath = pathOverride || projectPath;
 
+    writeConfig(userProjectPath);
+
     const information = await library.initializeProjectDirectories(
       userProjectPath
     );
@@ -57,11 +61,7 @@ function mainCatalog(mainWindow, projectPath, userMode) {
     mainWindow.webContents.send("catalog:send-full-library", catalog);
     mainWindow.webContents.send("catalog:send-library-path", userProjectPath);
 
-
     cycleBackgrounds(mainWindow, projectPath);
-    // TODO untangle icon and backgrounds from data dir
-    // the menu here uses the dafault directory for
-    // access to bg images
 
     configureCatalogMenu(mainWindow, projectPath);
 
@@ -75,3 +75,12 @@ function mainCatalog(mainWindow, projectPath, userMode) {
   }
 }
 exports.mainCatalog = mainCatalog;
+
+function writeConfig(userProjectPath) {
+  const writeTo = path.join(`${app.getPath("userData")}`, "config.json");
+  try {
+    fs.writeFileSync(writeTo, JSON.stringify({ USER_PATH: userProjectPath }));
+  } catch (error) {
+    console.error("ERRORZ");
+  }
+}

@@ -1,19 +1,12 @@
 import "./main.css";
 const { app, BrowserWindow, Notification, Menu, ipcMain } = require("electron");
 
-const fs = require("fs");
 const path = require("path");
 
 if (require("electron-squirrel-startup")) {
   app.quit();
 }
 const { DEV, DIST } = require("./main/settings/appConfiguration");
-
-const {
-  _DIR,
-  LORE_LIBRARY,
-  LORE_LIBRARY_TEMP,
-} = require("./catalog/process/config/directoryConfiguration");
 
 const { themes } = require("./main/settings/themes");
 
@@ -23,7 +16,7 @@ process.env["ELECTRON_DISABLE_SECURITY_WARNINGS"] = true;
 Menu.setApplicationMenu(null);
 app.setAppUserModelId("Lore");
 
-const userMode = DIST;
+const userMode = DEV;
 
 const projectPath = getProjectPath(userMode);
 
@@ -85,8 +78,19 @@ function saveAndQuit() {
   try {
     saveChanges({ reason: "save" });
     function saveChanges({ reason }) {
-      const mainFile = path.join(projectPath, _DIR, LORE_LIBRARY);
-      const tempFile = path.join(projectPath, _DIR, LORE_LIBRARY_TEMP);
+      const fs = require("fs");
+      const {
+        _DIR,
+        LORE_LIBRARY,
+        LORE_LIBRARY_TEMP,
+      } = require("./catalog/process/config/directoryConfiguration");
+
+      const configFile = path.join(`${app.getPath("userData")}`, "config.json");
+      
+      const usePath = JSON.parse(fs.readFileSync(configFile, "utf-8"));
+      
+      const mainFile = path.join(usePath.USER_PATH, _DIR, LORE_LIBRARY);
+      const tempFile = path.join(usePath.USER_PATH, _DIR, LORE_LIBRARY_TEMP);
 
       try {
         fs.copyFileSync(tempFile, mainFile);
