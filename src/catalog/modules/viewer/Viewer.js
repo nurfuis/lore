@@ -86,9 +86,6 @@ export class Viewer {
     listContentElement.classList.add("lore-summary__content");
     listParentElement.appendChild(listContentElement);
 
-    let previewText = ""; // Empty string for text accumulation
-    let previewTextLine2 = "";
-
     const nameKey =
       item?.name ||
       item?.Name ||
@@ -128,23 +125,6 @@ export class Viewer {
       descriptionSpan.textContent = `Description: ${descriptionValue}`;
       entryItemPreviewLine2.appendChild(descriptionSpan);
     }
-    // if (nameKey) {
-    //   previewText += `Name: ${nameKey}\n`;
-    // }
-
-    // if (descriptionValue) {
-    //   previewTextLine2 += `Description: ${descriptionValue}\n`;
-    // }
-
-    // const entryItemPreviewLine1 = document.createElement("p");
-    // entryItemPreviewLine1.classList.add("lore-summary__entry-text");
-    // entryItemPreviewLine1.textContent = previewText.trim();
-    // listContentElement.appendChild(entryItemPreviewLine1);
-
-    // const entryItemPreviewLine2 = document.createElement("p");
-    // entryItemPreviewLine2.classList.add("lore-summary__entry-text--line2");
-    // entryItemPreviewLine2.textContent = previewTextLine2.trim();
-    // listContentElement.appendChild(entryItemPreviewLine2);
 
     if (item.sprite) {
       const entryImagePeviewElement = document.createElement("img");
@@ -321,6 +301,7 @@ export class Viewer {
   renderGameData() {
     const viewerCards = document.querySelectorAll(".viewer__cards-wrapper");
     viewerCards[0].innerHTML = "";
+
     const loreLibrary = window.catalogAPI.getInformationLoreLibrary("temp");
 
     const sectionHeader = document.createElement("h1");
@@ -420,7 +401,8 @@ function createEntryList(item) {
       entryItemWrapper.appendChild(entryItemHeader);
 
       const entryItemDetails = document.createElement("p");
-      entryItemDetails.textContent = `${item[entry]}`;
+      const formattedText = item[entry].replace(/\n/g, "<br>");
+      entryItemDetails.innerHTML = formattedText;
       entryItemWrapper.appendChild(entryItemDetails);
 
       const hr = document.createElement("hr");

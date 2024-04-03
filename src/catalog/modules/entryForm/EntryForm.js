@@ -392,6 +392,7 @@ export class EntryForm {
     const formData = new FormData(entryFormElement[0]);
     for (const [key, value] of formData.entries()) {
       newEntry[key] = value;
+      console.log(value);
     }
 
     const entryFormImageInput = document.querySelectorAll(
