@@ -17,7 +17,7 @@ process.env["ELECTRON_DISABLE_SECURITY_WARNINGS"] = true;
 Menu.setApplicationMenu(null);
 app.setAppUserModelId("Lore");
 
-const userMode = DEV;
+const userMode = DIST;
 
 const projectPath = getProjectPath(userMode);
 
@@ -159,10 +159,7 @@ if (!gotTheLock) {
     window.once("ready-to-show", () => {
       window.show();
       window.webContents.send("catalog:send-library-path", projectPath);
-
-      if (userMode === DEV) {
-        window.webContents.openDevTools();
-      }
+      // window.webContents.openDevTools();
     });
   }
 }

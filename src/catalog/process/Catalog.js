@@ -2,11 +2,9 @@ const { dialog } = require("electron");
 
 const fs = require("fs");
 const path = require("path");
-const { DEV, DIST } = require("../../main/settings/appConfiguration");
 const {
   SPRITES_KEY,
   DEFAULT_KEY,
-  _DIR,
   _ASSETS_DIR,
   _SPRITES_DIR,
 } = require("./config/directoryConfiguration");
@@ -38,22 +36,11 @@ class Catalog {
     }
   }
   // sprites
-  async handleOpenImageDialog() {
-    // const { canceled, filePaths } = await dialog.showOpenDialog({
-    //   properties: ["openFile"],
-    // });
-    // if (!canceled) {
-    //   console.log("dialog result", filePaths[0]);
 
-    //   return filePaths[0];
-    // } else {
-    //   return filePaths[0];
-    // }
-    console.log("1");
-    return true;
-  }
   saveLoreImage(event, filePath, information, userMode, projectPath) {
+    
     saveImageData(event, filePath, information, userMode, projectPath);
+    
     async function saveImageData(
       event,
       sourceFilePath,
@@ -76,10 +63,8 @@ class Catalog {
 
       const imageData = fs.readFileSync(sourceFilePath);
 
-      if (userMode === DIST) {
-        if (!(await writeImageData(newImageFilePath, imageData))) {
-          return;
-        }
+      if (!(await writeImageData(newImageFilePath, imageData))) {
+        return;
       }
 
       if (
@@ -94,28 +79,13 @@ class Catalog {
         removeExtension(filename)
       );
 
-      if (userMode === DEV) {
-        // In development mode, set the return value to a temporary path within the
-        // data/assets/sprites directory to ensure the page doesn't reload due to webpack
-        // noticing file changes. This approach might not be ideal for long-term
-        // maintainability. Is there a preferred way to handle this scenario?
-        event.returnValue = path.join(
-          "../",
-          _ASSETS_DIR,
-          _SPRITES_DIR,
-          filename
-        );
-      } else if (userMode === DIST) {
-        // In production mode, set the return value to the final path within the
-        // data/assets/sprites directory relative to the application projectPath.
-        console.log(projectPath);
-        event.returnValue = path.join(
-          projectPath,
-          _ASSETS_DIR,
-          _SPRITES_DIR,
-          filename
-        );
-      }
+      console.log(projectPath);
+      event.returnValue = path.join(
+        projectPath,
+        _ASSETS_DIR,
+        _SPRITES_DIR,
+        filename
+      );
     }
     async function updateSpriteReferences(fileIndex, filename) {
       information.sprites.data[SPRITES_KEY][fileIndex] = {};
@@ -151,23 +121,20 @@ class Catalog {
     }
   }
   getSpritePreviewPath(fileKey, event, userMode, projectPath) {
-    if (userMode === DEV) {
-      const relativeFilePath = path.join(
-        "../",
-        _ASSETS_DIR,
-        _SPRITES_DIR,
-        this.information.sprites.data.sprite[fileKey]?.default
-      );
-      event.returnValue = relativeFilePath;
-    } else if (userMode === DIST) {
-      const filePath = path.join(
-        projectPath,
-        _ASSETS_DIR,
-        _SPRITES_DIR,
-        this.information.sprites.data.sprite[fileKey]?.default
-      );
-      event.returnValue = filePath;
-    }
+    const filePath = path.join(
+      projectPath,
+      _ASSETS_DIR,
+      _SPRITES_DIR,
+      this.information.sprites.data.sprite[fileKey]?.default
+    );
+    // When ran from webpack it will refuse to load images that reside outside the .webpack dir
+    // const filePath = path.join(
+    //   "../",
+    //   _ASSETS_DIR,
+    //   _SPRITES_DIR,
+    //   this.information.sprites.data.sprite[fileKey]?.default
+    // );
+    event.returnValue = filePath;
   }
   // templates
   getTemplates(event) {

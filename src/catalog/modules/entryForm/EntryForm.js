@@ -78,9 +78,7 @@ export class EntryForm {
     const entryFormImageInput = document.querySelectorAll(
       ".entry-form__image--input"
     );
-    entryFormImageInput[0].addEventListener("click", async (event) => {
-      // event.preventDefault();
-      // const result = await catalogAPI.openImageFileDialog();
+    entryFormImageInput[0].addEventListener("change", async (event) => {
       console.log("Image Input Clicked");
       this.updateImagePreview(event);
     });
@@ -144,6 +142,7 @@ export class EntryForm {
   async updateImagePreview(event) {
     const file = event.target.files[0];
     if (!file) {
+      console.log("No was image selected");
       return;
     }
 
@@ -153,6 +152,7 @@ export class EntryForm {
     }
 
     const pathToSource = catalogAPI.saveImage(file.path);
+    console.log("Path to source", pathToSource);
 
     const entryFormImagePreview = document.querySelectorAll(
       ".entry-form__image--preview"

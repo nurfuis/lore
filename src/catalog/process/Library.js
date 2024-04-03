@@ -33,10 +33,7 @@ class Library {
     );
     console.log("Initialized backup directory:", backupDirectory);
 
-    const assetsDirectory = this.tryMakeDirectory(
-      userAppDataPath,
-      _ASSETS_DIR
-    );
+    const assetsDirectory = this.tryMakeDirectory(userAppDataPath, _ASSETS_DIR);
     console.log("Initialized assets directory:", assetsDirectory);
 
     const spritesDirectory = this.tryMakeDirectory(
@@ -49,13 +46,16 @@ class Library {
     // console.log("Initialized previews directory", previewsPath);
 
     // Directories are ready, load the project data
-    const loreFiles = await this.readProjectData(projectDataDirectory);
+    const loreFiles = await this.readProjectData(
+      projectDataDirectory,
+      userAppDataPath
+    );
 
     return loreFiles;
   }
 
-  async readProjectData(projectDataDirectory) {
-    const sprites = this.readSprites(projectDataDirectory);
+  async readProjectData(projectDataDirectory, userAppDataPath) {
+    const sprites = this.readSprites(projectDataDirectory, userAppDataPath);
     const templates = this.readTemplates(projectDataDirectory);
     const lore = await this.readLore(projectDataDirectory, templates);
     if (!!lore) {
@@ -63,7 +63,7 @@ class Library {
     }
   }
 
-  readSprites(projectDataDirectory) {
+  readSprites(projectDataDirectory, userAppDataPath) {
     const spritesLibraryFile = path.join(projectDataDirectory, SPRITE_LIBRARY);
     console.log("Reading sprites file...");
     let results;
@@ -77,7 +77,7 @@ class Library {
     return {
       data: results,
       path: spritesLibraryFile,
-      directory: path.join(projectDataDirectory, _ASSETS_DIR, _SPRITES_DIR),
+      directory: path.join(userAppDataPath, _ASSETS_DIR, _SPRITES_DIR),
     };
   }
 

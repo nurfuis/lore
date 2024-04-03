@@ -1,4 +1,4 @@
-const { ipcMain, dialog } = require("electron");
+const { ipcMain } = require("electron");
 
 class CatalogHandler {
   constructor(userMode, projectPath) {
