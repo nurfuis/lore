@@ -5,7 +5,7 @@ const path = require("path");
 const { DEV, DIST } = require("../../main/settings/appConfiguration");
 const {
   SPRITES_KEY,
-  PREVIEWS_KEY,
+  DEFAULT_KEY,
   _DIR,
   _ASSETS_DIR,
   _SPRITES_DIR,
@@ -38,6 +38,20 @@ class Catalog {
     }
   }
   // sprites
+  async handleOpenImageDialog() {
+    // const { canceled, filePaths } = await dialog.showOpenDialog({
+    //   properties: ["openFile"],
+    // });
+    // if (!canceled) {
+    //   console.log("dialog result", filePaths[0]);
+
+    //   return filePaths[0];
+    // } else {
+    //   return filePaths[0];
+    // }
+    console.log("1");
+    return true;
+  }
   saveLoreImage(event, filePath, information, userMode, projectPath) {
     saveImageData(event, filePath, information, userMode, projectPath);
     async function saveImageData(
@@ -94,6 +108,7 @@ class Catalog {
       } else if (userMode === DIST) {
         // In production mode, set the return value to the final path within the
         // data/assets/sprites directory relative to the application projectPath.
+        console.log(projectPath);
         event.returnValue = path.join(
           projectPath,
           _ASSETS_DIR,
@@ -104,7 +119,7 @@ class Catalog {
     }
     async function updateSpriteReferences(fileIndex, filename) {
       information.sprites.data[SPRITES_KEY][fileIndex] = {};
-      information.sprites.data[SPRITES_KEY][fileIndex][PREVIEWS_KEY] = filename;
+      information.sprites.data[SPRITES_KEY][fileIndex][DEFAULT_KEY] = filename;
 
       try {
         await fs.promises.writeFile(
@@ -141,7 +156,7 @@ class Catalog {
         "../",
         _ASSETS_DIR,
         _SPRITES_DIR,
-        this.information.sprites.data.sprite[fileKey].preview
+        this.information.sprites.data.sprite[fileKey]?.default
       );
       event.returnValue = relativeFilePath;
     } else if (userMode === DIST) {
@@ -149,7 +164,7 @@ class Catalog {
         projectPath,
         _ASSETS_DIR,
         _SPRITES_DIR,
-        this.information.sprites.data.sprite[fileKey].preview
+        this.information.sprites.data.sprite[fileKey]?.default
       );
       event.returnValue = filePath;
     }

@@ -22,7 +22,9 @@ function mainCatalog(mainWindow, projectPath, userMode) {
     });
     if (!canceled && !catalogIsLoaded) {
       console.log("dialog result", filePaths[0]);
+
       pathOverride = filePaths[0];
+
       mainWindow.webContents.send("catalog:send-library-path", filePaths[0]);
 
       return filePaths[0];
@@ -38,7 +40,6 @@ function mainCatalog(mainWindow, projectPath, userMode) {
 
     console.log("Catalog is loaded...", catalogIsLoaded);
   });
-
   async function loadCatalog(userMode, projectPath, mainWindow) {
     console.log("Loading catalog...");
 
@@ -78,6 +79,8 @@ exports.mainCatalog = mainCatalog;
 
 function writeConfig(userProjectPath) {
   const writeTo = path.join(`${app.getPath("userData")}`, "config.json");
+  console.log(userProjectPath);
+  console.log(writeTo);
   try {
     fs.writeFileSync(writeTo, JSON.stringify({ USER_PATH: userProjectPath }));
   } catch (error) {

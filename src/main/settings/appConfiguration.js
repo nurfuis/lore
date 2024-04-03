@@ -1,5 +1,3 @@
-const APP_ICON = "/assets/icon.png";
-exports.APP_ICON = APP_ICON;
 const DEV = "development";
 exports.DEV = DEV;
 const DIST = "distribution";

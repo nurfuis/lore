@@ -1,4 +1,4 @@
-const { ipcMain } = require("electron");
+const { ipcMain, dialog } = require("electron");
 
 class CatalogHandler {
   constructor(userMode, projectPath) {
@@ -10,6 +10,11 @@ class CatalogHandler {
       this.module.getLoreLibrary(edition, event);
     });
     // sprites
+    // ipcMain.handle(
+    //   "dialog:open-image-file",
+    //   this.module.handleOpenImageDialog()
+    // );
+
     ipcMain.on("save:lore-image", (event, filePath) => {
       this.module.saveLoreImage(
         event,
@@ -59,12 +64,9 @@ class CatalogHandler {
     ipcMain.on("save:lore-entry", (event, { templateKey, newEntry, flags }) => {
       this.module.saveLoreEntry(flags, newEntry, templateKey, event);
     });
-    ipcMain.on(
-      "catalog:lore-entry-delete",
-      (event, { templateKey, entry }) => {
-        this.module.removeLoreEntryInformation(entry, templateKey, event);
-      }
-    );
+    ipcMain.on("catalog:lore-entry-delete", (event, { templateKey, entry }) => {
+      this.module.removeLoreEntryInformation(entry, templateKey, event);
+    });
     ipcMain.on("save:lore-information", (event) => {
       this.module.saveCatalogInformationToTemp();
       console.log(event);

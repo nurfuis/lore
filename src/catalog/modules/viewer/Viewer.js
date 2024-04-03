@@ -87,30 +87,64 @@ export class Viewer {
     listParentElement.appendChild(listContentElement);
 
     let previewText = ""; // Empty string for text accumulation
-    const nameKey = "name";
-    const versionKey = "version";
-    const descriptionKey = "description";
+    let previewTextLine2 = "";
 
-    const nameValue = item[nameKey];
-    const versionValue = item[versionKey];
+    const nameKey =
+      item?.name ||
+      item?.Name ||
+      item?.index ||
+      item?.Index ||
+      item?.key ||
+      item?.Key ||
+      Object.values(item)[1];
+
+    const descriptionKey = "description";
     const descriptionValue = item[descriptionKey];
 
-    if (nameValue) {
-      previewText += `Name: ${nameValue}\n`;
+    const entryItemPreviewLine1 = document.createElement("p");
+    entryItemPreviewLine1.classList.add("lore-summary__entry-text");
+
+    const entryItemPreviewLine2 = document.createElement("p");
+    entryItemPreviewLine2.classList.add("lore-summary__entry-text--line2");
+
+    // Append the paragraphs to the listContentElement so we can create the spans inside them
+    listContentElement.appendChild(entryItemPreviewLine1);
+    listContentElement.appendChild(entryItemPreviewLine2);
+
+    if (nameKey) {
+      const nameSpan = document.createElement("span");
+      nameSpan.textContent = "Name: ";
+      entryItemPreviewLine1.appendChild(nameSpan);
+
+      const valueSpan = document.createElement("span");
+      valueSpan.textContent = `${nameKey}`;
+      valueSpan.classList.add("highlight");
+
+      entryItemPreviewLine1.appendChild(valueSpan);
     }
 
     if (descriptionValue) {
-      previewText += `Description: ${descriptionValue}\n`;
+      const descriptionSpan = document.createElement("span");
+      descriptionSpan.textContent = `Description: ${descriptionValue}`;
+      entryItemPreviewLine2.appendChild(descriptionSpan);
     }
-
-    // if (versionValue) {
-    //   previewText += `Version: ${versionValue}\n`;
+    // if (nameKey) {
+    //   previewText += `Name: ${nameKey}\n`;
     // }
 
-    const entryItemPreview = document.createElement("p");
-    entryItemPreview.classList.add("lore-summary__entry-text");
-    entryItemPreview.textContent = previewText.trim();
-    listContentElement.appendChild(entryItemPreview);
+    // if (descriptionValue) {
+    //   previewTextLine2 += `Description: ${descriptionValue}\n`;
+    // }
+
+    // const entryItemPreviewLine1 = document.createElement("p");
+    // entryItemPreviewLine1.classList.add("lore-summary__entry-text");
+    // entryItemPreviewLine1.textContent = previewText.trim();
+    // listContentElement.appendChild(entryItemPreviewLine1);
+
+    // const entryItemPreviewLine2 = document.createElement("p");
+    // entryItemPreviewLine2.classList.add("lore-summary__entry-text--line2");
+    // entryItemPreviewLine2.textContent = previewTextLine2.trim();
+    // listContentElement.appendChild(entryItemPreviewLine2);
 
     if (item.sprite) {
       const entryImagePeviewElement = document.createElement("img");
@@ -290,7 +324,7 @@ export class Viewer {
     const loreLibrary = window.catalogAPI.getInformationLoreLibrary("temp");
 
     const sectionHeader = document.createElement("h1");
-    sectionHeader.innerText = "Lore Explorer";
+    sectionHeader.innerText = "Explorer";
     viewerCards[0].appendChild(sectionHeader);
 
     for (const type in loreLibrary) {

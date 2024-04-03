@@ -8,6 +8,10 @@ const catalogAPI = {
     const response = ipcRenderer.invoke("dialog-file-open");
     return response;
   },
+  // openImageFileDialog() {
+  //   const response = ipcRenderer.invoke("dialog:open-image-file");
+  //   return response;
+  // },
   loadCatalog() {
     const response = ipcRenderer.sendSync("catalog:load");
     return response;

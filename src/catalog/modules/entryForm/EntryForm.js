@@ -78,7 +78,10 @@ export class EntryForm {
     const entryFormImageInput = document.querySelectorAll(
       ".entry-form__image--input"
     );
-    entryFormImageInput[0].addEventListener("change", (event) => {
+    entryFormImageInput[0].addEventListener("click", async (event) => {
+      // event.preventDefault();
+      // const result = await catalogAPI.openImageFileDialog();
+      console.log("Image Input Clicked");
       this.updateImagePreview(event);
     });
 

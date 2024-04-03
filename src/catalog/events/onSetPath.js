@@ -1,5 +1,6 @@
 //* EVENTS *//
 catalogAPI.onSetPath((currentDirectory) => {
+  console.log(currentDirectory)
   setDetailsProjectDirectory(currentDirectory);
   function setDetailsProjectDirectory(currentDirectory) {
     const detailsProjectDirectory = document.querySelectorAll(
