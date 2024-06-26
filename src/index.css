@@ -427,9 +427,11 @@ img {
 .viewer__cards-wrapper li {
   color: var(--text-color);
   background-color: rgba(0, 0, 0, 0.4);
+  border-radius: 10px 10px 10px 10px;
+  border-top: 1px solid var(--secondary-color);
   border-bottom: 1px solid var(--secondary-color);
   width: 100%;
-  margin-bottom: 2rem;
+  margin-bottom: 3rem;
 }
 .viewer__cards-wrapper button {
   background-color: var(--button-color);
@@ -447,9 +449,7 @@ img {
   overflow: hidden;
   transition: max-height 0.3s ease-out;
 }
-.category-card:hover {
-  border: none;
-}
+
 .category-card {
   border: 1px solid #ddd;
   margin-bottom: 15px;
@@ -661,7 +661,7 @@ img {
 }
 .modal-details {
   width: 90%;
-  max-width: 600px;
+  max-width: 900px;
 }
 
 .modal-details__entry-item-wrapper {
@@ -669,7 +669,7 @@ img {
   border: 1px solid var(--secondary-color);
   border-radius: 10px;
   padding: 0rem 1rem 0 1rem;
-  margin-bottom: 2rem;
+  margin-bottom: 3rem;
 }
 .modal-details__entry-item-wrapper h3 {
   color: var(--secondary-color);
@@ -686,8 +686,9 @@ img {
   background-color: rgb(255, 255, 255, 0.7);
   box-shadow: inset 1px 1px 1px rgba(87, 87, 87, 0.3);
   padding: 1rem 1rem 2rem 1rem;
-  max-width: 256px;
+  max-width: 80%;
   margin: 2rem;
+  user-select: none;
 }
 .background0 {
   background-image: url("../assets/images/backgrounds/lore-library-tile-0.png");

@@ -159,7 +159,7 @@ if (!gotTheLock) {
     window.once("ready-to-show", () => {
       window.show();
       window.webContents.send("catalog:send-library-path", projectPath);
-      window.webContents.openDevTools();
+      // window.webContents.openDevTools();
     });
   }
 }
